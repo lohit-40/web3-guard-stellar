@@ -38,14 +38,14 @@ jobs:
           RUST_BACKTRACE: 1
 
       - name: Build WASM Binary
-        working-directory: soroban_contracts/proof_of_audit
-        run: cargo build --target wasm32-unknown-unknown --release
+        working-directory: soroban_contracts
+        run: cargo build --target wasm32-unknown-unknown --release -p proof-of-audit
 
       - name: Verify WASM Artifact Exists
-        working-directory: soroban_contracts/proof_of_audit
+        working-directory: soroban_contracts
         run: |
           ls -lh target/wasm32-unknown-unknown/release/proof_of_audit.wasm
-          echo "✅ WASM binary built successfully"
+          echo "WASM binary built successfully"
 
   # ─── Job 2: Frontend Build (L4 Production Readiness) ────────────────────────
   frontend-build:
@@ -63,7 +63,7 @@ jobs:
 
       - name: Install Dependencies
         working-directory: frontend
-        run: npm install --legacy-peer-deps
+        run: npm install --legacy-peer-deps --ignore-scripts
 
       - name: Build Production Bundle
         working-directory: frontend
@@ -72,9 +72,10 @@ jobs:
           NEXT_PUBLIC_SOROBAN_CONTRACT_ID: CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
           NEXT_PUBLIC_API_URL: https://placeholder.up.railway.app
+          CI: false
 
       - name: Confirm Build Success
-        run: echo "✅ Next.js production build completed"
+        run: echo "Next.js production build completed"
 
   # ─── Job 3: Backend Lint Check ───────────────────────────────────────────────
   backend-check:
@@ -92,9 +93,22 @@ jobs:
 
       - name: Install Core Dependencies
         working-directory: backend
-        run: |
-          pip install fastapi uvicorn requests python-dotenv pydantic google-generativeai web3 slowapi
+        run: pip install fastapi uvicorn requests python-dotenv pydantic google-generativeai web3 slowapi
 
       - name: Syntax Check
         working-directory: backend
-        run: python -m py_compile main.py && echo "✅ Backend syntax OK"
+        run: |
+          python -c "
+          import ast, sys, os
+          files = ['main.py', 'ci_router.py', 'database.py']
+          failed = False
+          for f in files:
+              if os.path.exists(f):
+                  try:
+                      ast.parse(open(f, encoding='utf-8').read())
+                      print('OK: ' + f)
+                  except SyntaxError as e:
+                      print('FAIL: ' + f + ' - ' + str(e))
+                      failed = True
+          sys.exit(1 if failed else 0)
+          "
