@@ -1,0 +1,22 @@
+ℹ️  CARGO_BUILD_RUSTFLAGS=--remap-path-prefix=C:/Users/Asus/.cargo/registry/src= SOROBAN_SDK_BUILD_SYSTEM_SUPPORTS_SPEC_SHAKING_V2=1 cargo rustc --manifest-path=proof_of_audit\Cargo.toml --crate-type=cdylib --target=wasm32v1-none --release
+warning: profiles for the non root package will be ignored, specify profiles at the workspace root:
+package:   C:\Users\Asus\Desktop\bc-adv\soroban_contracts\proof_of_audit\Cargo.toml
+workspace: C:\Users\Asus\Desktop\bc-adv\soroban_contracts\Cargo.toml
+   Compiling escape-bytes v0.1.1
+   Compiling num-traits v0.2.19
+   Compiling ethnum v1.5.2
+   Compiling static_assertions v1.1.0
+   Compiling soroban-sdk v22.0.11
+   Compiling stellar-xdr v22.1.0
+   Compiling soroban-env-common v22.1.3
+error[E0463]: can't find crate for `core`
+  |
+  = note: the `wasm32v1-none` target may not be installed
+  = help: consider downloading the target with `rustup target add wasm32v1-none`
+
+For more information about this error, try `rustc --explain E0463`.
+error: could not compile `escape-bytes` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `static_assertions` (lib) due to 1 previous error
+error: could not compile `ethnum` (lib) due to 1 previous error
+❌ error: exit status exit code: 101

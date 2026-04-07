@@ -1,0 +1,13 @@
+warning: profiles for the non root package will be ignored, specify profiles at the workspace root:
+package:   C:\Users\Asus\Desktop\bc-adv\soroban_contracts\proof_of_audit\Cargo.toml
+workspace: C:\Users\Asus\Desktop\bc-adv\soroban_contracts\Cargo.toml
+warning: unused import: `Symbol`
+ --> proof_of_audit\src\lib.rs:2:84
+  |
+2 | use soroban_sdk::{contract, contractimpl, contracttype, symbol_short, Env, String, Symbol, Address, token};
+  |                                                                                    ^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `proof-of-audit` (lib) generated 1 warning (run `cargo fix --lib -p proof-of-audit` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 0.17s

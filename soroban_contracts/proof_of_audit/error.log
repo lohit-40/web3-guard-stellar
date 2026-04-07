@@ -1,0 +1,71 @@
+﻿cargo : warning: profiles for the non root 
+package will be ignored, specify profiles at the 
+workspace root:
+At line:1 char:1
++ cargo check --tests --color never 2>&1 | 
+Out-File -Encoding UTF8 erro ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (warn 
+   ing: profil...workspace root::String) [], Rem  
+  oteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+package:   C:\Users\Asus\Desktop\bc-adv\soroban_co
+ntracts\proof_of_audit\Cargo.toml
+workspace: C:\Users\Asus\Desktop\bc-adv\soroban_co
+ntracts\Cargo.toml
+    Checking proof-of-audit v0.1.0 (C:\Users\Asus\
+Desktop\bc-adv\soroban_contracts\proof_of_audit)
+warning: unused import: `Symbol`
+ --> proof_of_audit\src\lib.rs:2:84
+  |
+2 | use soroban_sdk::{contract, contractimpl, 
+contracttype, symbol_short, Env, String, Symbol, 
+Address, token};
+  |                                               
+                                     ^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of 
+`#[warn(unused)]`) on by default
+
+warning: unused import: `Ledger`
+   --> proof_of_audit\src\lib.rs:112:49
+    |
+112 |     use soroban_sdk::{testutils::{Address 
+as _, Ledger}, Env, String, Address};
+    |                                             
+    ^^^^^^
+
+error[E0599]: no method named `register` found 
+for struct `Env` in the current scope
+   --> proof_of_audit\src\lib.rs:127:31
+    |
+127 |         let contract_id = 
+env.register(ProofOfAuditContract, ());
+    |                               ^^^^^^^^ 
+method not found in `Env`
+
+error[E0599]: no method named `register` found 
+for struct `Env` in the current scope
+   --> proof_of_audit\src\lib.rs:157:31
+    |
+157 |         let contract_id = 
+env.register(ProofOfAuditContract, ());
+    |                               ^^^^^^^^ 
+method not found in `Env`
+
+error[E0599]: no method named `register` found 
+for struct `Env` in the current scope
+   --> proof_of_audit\src\lib.rs:174:31
+    |
+174 |         let contract_id = 
+env.register(ProofOfAuditContract, ());
+    |                               ^^^^^^^^ 
+method not found in `Env`
+
+For more information about this error, try `rustc 
+--explain E0599`.
+warning: `proof-of-audit` (lib test) generated 2 
+warnings
+error: could not compile `proof-of-audit` (lib 
+test) due to 3 previous errors; 2 warnings emitted

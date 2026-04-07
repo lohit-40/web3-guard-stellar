@@ -1,0 +1,26 @@
+ℹ️  CARGO_BUILD_RUSTFLAGS=--remap-path-prefix=C:/Users/Asus/.cargo/registry/src= SOROBAN_SDK_BUILD_SYSTEM_SUPPORTS_SPEC_SHAKING_V2=1 cargo rustc --manifest-path=proof_of_audit\Cargo.toml --crate-type=cdylib --target=wasm32v1-none --release
+warning: profiles for the non root package will be ignored, specify profiles at the workspace root:
+package:   C:\Users\Asus\Desktop\bc-adv\soroban_contracts\proof_of_audit\Cargo.toml
+workspace: C:\Users\Asus\Desktop\bc-adv\soroban_contracts\Cargo.toml
+   Compiling num-traits v0.2.19
+   Compiling escape-bytes v0.1.1
+   Compiling ethnum v1.5.2
+   Compiling static_assertions v1.1.0
+   Compiling soroban-sdk v22.0.11
+   Compiling stellar-xdr v22.1.0
+   Compiling soroban-env-common v22.1.3
+   Compiling soroban-env-guest v22.1.3
+   Compiling proof-of-audit v0.1.0 (C:\Users\Asus\Desktop\bc-adv\soroban_contracts\proof_of_audit)
+    Finished `release` profile [optimized] target(s) in 7.58s
+ℹ️  Build Summary:
+    Wasm File: target\wasm32v1-none\release\proof_of_audit.wasm (4138 bytes)
+    Wasm Hash: 6feef32b6cbddd9747a4423a0f25c9495f3b29d153c1ebf012b5d5597a96ca24
+    Wasm Size: 4138 bytes
+    Exported Functions: 5 found
+      • _
+      • get_proof
+      • store_proof
+      • total_proofs
+      • verify_proof
+✅ Build Complete
+

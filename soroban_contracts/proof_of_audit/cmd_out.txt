@@ -1,0 +1,103 @@
+warning: profiles for the non root package will be ignored, specify profiles at the workspace root:
+package:   C:\Users\Asus\Desktop\bc-adv\soroban_contracts\proof_of_audit\Cargo.toml
+workspace: C:\Users\Asus\Desktop\bc-adv\soroban_contracts\Cargo.toml
+warning: unused import: `Symbol`
+ --> proof_of_audit\src\lib.rs:2:84
+  |
+2 | ...rt, Env, String, Symbol, Address, token};
+  |                     ^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `Ledger`
+   --> proof_of_audit\src\lib.rs:112:49
+    |
+112 | ...:{Address as _, Ledger}, Env, String, ...
+    |                    ^^^^^^
+
+warning: `proof-of-audit` (lib test) generated 2 warnings (run `cargo fix --lib -p proof-of-audit --tests` to apply 2 suggestions)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.16s
+     Running unittests src\lib.rs (C:\Users\Asus\Desktop\bc-adv\soroban_contracts\target\debug\deps\proof_of_audit-5b675f5296ec3016.exe)
+
+running 3 tests
+test tests::test_missing_proof_returns_none ... ok
+test tests::test_store_and_retrieve_proof ... FAILED
+test tests::test_require_auth_fails_without_signature - should panic ... ok
+
+failures:
+
+---- tests::test_store_and_retrieve_proof stdout ----
+
+thread 'tests::test_store_and_retrieve_proof' (1672) panicked at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-env-host-21.2.1\src\host.rs:768:9:
+HostError: Error(Auth, InvalidAction)
+
+Event log (newest first):
+   0: [Diagnostic Event] topics:[error, Error(Auth, InvalidAction)], data:"escalating error to panic"
+   1: [Diagnostic Event] topics:[error, Error(Auth, InvalidAction)], data:["contract call failed", mint, [CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4, 1000000000]]
+   2: [Failed Diagnostic Event (not emitted)] contract:CBUSYNQKASUYFWYC3M2GUEDMX4AIVWPALDBYJPNK6554BREHTGZ2IUNF, topics:[error, Error(Auth, InvalidAction)], data:["Unauthorized function call for address", CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM]
+   3: [Diagnostic Event] topics:[fn_call, Bytes(692c360a04a982db02db346a106cbf008ad9e058c384bdaaf77bc0c48799b3a4), mint], data:[CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4, 1000000000]
+   4: [Diagnostic Event] contract:CBUSYNQKASUYFWYC3M2GUEDMX4AIVWPALDBYJPNK6554BREHTGZ2IUNF, topics:[fn_return, set_admin], data:Void
+   5: [Contract Event] contract:CBUSYNQKASUYFWYC3M2GUEDMX4AIVWPALDBYJPNK6554BREHTGZ2IUNF, topics:[set_admin, GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGO6V, "aaa:GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGO6V"], data:CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM
+   6: [Diagnostic Event] topics:[fn_call, Bytes(692c360a04a982db02db346a106cbf008ad9e058c384bdaaf77bc0c48799b3a4), set_admin], data:CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM
+   7: [Diagnostic Event] contract:CBUSYNQKASUYFWYC3M2GUEDMX4AIVWPALDBYJPNK6554BREHTGZ2IUNF, topics:[fn_return, init_asset], data:Void
+   8: [Diagnostic Event] topics:[fn_call, Bytes(692c360a04a982db02db346a106cbf008ad9e058c384bdaaf77bc0c48799b3a4), init_asset], data:Bytes(0000000161616100000000000000000000000000000000000000000000000000000000000000000000000003)
+
+Backtrace (newest first):
+   0: backtrace::backtrace::win64::trace
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\backtrace-0.3.76\src\backtrace\win64.rs:85
+      backtrace::backtrace::trace_unsynchronized<backtrace::capture::impl$4::create::closure_env$0>
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\backtrace-0.3.76\src\backtrace\mod.rs:66
+   1: backtrace::backtrace::trace<backtrace::capture::impl$4::create::closure_env$0>
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\backtrace-0.3.76\src\backtrace\mod.rs:53
+   2: backtrace::capture::Backtrace::create
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\backtrace-0.3.76\src\capture.rs:294
+   3: backtrace::capture::Backtrace::new_unresolved
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\backtrace-0.3.76\src\capture.rs:289
+   4: soroban_env_host::host::error::impl$10::maybe_get_debug_info::closure$0
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-env-host-21.2.1\src\host\error.rs:293
+   5: soroban_env_host::budget::Budget::with_shadow_mode<tuple$<>,soroban_env_host::host::error::impl$10::maybe_get_debug_info::closure_env$0>
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-env-host-21.2.1\src\budget.rs:972
+   6: soroban_env_host::host::Host::with_debug_mode<soroban_env_host::host::error::impl$10::maybe_get_debug_info::closure_env$0>
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-env-host-21.2.1\src\host.rs:615
+   7: soroban_env_host::host::Host::maybe_get_debug_info
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-env-host-21.2.1\src\host\error.rs:290
+   8: soroban_env_host::host::error::impl$10::error::closure$0
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-env-host-21.2.1\src\host\error.rs:274
+   9: soroban_env_host::budget::Budget::with_shadow_mode<tuple$<>,soroban_env_host::host::error::impl$10::error::closure_env$0>
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-env-host-21.2.1\src\budget.rs:972
+  10: soroban_env_host::host::Host::with_debug_mode<soroban_env_host::host::error::impl$10::error::closure_env$0>
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-env-host-21.2.1\src\host.rs:615
+  11: soroban_env_host::host::Host::error
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-env-host-21.2.1\src\host\error.rs:261
+  12: soroban_env_host::host::impl$4::escalate_error_to_panic
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-env-host-21.2.1\src\host.rs:767
+  13: soroban_sdk::env::internal::reject_err::closure$0<soroban_env_common::val::Val>
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-sdk-21.7.7\src\env.rs:52
+  14: enum2$<core::result::Result<soroban_env_common::val::Val,soroban_env_host::host::error::HostError> >::map_err<soroban_env_common::val::Val,soroban_env_host::host::error::HostError,enum2$<core::convert::Infallible>,soroban_sdk::env::internal::reject_err::cl
+             at C:\Users\Asus\.rustup\toolchains\stable-x86_64-pc-windows-msvc\lib\rustlib\src\rust\library\core\src\result.rs:961
+  15: soroban_sdk::env::internal::reject_err<soroban_env_common::val::Val>
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-sdk-21.7.7\src\env.rs:52
+  16: soroban_sdk::env::impl$20::call
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-sdk-21.7.7\src\env.rs:1667
+  17: soroban_sdk::env::Env::invoke_contract<tuple$<> >
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-sdk-21.7.7\src\env.rs:379
+  18: soroban_sdk::token::StellarAssetClient::mint
+             at C:\Users\Asus\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-sdk-21.7.7\src\token.rs:236
+  19: proof_of_audit::tests::test_store_and_retrieve_proof
+             at src\lib.rs:125
+  20: proof_of_audit::tests::test_store_and_retrieve_proof::closure$0
+             at src\lib.rs:116
+  21: core::ops::function::FnOnce::call_once<proof_of_audit::tests::test_store_and_retrieve_proof::closure_env$0,tuple$<> >
+             at C:\Users\Asus\.rustup\toolchains\stable-x86_64-pc-windows-msvc\lib\rustlib\src\rust\library\core\src\ops\function.rs:250
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+Writing test snapshot file for test "tests::test_store_and_retrieve_proof" to "test_snapshots\\tests\\test_store_and_retrieve_proof.1.json".
+
+
+failures:
+    tests::test_store_and_retrieve_proof
+
+test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+error: test failed, to rerun pass `--lib`
