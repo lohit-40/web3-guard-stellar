@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/badge/Backend-Python%20|%20FastAPI-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
 </p>
 
-[**🚀 Live Demo**](#) • [**📼 Watch Video**](#) • [**📚 Read Docs**](#setup-instructions)
+[**🚀 Live Demo**](https://web3-guard-stellar-gilt.vercel.app/) • [**📼 Watch Video**](#) • [**📚 Read Docs**](#setup-instructions)
 
 <br/>
 <p align="justify">
