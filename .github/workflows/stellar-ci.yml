@@ -19,7 +19,7 @@ jobs:
       - name: Install Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: wasm32v1-none
+          targets: wasm32-unknown-unknown
 
       - name: Cache Cargo Registry
         uses: actions/cache@v4
@@ -40,11 +40,11 @@ jobs:
 
       - name: Build WASM Binary
         working-directory: soroban_contracts/proof_of_audit
-        run: cargo build --target wasm32v1-none --release
+        run: cargo build --target wasm32-unknown-unknown --release
 
       - name: Verify WASM Artifact Exists
         run: |
-          ls -lh soroban_contracts/proof_of_audit/target/wasm32v1-none/release/proof_of_audit.wasm
+          ls -lh soroban_contracts/proof_of_audit/target/wasm32-unknown-unknown/release/proof_of_audit.wasm
           echo "✅ WASM binary built successfully"
 
   # ─── Job 2: Frontend Build (L4 Production Readiness) ────────────────────────
