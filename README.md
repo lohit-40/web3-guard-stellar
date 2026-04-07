@@ -59,6 +59,22 @@ npm run dev
 
 ---
 
+## 🧪 Step-by-Step E2E Testing Guide (For Hackathon Judges)
+
+To fully experience the Web3 Guard auditing capabilities natively on the Stellar Testnet, please follow this flow:
+
+1. **Install Freighter:** Ensure you have the [Freighter Wallet browser extension](https://www.freighter.app/) installed and set your network to **Testnet**.
+2. **Launch the dApp:** Visit the Live Vercel Deployment linked at the top of this repository.
+3. **Connect Wallet:** Click **"Connect Wallet"** in the top right corner. The Freighter popup will prompt you to authenticate. Once accepted, your XLM balance will instantly display.
+4. **Configure Target Ecosystem:** In the Web3 Guard dashboard, select **`[rust]`** as your core ecosystem, and click the **`Stellar`** toggle underneath it.
+5. **Input Vulnerable Code:** Paste any raw Rust / Soroban smart contract source code into the `< / > [ SOURCE ]` text area (or leave the default template for a quick test).
+6. **Commence Audit:** Click the giant orange **Commence Audit** button. Note: 
+    - The AI Engine will instantly compile and decompile heuristics.
+    - If successful, a toast notification reading **`Audit proof anchored on Stellar Testnet!`** will confirm the interaction with our native `proof_of_audit` Soroban contract.
+7. **View the Report:** You will be immediately redirected to the beautifully generated Audit Report, mapping the zero-day vulnerabilities directly back to the line numbers!
+
+---
+
 ## 🔗 Stellar Ecosystem Submission Data
 
 > **📍 Soroban Advanced Contract:** `CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU`  
