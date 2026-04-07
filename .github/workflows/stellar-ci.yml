@@ -27,8 +27,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            soroban_contracts/proof_of_audit/target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('soroban_contracts/proof_of_audit/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-${{ hashFiles('soroban_contracts/proof_of_audit/Cargo.toml') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
 
@@ -43,8 +42,9 @@ jobs:
         run: cargo build --target wasm32-unknown-unknown --release
 
       - name: Verify WASM Artifact Exists
+        working-directory: soroban_contracts/proof_of_audit
         run: |
-          ls -lh soroban_contracts/proof_of_audit/target/wasm32-unknown-unknown/release/proof_of_audit.wasm
+          ls -lh target/wasm32-unknown-unknown/release/proof_of_audit.wasm
           echo "✅ WASM binary built successfully"
 
   # ─── Job 2: Frontend Build (L4 Production Readiness) ────────────────────────
@@ -60,12 +60,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
 
       - name: Install Dependencies
         working-directory: frontend
-        run: npm ci --legacy-peer-deps
+        run: npm install --legacy-peer-deps
 
       - name: Build Production Bundle
         working-directory: frontend
@@ -73,6 +71,7 @@ jobs:
         env:
           NEXT_PUBLIC_SOROBAN_CONTRACT_ID: CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
+          NEXT_PUBLIC_API_URL: https://placeholder.up.railway.app
 
       - name: Confirm Build Success
         run: echo "✅ Next.js production build completed"
@@ -91,9 +90,10 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Dependencies
+      - name: Install Core Dependencies
         working-directory: backend
-        run: pip install -r requirements.txt
+        run: |
+          pip install fastapi uvicorn requests python-dotenv pydantic google-generativeai web3 slowapi
 
       - name: Syntax Check
         working-directory: backend
