@@ -78,15 +78,15 @@ npm run dev
 <details>
   <summary><b>1. Multi-Wallet Connection Options</b> (Click to expand)</summary>
   
-  *Replace with screenshot of wallet options*
-  ![Wallet Settings](#)
+  *Freighter wallet extension correctly identifying the Web3 Guard Vercel dApp and prompting for Testnet access.*
+  ![Wallet Settings](assets/wallet_connection.png)
 </details>
 
 <details>
   <summary><b>2. Freighter Connection & Real-time Balance Execution</b> (Click to expand)</summary>
 
-  *Replace with screenshot of Top-Right Navbar showing connected address and XLM balance*
-  ![Balance](#)
+  *The frontend successfully reading the connected user's current XLM balance directly through the Freighter RPC.*
+  ![Balance](assets/navbar_balance.png)
 </details>
 
 ### 🥋 Level 3: Testing Paradigms
@@ -108,8 +108,8 @@ npm run dev
 <details>
   <summary><b>4. On-Chain Transaction Anchoring</b> (Click to expand)</summary>
 
-  *Replace with screenshot of the Green UI success message or Stellar Expert Tx Result*
-  ![Success Tx](#)
+  *Web3 Guard successfully capturing the deployed Soroban contract and alerting the user that the audit proof is secured on the Stellar Testnet.*
+  ![Success Tx](assets/success_toast.png)
 </details>
 
 
@@ -117,8 +117,15 @@ npm run dev
 <details>
   <summary><b>5. Responsive Mobile Architecture</b> (Click to expand)</summary>
 
-  *Replace with screenshot of the site viewed on a mobile resolution*
-  ![Mobile UX](#)
+  *Full UI gracefully transitioning to a vertical mobile view while maintaining Soroban/Stellar selection parity.*
+  ![Mobile UX](assets/mobile_ux.png)
+</details>
+
+<details>
+  <summary><b>6. Exportable Smart Contract Audits</b> (Click to expand)</summary>
+
+  *Final PDF/Web report clearly diagnosing a High Risk vulnerability with its source mapping, badged with its "Stellar Verified" status.*
+  ![Audit Report](assets/audit_report.png)
 </details>
 
 <details>
