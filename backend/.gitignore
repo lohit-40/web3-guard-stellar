@@ -1,0 +1,20 @@
+# Environment Variables (contains secrets!)
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# SQLite cache
+cache.db
+
+# IDE
+.vscode/
+.idea/

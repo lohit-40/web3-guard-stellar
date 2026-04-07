@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+requests
+python-dotenv
+pydantic
+google-genai
+web3
+slowapi
+solana
+solders
