@@ -93,8 +93,16 @@ npm run dev
 <details>
   <summary><b>3. Soroban Rust Test Suite Output (3+ Passing)</b> (Click to expand)</summary>
 
-  *Replace with screenshot of your terminal after running `cargo test`*
-  ![Tests](#)
+  ```bash
+  $ cargo test
+
+  running 3 tests                        
+  test tests::test_missing_proof_returns_none ... ok
+  test tests::test_require_auth_fails_without_signature - should panic ... ok              
+  test tests::test_store_and_retrieve_proof ... ok     
+
+  test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+  ```
 </details>
 
 <details>
@@ -116,8 +124,9 @@ npm run dev
 <details>
   <summary><b>6. Automated CI/CD Pipeline</b> (Click to expand)</summary>
 
-  *Replace with screenshot of GitHub actions showing the Soroban Build Pipeline succeeding*
-  ![CI/CD Build](#)
+  *The project utilizes an automated GitHub Action YAML workflow designed for Soroban test execution.*
+  
+  ![CI/CD Build](https://img.shields.io/github/actions/workflow/status/lohit-40/web3-guard-stellar/stellar-ci.yml?branch=main&label=Stellar%20Soroban%20Build%20Pipeline&style=for-the-badge)
 </details>
 
 <br/>
