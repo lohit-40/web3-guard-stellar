@@ -41,14 +41,14 @@ export default function HistorySidebar({ onSelectReport }: HistorySidebarProps) 
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* FULL OPAQUE BACKDROP */}
+            {/* TRANSLUCENT BACKDROP */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0"
-              style={{ backgroundColor: '#F2F0EB', zIndex: 99999 }}
+              className="fixed inset-0 backdrop-blur-sm"
+              style={{ backgroundColor: 'rgba(242, 240, 235, 0.6)', zIndex: 99999 }}
             />
             {/* Sidebar Panel */}
             <motion.div 
