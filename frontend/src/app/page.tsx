@@ -417,7 +417,7 @@ export default function App() {
         style: { background: '#111', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }
       }} />
       {/* Main UI Overlay */}
-      <div className="relative z-10 w-full min-h-screen flex flex-col justify-center px-6 md:px-24 pt-32 pb-20 pointer-events-none">
+      <div className="relative z-10 w-full min-h-screen flex flex-col justify-center px-6 md:px-24 pt-16 md:pt-20 pb-20 pointer-events-none">
         <div className="max-w-6xl w-full mx-auto pointer-events-auto">
           
           {/* Header Section */}
@@ -427,8 +427,8 @@ export default function App() {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             className="mb-24 relative"
           >
-            <div className="flex items-center gap-3 mb-6 absolute -top-12 left-2 md:-left-12">
-              <span className="text-brutal-orange text-6xl font-serif mt-4">*</span>
+            <div className="flex items-center gap-3 mb-6 relative md:absolute md:-top-12 left-2 md:-left-12">
+              <span className="text-brutal-orange text-4xl md:text-6xl font-serif mt-4">*</span>
               <span className="uppercase tracking-[0.2em] text-xs font-bold text-brutal-text leading-tight max-w-[200px]">
                 We are rethinking how smart contract communication happens.
               </span>
@@ -456,7 +456,7 @@ export default function App() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button
                   onClick={() => { setEcosystem('Solidity'); setChainId('1'); setInputMode(null); }}
-                  className={`py-8 px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
+                  className={`py-4 md:py-8 px-4 md:px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
                     ecosystem === 'Solidity' 
                     ? 'border-brutal-orange bg-brutal-orange/5 scale-105 z-10' 
                     : 'border-brutal-text/20 hover:border-brutal-text/50 opacity-60'
@@ -467,7 +467,7 @@ export default function App() {
                 </button>
                 <button
                   onClick={() => { setEcosystem('Rust'); setChainId(''); setInputMode('code'); }}
-                  className={`py-8 px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
+                  className={`py-4 md:py-8 px-4 md:px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
                     ecosystem === 'Rust' 
                     ? 'border-brutal-orange bg-brutal-orange/5 scale-105 z-10' 
                     : 'border-brutal-text/20 hover:border-brutal-text/50 opacity-60'
