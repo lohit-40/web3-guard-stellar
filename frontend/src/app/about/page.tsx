@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ShieldCheck, Cpu, Code2, ArrowRight } from "lucide-react";
+import { ShieldCheck, Cpu, Code2, ArrowRight, Twitter, Linkedin, Github } from "lucide-react";
 
 export default function About() {
   return (
@@ -83,9 +83,22 @@ export default function About() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="mt-16 flex items-center justify-between border-t-4 border-brutal-text pt-8"
+            className="mt-16 flex items-center justify-between border-t-4 border-brutal-text pt-8 flex-wrap gap-6"
           >
-            <p className="text-brutal-text font-bold text-sm uppercase tracking-[0.2em]">Final Year Project</p>
+            <div>
+              <p className="text-brutal-text font-bold text-sm uppercase tracking-[0.2em] mb-3">Final Year Project</p>
+              <div className="flex items-center gap-4">
+                <a href="https://x.com/LohitMishr_a" target="_blank" rel="noopener noreferrer" className="p-2 border-2 border-brutal-text hover:bg-brutal-orange hover:text-brutal-bg hover:border-brutal-orange transition-colors">
+                  <Twitter className="w-4 h-4" />
+                </a>
+                <a href="https://www.linkedin.com/in/lohit-mishra-840640200/" target="_blank" rel="noopener noreferrer" className="p-2 border-2 border-brutal-text hover:bg-brutal-orange hover:text-brutal-bg hover:border-brutal-orange transition-colors">
+                  <Linkedin className="w-4 h-4" />
+                </a>
+                <a href="https://github.com/lohit-40" target="_blank" rel="noopener noreferrer" className="p-2 border-2 border-brutal-text hover:bg-brutal-orange hover:text-brutal-bg hover:border-brutal-orange transition-colors">
+                  <Github className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
             <div className="flex items-center gap-3 text-brutal-text font-bold text-sm uppercase tracking-[0.2em] hover:text-brutal-orange transition-colors">
               Powered by Next.js & FastAPI <ArrowRight className="w-5 h-5" />
             </div>
