@@ -260,7 +260,7 @@ Based on the active feedback from our **30+ beta-testers** (see the raw data: [d
     - **Email Support via SendGrid:** Automated daily security digests.
     - **Telegram Bot Hooks:** Real-time push alerts via a dedicated Web3 Guard Bot.
   
-[View Improvement Implementation Commit](https://github.com/lohit-40/web3-guard-stellar/commits/main)
+[View Improvement Implementation Commit](https://github.com/lohit-40/web3-guard-stellar/commit/66d7830c6c8f5368cebb60f559fc4d460de97c61)
 
 ---
 
