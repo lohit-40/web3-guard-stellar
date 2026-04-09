@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ShieldCheck, Cpu, Code2, ArrowRight, Twitter, Linkedin, Github } from "lucide-react";
+import { ShieldCheck, Cpu, Code2, ArrowRight } from "lucide-react";
 
 export default function About() {
   return (
@@ -88,14 +88,14 @@ export default function About() {
             <div>
               <p className="text-brutal-text font-bold text-sm uppercase tracking-[0.2em] mb-3">Final Year Project</p>
               <div className="flex items-center gap-4">
-                <a href="https://x.com/LohitMishr_a" target="_blank" rel="noopener noreferrer" className="p-2 border-2 border-brutal-text hover:bg-brutal-orange hover:text-brutal-bg hover:border-brutal-orange transition-colors">
-                  <Twitter className="w-4 h-4" />
+                <a href="https://x.com/LohitMishr_a" target="_blank" rel="noopener noreferrer" className="px-4 py-2 border-2 border-brutal-text hover:bg-brutal-orange hover:text-brutal-bg hover:border-brutal-orange transition-colors font-bold uppercase tracking-widest text-xs">
+                  [x]
                 </a>
-                <a href="https://www.linkedin.com/in/lohit-mishra-840640200/" target="_blank" rel="noopener noreferrer" className="p-2 border-2 border-brutal-text hover:bg-brutal-orange hover:text-brutal-bg hover:border-brutal-orange transition-colors">
-                  <Linkedin className="w-4 h-4" />
+                <a href="https://www.linkedin.com/in/lohit-mishra-840640200/" target="_blank" rel="noopener noreferrer" className="px-4 py-2 border-2 border-brutal-text hover:bg-brutal-orange hover:text-brutal-bg hover:border-brutal-orange transition-colors font-bold uppercase tracking-widest text-xs">
+                  [in]
                 </a>
-                <a href="https://github.com/lohit-40" target="_blank" rel="noopener noreferrer" className="p-2 border-2 border-brutal-text hover:bg-brutal-orange hover:text-brutal-bg hover:border-brutal-orange transition-colors">
-                  <Github className="w-4 h-4" />
+                <a href="https://github.com/lohit-40" target="_blank" rel="noopener noreferrer" className="px-4 py-2 border-2 border-brutal-text hover:bg-brutal-orange hover:text-brutal-bg hover:border-brutal-orange transition-colors font-bold uppercase tracking-widest text-xs">
+                  [git]
                 </a>
               </div>
             </div>
