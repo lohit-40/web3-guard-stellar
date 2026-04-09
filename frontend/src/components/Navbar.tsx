@@ -28,7 +28,7 @@ export default function Navbar() {
     : "";
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-40 px-6 py-4 md:px-12 pointer-events-auto bg-[#F2F0EB]/85 backdrop-blur-md border-b-[3px] border-[#1C1C1C] shadow-[0px_4px_0px_0px_rgba(28,28,28,0.2)]">
+    <nav className="absolute top-0 left-0 w-full z-40 px-6 py-6 md:px-12 pointer-events-none">
       <div className="max-w-7xl mx-auto flex items-center justify-between pointer-events-auto">
         
         {/* Logo */}
