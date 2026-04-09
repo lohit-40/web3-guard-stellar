@@ -12,8 +12,63 @@ def init_db():
             response_data TEXT
         )
     ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            wallet_address TEXT PRIMARY KEY,
+            first_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            audit_count INTEGER DEFAULT 0
+        )
+    ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS watchlist (
+            contract_address TEXT PRIMARY KEY,
+            added_by TEXT,
+            last_scanned TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            risk_level TEXT
+        )
+    ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS monitoring_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            contract_address TEXT,
+            event_type TEXT,
+            details TEXT,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
     conn.commit()
     conn.close()
+
+def record_user_activity(wallet_address: str):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("INSERT OR IGNORE INTO users (wallet_address) VALUES (?)", (wallet_address,))
+    cursor.execute("UPDATE users SET audit_count = audit_count + 1 WHERE wallet_address = ?", (wallet_address,))
+    conn.commit()
+    conn.close()
+
+def get_dashboard_metrics():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT COUNT(*) FROM users")
+    user_count = cursor.fetchone()[0]
+    
+    cursor.execute("SELECT COUNT(*) FROM watchlist")
+    watchlist_count = cursor.fetchone()[0]
+    
+    cursor.execute("SELECT * FROM monitoring_events ORDER BY timestamp DESC LIMIT 10")
+    recent_events = [
+        {"id": r[0], "contract": r[1], "type": r[2], "details": r[3], "time": r[4]} 
+        for r in cursor.fetchall()
+    ]
+    
+    conn.close()
+    return {
+        "active_users": user_count,
+        "watched_contracts": watchlist_count,
+        "recent_events": recent_events
+    }
 
 def get_cached_scan(hash_key: str):
     conn = sqlite3.connect(DB_PATH)
