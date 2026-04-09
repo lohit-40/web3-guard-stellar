@@ -7,11 +7,14 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   async rewrites() {
+    let apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+    if (!apiUrl.startsWith('http://') && !apiUrl.startsWith('https://')) {
+      apiUrl = `https://${apiUrl}`;
+    }
     return [
       {
         source: '/api/:path*',
-        // Fallback to local API if NEXT_PUBLIC_API_URL isn't set
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/:path*`, 
+        destination: `${apiUrl}/:path*`, 
       },
     ];
   },
