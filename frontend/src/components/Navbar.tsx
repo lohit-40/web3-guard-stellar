@@ -29,7 +29,7 @@ export default function Navbar() {
 
   return (
     <nav className="absolute top-0 left-0 w-full z-40 px-6 py-6 md:px-12 pointer-events-none">
-      <div className="max-w-7xl mx-auto flex items-center justify-between pointer-events-auto">
+      <div className="max-w-7xl mx-auto flex flex-wrap gap-4 items-center justify-center md:justify-between pointer-events-auto">
         
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
@@ -42,10 +42,10 @@ export default function Navbar() {
         </Link>
 
         {/* Links */}
-        <div className="flex items-center gap-2 border-2 border-brutal-text bg-brutal-bg p-1 rounded-none shadow-[4px_4px_0px_0px_rgba(28,28,28,1)]">
+        <div className="flex items-center gap-1 sm:gap-2 border-2 border-brutal-text bg-brutal-bg p-1 rounded-none shadow-[4px_4px_0px_0px_rgba(28,28,28,1)] overflow-x-auto no-scrollbar">
           <Link 
             href="/"
-            className={`px-6 py-2 text-xs uppercase tracking-[0.2em] font-bold transition-all ${
+            className={`px-3 py-1.5 sm:px-6 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold transition-all ${
               pathname === "/" ? "bg-brutal-text text-brutal-bg" : "text-brutal-text/60 hover:text-brutal-text hover:bg-brutal-text/5"
             }`}
           >
@@ -53,7 +53,7 @@ export default function Navbar() {
           </Link>
           <Link 
             href="/explorer"
-            className={`px-6 py-2 text-xs uppercase tracking-[0.2em] font-bold transition-all ${
+            className={`px-3 py-1.5 sm:px-6 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold transition-all ${
               pathname === "/explorer" ? "bg-brutal-text text-brutal-bg" : "text-brutal-text/60 hover:text-brutal-text hover:bg-brutal-text/5"
             }`}
           >
@@ -61,7 +61,7 @@ export default function Navbar() {
           </Link>
           <Link 
             href="/about"
-            className={`px-6 py-2 text-xs uppercase tracking-[0.2em] font-bold transition-all ${
+            className={`px-3 py-1.5 sm:px-6 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold transition-all ${
               pathname === "/about" ? "bg-brutal-text text-brutal-bg" : "text-brutal-text/60 hover:text-brutal-text hover:bg-brutal-text/5"
             }`}
           >
@@ -69,7 +69,7 @@ export default function Navbar() {
           </Link>
           <Link 
             href="/dashboard"
-            className={`px-6 py-2 text-xs uppercase tracking-[0.2em] font-bold transition-all ${
+            className={`px-3 py-1.5 sm:px-6 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold transition-all ${
               pathname === "/dashboard" ? "bg-brutal-text text-brutal-bg" : "text-brutal-text/60 hover:text-brutal-text hover:bg-brutal-text/5"
             }`}
           >

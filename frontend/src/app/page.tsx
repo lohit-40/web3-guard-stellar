@@ -433,7 +433,7 @@ export default function App() {
                 We are rethinking how smart contract communication happens.
               </span>
             </div>
-            <h1 className="text-[100px] md:text-[160px] lg:text-[220px] font-medium tracking-tighter leading-[0.8] text-brutal-text lowercase relative z-10">
+            <h1 className="text-[70px] sm:text-[100px] md:text-[160px] lg:text-[220px] font-medium tracking-tighter leading-[0.8] text-brutal-text lowercase relative z-10">
               web3<br/>
               guard
             </h1>
@@ -453,7 +453,7 @@ export default function App() {
             {/* Ecosystem Selection */}
             <div className="flex flex-col gap-4 mb-10 w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
               <span className="text-xs tracking-widest text-brutal-text/60 uppercase font-bold">1. Select Target Ecosystem:</span>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button
                   onClick={() => { setEcosystem('Solidity'); setChainId('1'); setInputMode(null); }}
                   className={`py-8 px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
