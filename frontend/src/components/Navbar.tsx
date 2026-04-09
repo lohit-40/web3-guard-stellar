@@ -67,6 +67,14 @@ export default function Navbar() {
           >
             ethos
           </Link>
+          <Link 
+            href="/dashboard"
+            className={`px-6 py-2 text-xs uppercase tracking-[0.2em] font-bold transition-all ${
+              pathname === "/dashboard" ? "bg-brutal-text text-brutal-bg" : "text-brutal-text/60 hover:text-brutal-text hover:bg-brutal-text/5"
+            }`}
+          >
+            monitor
+          </Link>
         </div>
 
         {/* Wallet Connect — Multi-Chain */}
