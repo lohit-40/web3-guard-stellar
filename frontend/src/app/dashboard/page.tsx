@@ -24,7 +24,7 @@ export default function Dashboard() {
 
   const fetchMetrics = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/metrics/live");
+      const res = await fetch("/api/metrics/live");
       const data = await res.json();
       setMetrics(data);
     } catch (e) {
