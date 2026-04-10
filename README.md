@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/badge/Backend-Python%20|%20FastAPI-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
 </p>
 
-[**🚀 Live Demo**](#) • [**📼 Watch Video**](#) • [**📚 Read Docs**](#setup-instructions)
+[**🚀 Live Demo**](https://web3-guard-stellar-gilt.vercel.app/) • [**📼 Watch Video**](#) • [**📚 Read Docs**](#setup-instructions)
 
 <br/>
 <p align="justify">
@@ -85,7 +85,7 @@ npm run dev
 
 > **📍 Soroban Advanced Contract:** `CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU`  
 > **💸 Token Address:** Uses Native XLM standard for Inter-Contract Protocol Fees  
-> **🧾 Example Transaction Hash:** `[Insert Tx Hash Here]`  
+> **🧾 Example Transaction Hash:** `273129c0dffebb66bfe88fde0f3752599726317c5b5bbe45ea3cf4b8ddebb68c`  
 
 ---
 
