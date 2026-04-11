@@ -312,8 +312,12 @@ export default function App() {
         const saved = localStorage.getItem('web3guard_history') || '[]';
         const historyArray = JSON.parse(saved);
         const newEntry = { ...data, timestamp: new Date().toISOString() };
-        const deduplicated = historyArray.filter((item: any) => item.address !== data.address || !data.address);
-        const newHistory = [newEntry, ...deduplicated].slice(0, 10);
+        // Deduplicate using hash_key so multiple "Raw Source Code Provided" scans don't overwrite each other
+        const deduplicated = historyArray.filter((item: any) => {
+          if (item.hash_key && data.hash_key) return item.hash_key !== data.hash_key;
+          return item.address !== data.address;
+        });
+        const newHistory = [newEntry, ...deduplicated].slice(0, 50); // Increased limit to 50
         localStorage.setItem('web3guard_history', JSON.stringify(newHistory));
       } catch (e) {
         console.error("Failed to save history", e);
