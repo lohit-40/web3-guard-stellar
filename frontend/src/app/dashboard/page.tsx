@@ -1,8 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Activity, Users, ShieldAlert, Cpu, AlertTriangle, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(useGSAP);
+}
 
 interface MonitoringEvent {
   id: number;
@@ -21,6 +27,13 @@ interface MetricsData {
 
 export default function Dashboard() {
   const [metrics, setMetrics] = useState<MetricsData | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    gsap.fromTo(".gsap-dash-title", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 1, ease: "power4.out" });
+    gsap.fromTo(".gsap-dash-stat", { opacity: 0, scale: 0.9, y: 20 }, { opacity: 1, scale: 1, y: 0, duration: 0.8, stagger: 0.1, delay: 0.2, ease: "back.out(1.5)" });
+    gsap.fromTo(".gsap-dash-feed", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1, delay: 0.5, ease: "power3.out" });
+  }, { scope: containerRef });
 
   const fetchMetrics = async () => {
     try {
@@ -47,9 +60,9 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen pt-32 pb-24 px-6 md:px-12 pointer-events-auto" style={{ backgroundColor: '#F2F0EB' }}>
+    <div ref={containerRef} className="min-h-screen pt-32 pb-24 px-6 md:px-12 pointer-events-auto" style={{ backgroundColor: '#F2F0EB' }}>
       <div className="max-w-7xl mx-auto space-y-12">
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <header className="gsap-dash-title flex flex-col md:flex-row md:items-end justify-between gap-6 opacity-0">
           <div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-[0.15em] uppercase text-brutal-text mb-2">
               Command <span className="text-brutal-orange">Center</span>
@@ -70,7 +83,7 @@ export default function Dashboard() {
         {/* Top Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Active Users */}
-          <div className="border-4 border-brutal-text p-6 shadow-[8px_8px_0px_0px_rgba(28,28,28,1)] bg-white relative overflow-hidden group">
+          <div className="gsap-dash-stat opacity-0 border-4 border-brutal-text p-6 shadow-[8px_8px_0px_0px_rgba(28,28,28,1)] bg-white relative overflow-hidden group">
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-brutal-blue/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
             <div className="flex items-center gap-4 mb-4">
               <div className="p-3 bg-brutal-blue/20 border-2 border-brutal-text">
@@ -83,7 +96,7 @@ export default function Dashboard() {
           </div>
 
           {/* Scout Watchlist */}
-          <div className="border-4 border-brutal-text p-6 shadow-[8px_8px_0px_0px_rgba(28,28,28,1)] bg-white relative overflow-hidden group">
+          <div className="gsap-dash-stat opacity-0 border-4 border-brutal-text p-6 shadow-[8px_8px_0px_0px_rgba(28,28,28,1)] bg-white relative overflow-hidden group">
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-brutal-orange/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
             <div className="flex items-center gap-4 mb-4">
               <div className="p-3 bg-brutal-orange/20 border-2 border-brutal-text">
@@ -96,7 +109,7 @@ export default function Dashboard() {
           </div>
 
           {/* Total Audits */}
-          <div className="border-4 border-brutal-text p-6 shadow-[8px_8px_0px_0px_rgba(28,28,28,1)] bg-white relative overflow-hidden group">
+          <div className="gsap-dash-stat opacity-0 border-4 border-brutal-text p-6 shadow-[8px_8px_0px_0px_rgba(28,28,28,1)] bg-white relative overflow-hidden group">
             <div className="absolute -right-6 -top-6 w-24 h-24 bg-green-500/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
             <div className="flex items-center gap-4 mb-4">
               <div className="p-3 bg-green-500/20 border-2 border-brutal-text">
@@ -110,7 +123,7 @@ export default function Dashboard() {
         </div>
 
         {/* Live Event Feed */}
-        <div className="border-4 border-brutal-text bg-white shadow-[12px_12px_0px_0px_rgba(28,28,28,1)] overflow-hidden">
+        <div className="gsap-dash-feed opacity-0 border-4 border-brutal-text bg-white shadow-[12px_12px_0px_0px_rgba(28,28,28,1)] overflow-hidden">
           <div className="bg-brutal-text p-4 border-b-4 border-brutal-text text-brutal-bg flex items-center justify-between">
             <h2 className="font-bold uppercase tracking-[0.2em] flex items-center gap-3">
               <Cpu className="w-5 h-5" /> Agent Activity Feed

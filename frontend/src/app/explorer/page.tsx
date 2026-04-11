@@ -1,7 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(useGSAP);
+}
 import { ShieldCheck, Award, Activity, ExternalLink, Search, Cpu, Hash, Clock, User, AlertTriangle } from "lucide-react";
 
 const API_URL = "/api";
@@ -40,6 +46,13 @@ export default function ExplorerPage() {
   const [activeTab, setActiveTab] = useState<"audits" | "badges">("audits");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const containerRef = useRef<HTMLElement>(null);
+  useGSAP(() => {
+    gsap.fromTo(".gsap-exp-title", { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" });
+    gsap.fromTo(".gsap-exp-stat", { opacity: 0, scale: 0.95, y: 20 }, { opacity: 1, scale: 1, y: 0, duration: 0.6, stagger: 0.1, delay: 0.2, ease: "back.out(1.2)" });
+    gsap.fromTo(".gsap-exp-search", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, delay: 0.5 });
+  }, { scope: containerRef });
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -99,17 +112,12 @@ export default function ExplorerPage() {
   );
 
   return (
-    <main className="relative min-h-screen w-full">
+    <main ref={containerRef} className="relative min-h-screen w-full">
       <div className="relative z-10 w-full min-h-screen flex flex-col px-6 md:px-24 pt-32 pb-20">
         <div className="max-w-6xl w-full mx-auto">
 
           {/* Hero */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-20"
-          >
+          <div className="gsap-exp-title mb-20 opacity-0">
             <div className="flex items-center gap-3 mb-6">
               <Activity className="w-5 h-5 text-brutal-orange" />
               <span className="text-xs uppercase tracking-[0.3em] font-bold text-brutal-text/60">live on-chain data</span>
@@ -120,31 +128,26 @@ export default function ExplorerPage() {
             <p className="mt-6 text-lg text-brutal-text/60 max-w-xl font-medium">
               Real-time verification portal. Every audit and security badge ever recorded on the Ethereum, Solana, and Stellar blockchains by Web3 Guard.
             </p>
-          </motion.div>
+          </div>
 
           {/* Stats Grid */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16"
-          >
-            <div className="border-2 border-brutal-text p-6 group hover:bg-brutal-text hover:text-brutal-bg transition-all">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+            <div className="gsap-exp-stat opacity-0 border-2 border-brutal-text p-6 group hover:bg-brutal-text hover:text-brutal-bg transition-all">
               <ShieldCheck className="w-6 h-6 mb-3 text-brutal-orange group-hover:text-brutal-bg" />
               <p className="text-4xl md:text-5xl font-bold font-mono">{stats ? 35 + (stats.total_audits || 0) : "—"}</p>
               <p className="text-xs tracking-[0.2em] uppercase mt-2 opacity-60">audits recorded</p>
             </div>
-            <div className="border-2 border-brutal-text p-6 group hover:bg-brutal-text hover:text-brutal-bg transition-all">
+            <div className="gsap-exp-stat opacity-0 border-2 border-brutal-text p-6 group hover:bg-brutal-text hover:text-brutal-bg transition-all">
               <Award className="w-6 h-6 mb-3 text-purple-500 group-hover:text-brutal-bg" />
               <p className="text-4xl md:text-5xl font-bold font-mono">{stats?.total_badges ?? "—"}</p>
               <p className="text-xs tracking-[0.2em] uppercase mt-2 opacity-60">badges minted</p>
             </div>
-            <div className="border-2 border-brutal-text p-6 group hover:bg-brutal-text hover:text-brutal-bg transition-all">
+            <div className="gsap-exp-stat opacity-0 border-2 border-brutal-text p-6 group hover:bg-brutal-text hover:text-brutal-bg transition-all">
               <Cpu className="w-6 h-6 mb-3 text-[#10B981] group-hover:text-brutal-bg" />
               <p className="text-lg font-bold font-mono mt-2">Omni-Chain</p>
               <p className="text-xs tracking-[0.2em] uppercase mt-2 opacity-60">network</p>
             </div>
-            <div className="border-2 border-brutal-text p-6 group hover:bg-brutal-text hover:text-brutal-bg transition-all">
+            <div className="gsap-exp-stat opacity-0 border-2 border-brutal-text p-6 group hover:bg-brutal-text hover:text-brutal-bg transition-all">
               <Activity className="w-6 h-6 mb-3 group-hover:text-brutal-bg" />
               <div className={`flex items-center gap-2 mt-2 ${stats?.rpc_connected ? 'text-[#10B981]' : 'text-red-500'}`}>
                 <div className={`w-2.5 h-2.5 rounded-full ${stats?.rpc_connected ? 'bg-[#10B981] animate-pulse' : 'bg-red-500'}`} />
@@ -152,7 +155,7 @@ export default function ExplorerPage() {
               </div>
               <p className="text-xs tracking-[0.2em] uppercase mt-2 opacity-60">rpc status</p>
             </div>
-          </motion.div>
+          </div>
 
           {/* Contract Links */}
           {stats && (
@@ -182,7 +185,7 @@ export default function ExplorerPage() {
           )}
 
           {/* Search Bar */}
-          <div className="relative mb-10">
+          <div className="gsap-exp-search opacity-0 relative mb-10">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-brutal-text/30" />
             <input
               type="text"
@@ -194,7 +197,7 @@ export default function ExplorerPage() {
           </div>
 
           {/* Tab Switcher */}
-          <div className="flex gap-0 mb-10 border-2 border-brutal-text w-max">
+          <div className="gsap-exp-search opacity-0 flex gap-0 mb-10 border-2 border-brutal-text w-max">
             <button
               onClick={() => setActiveTab("audits")}
               className={`px-8 py-3 text-xs uppercase tracking-[0.2em] font-bold transition-all ${

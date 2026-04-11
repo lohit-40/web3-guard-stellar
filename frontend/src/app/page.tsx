@@ -1,11 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import ScrollTrigger from "gsap/ScrollTrigger";
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(useGSAP, ScrollTrigger);
+}
 import { motion, AnimatePresence } from "framer-motion";
 import { ShieldCheck, ShieldAlert, Code2, Link, Sparkles, Download, Award } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { playSound } from "@/utils/sounds";
+import ScrambleText from "@/components/ScrambleText";
 import { useWallet } from "@/contexts/WalletContext";
 import {
   Networks,
@@ -149,6 +157,60 @@ interface ScanResponse {
 }
 
 export default function App() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const solButtonRef = useRef<HTMLButtonElement>(null);
+  const rustButtonRef = useRef<HTMLButtonElement>(null);
+
+  useGSAP(() => {
+    // Elegant brutalist entrance
+    gsap.fromTo(
+      ".gsap-hero-title",
+      { y: 250, rotation: 3, opacity: 0 },
+      { y: 0, rotation: 0, opacity: 1, duration: 1.4, ease: "power4.out", stagger: 0.15, delay: 0.2 }
+    );
+    
+    gsap.fromTo(
+      ".gsap-hero-asterisk",
+      { scale: 0, rotation: -180 },
+      { scale: 1, rotation: 0, duration: 1.5, ease: "elastic.out(1, 0.3)", delay: 0.8 }
+    );
+
+    gsap.fromTo(
+      ".gsap-hero-subtitle",
+      { opacity: 0, x: -30 },
+      { opacity: 1, x: 0, duration: 1, ease: "power3.out", delay: 1 }
+    );
+    
+    gsap.fromTo(
+      ".gsap-ecosystem-btn",
+      { opacity: 0, scale: 0.9, y: 30 },
+      { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: "power3.out", stagger: 0.1, delay: 1.2 }
+    );
+
+    const makeMagnetic = (element: HTMLElement | null) => {
+      if (!element) return;
+      const xTo = gsap.quickTo(element, "x", { duration: 1, ease: "elastic.out(1, 0.3)" });
+      const yTo = gsap.quickTo(element, "y", { duration: 1, ease: "elastic.out(1, 0.3)" });
+
+      element.addEventListener("mousemove", (e: MouseEvent) => {
+        const { clientX, clientY } = e;
+        const { height, width, left, top } = element.getBoundingClientRect();
+        const x = clientX - (left + width / 2);
+        const y = clientY - (top + height / 2);
+        xTo(x * 0.15);
+        yTo(y * 0.15);
+      });
+
+      element.addEventListener("mouseleave", () => {
+        xTo(0);
+        yTo(0);
+      });
+    };
+
+    makeMagnetic(solButtonRef.current);
+    makeMagnetic(rustButtonRef.current);
+  }, { scope: containerRef });
+
   const { address: userAddress, isConnected, chain: walletChain, switchChain } = useWallet();
   const [inputMode, setInputMode] = useState<'address' | 'code' | null>(null);
   const [ecosystem, setEcosystem] = useState<'Solidity' | 'Rust'>('Solidity');
@@ -415,37 +477,46 @@ export default function App() {
     }
   };
 
+  useGSAP(() => {
+    if (result && result.vulnerabilities.length > 0) {
+      ScrollTrigger.batch(".gsap-vuln-card", {
+        onEnter: (elements) => {
+          gsap.fromTo(elements, 
+            { opacity: 0, x: -50 }, 
+            { opacity: 1, x: 0, stagger: 0.15, duration: 0.8, ease: "power3.out", overwrite: true }
+          );
+        },
+        once: true
+      });
+    }
+  }, { dependencies: [result], scope: containerRef });
+
   return (
     <main className="relative min-h-screen w-full">
       <Toaster position="bottom-center" toastOptions={{
         style: { background: '#111', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }
       }} />
       {/* Main UI Overlay */}
-      <div className="relative z-10 w-full min-h-screen flex flex-col justify-center px-6 md:px-24 pt-16 md:pt-20 pb-20 pointer-events-none">
+      <div className="relative z-10 w-full min-h-screen flex flex-col justify-center px-6 md:px-24 pt-16 md:pt-20 pb-20 pointer-events-none" ref={containerRef}>
         <div className="max-w-6xl w-full mx-auto pointer-events-auto">
           
           {/* Header Section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-24 relative"
-          >
+          <div className="mb-24 relative">
             <div className="flex items-center gap-3 mb-6 relative md:absolute md:-top-12 left-2 md:-left-12">
-              <span className="text-brutal-orange text-4xl md:text-6xl font-serif mt-4">*</span>
-              <span className="uppercase tracking-[0.2em] text-xs font-bold text-brutal-text leading-tight max-w-[200px]">
+              <span className="text-brutal-orange text-4xl md:text-6xl font-serif mt-4 tracking-tighter gsap-hero-asterisk inline-block origin-center" style={{ scale: 0 }}>*</span>
+              <span className="uppercase tracking-[0.2em] text-xs font-bold text-brutal-text leading-tight max-w-[200px] gsap-hero-subtitle" style={{ opacity: 0 }}>
                 We are rethinking how smart contract communication happens.
               </span>
             </div>
             <h1 className="text-[70px] sm:text-[100px] md:text-[160px] lg:text-[220px] font-medium tracking-tighter leading-[0.8] text-brutal-text lowercase relative z-10">
-              web3<br/>
-              guard
+              <div className="overflow-hidden p-2 -m-2"><div className="gsap-hero-title origin-bottom-left leading-none" style={{ opacity: 0 }}>web3</div></div>
+              <div className="overflow-hidden p-2 -m-2"><div className="gsap-hero-title origin-bottom-left leading-none" style={{ opacity: 0 }}>guard</div></div>
             </h1>
             
             <div className="absolute top-1/2 right-0 hidden lg:block transform rotate-90 origin-right z-0">
               <span className="text-xs tracking-widest uppercase text-brutal-text/40">Scroll to discover</span>
             </div>
-          </motion.div>
+          </div>
 
           {/* Interactive Search Area */}
           <motion.div 
@@ -459,23 +530,27 @@ export default function App() {
               <span className="text-xs tracking-widest text-brutal-text/60 uppercase font-bold">1. Select Target Ecosystem:</span>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button
+                  ref={solButtonRef}
                   onClick={() => { setEcosystem('Solidity'); setChainId('1'); setInputMode(null); }}
-                  className={`py-4 md:py-8 px-4 md:px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
+                  className={`gsap-ecosystem-btn py-4 md:py-8 px-4 md:px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
                     ecosystem === 'Solidity' 
                     ? 'border-brutal-orange bg-brutal-orange/5 scale-105 z-10' 
                     : 'border-brutal-text/20 hover:border-brutal-text/50 opacity-60'
                   }`}
+                  style={{ opacity: 0 }}
                 >
                   <span className="text-xl md:text-3xl font-bold tracking-tighter uppercase lowercase">[ Solidity ]</span>
                   <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] font-mono text-center">EVM / Ethereum / Polygon</p>
                 </button>
                 <button
+                  ref={rustButtonRef}
                   onClick={() => { setEcosystem('Rust'); setChainId(''); setInputMode('code'); }}
-                  className={`py-4 md:py-8 px-4 md:px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
+                  className={`gsap-ecosystem-btn py-4 md:py-8 px-4 md:px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
                     ecosystem === 'Rust' 
                     ? 'border-brutal-orange bg-brutal-orange/5 scale-105 z-10' 
                     : 'border-brutal-text/20 hover:border-brutal-text/50 opacity-60'
                   }`}
+                  style={{ opacity: 0 }}
                 >
                   <span className="text-xl md:text-3xl font-bold tracking-tighter uppercase lowercase">[ RUST ]</span>
                   <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] font-mono text-center">Solana / Stellar / NEAR</p>
@@ -684,7 +759,9 @@ export default function App() {
               >
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
                   <div>
-                    <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-brutal-text lowercase mb-4">audit <br/> report *</h2>
+                    <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-brutal-text lowercase mb-4">
+                      <ScrambleText text={"audit\nreport *"} delayMs={600} />
+                    </h2>
                     <p className="text-brutal-text/60 font-mono text-sm tracking-widest bg-brutal-text/5 inline-block px-4 py-2">{result.address}</p>
                     
                     <div className="flex flex-wrap items-center gap-4 mt-6">
@@ -823,12 +900,9 @@ export default function App() {
                 ) : (
                   <div className="grid gap-6 border-l-4 border-brutal-text pl-4 md:pl-10">
                     {result.vulnerabilities.map((vuln, idx) => (
-                      <motion.div 
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 * idx }}
+                      <div 
                         key={idx} 
-                        className="group flex flex-col p-8 md:p-12 border-2 border-brutal-text hover:bg-brutal-text hover:text-brutal-bg transition-all duration-300"
+                        className="gsap-vuln-card opacity-0 group flex flex-col p-8 md:p-12 border-2 border-brutal-text hover:bg-brutal-text hover:text-brutal-bg transition-all duration-300"
                       >
                         <div className="flex flex-col md:flex-row md:items-start justify-between mb-8">
                           <div className="flex-1">
@@ -867,7 +941,7 @@ export default function App() {
                             </div>
                           </div>
                         )}
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -907,7 +981,9 @@ export default function App() {
                       >
                         <div className="flex items-center gap-4 mb-8 border-b-2 border-brutal-bg/20 pb-6">
                           <ShieldCheck className="w-10 h-10 text-brutal-orange" />
-                          <h2 className="text-3xl md:text-5xl font-bold tracking-tighter lowercase">secured <br/> architecture *</h2>
+                          <h2 className="text-3xl md:text-5xl font-bold tracking-tighter lowercase">
+                            <ScrambleText text={"secured\narchitecture *"} delayMs={100} />
+                          </h2>
                         </div>
                         <div className="prose max-w-none font-mono text-[13px] md:text-sm leading-relaxed whitespace-pre-wrap overflow-x-auto text-left text-brutal-bg/90">
                           <pre><code className="block text-left">{secureContract}</code></pre>
