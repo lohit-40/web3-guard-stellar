@@ -165,4 +165,50 @@ def get_recent_non_evm_audits(limit: int = 20):
     audits.sort(key=lambda x: x["timestamp"], reverse=True)
     return audits[:limit]
 
+def add_to_watchlist(contract_address: str, added_by: str, risk_level: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    if DB_URL:
+        cursor.execute('''
+            INSERT INTO watchlist (contract_address, added_by, risk_level)
+            VALUES (%s, %s, %s)
+            ON CONFLICT (contract_address) DO UPDATE 
+            SET added_by = EXCLUDED.added_by, risk_level = EXCLUDED.risk_level, last_scanned = CURRENT_TIMESTAMP
+        ''', (contract_address, added_by, risk_level))
+    else:
+        cursor.execute("INSERT OR REPLACE INTO watchlist (contract_address, added_by, risk_level) VALUES (?, ?, ?)", 
+                 (contract_address, added_by, risk_level))
+    conn.commit()
+    conn.close()
+
+def add_monitoring_event(contract_address: str, event_type: str, details: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    if DB_URL:
+        cursor.execute("INSERT INTO monitoring_events (contract_address, event_type, details) VALUES (%s, %s, %s)", 
+                       (contract_address, event_type, details))
+    else:
+        cursor.execute("INSERT INTO monitoring_events (contract_address, event_type, details) VALUES (?, ?, ?)", 
+                       (contract_address, event_type, details))
+    conn.commit()
+    conn.close()
+
+def get_watchlist_contracts():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT contract_address FROM watchlist")
+    rows = cursor.fetchall()
+    conn.close()
+    return [r[0] for r in rows]
+
+def get_total_user_scans() -> int:
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT SUM(audit_count) FROM users")
+    row = cursor.fetchone()
+    conn.close()
+    if row and row[0]:
+        return row[0]
+    return 0
+
 init_db()

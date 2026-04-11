@@ -33,30 +33,20 @@ async def scout_monitor_loop():
     # Background task to monitor contracts
     while True:
         try:
-            conn = sqlite3.connect("cache.db")
-            cursor = conn.cursor()
-            cursor.execute("SELECT contract_address FROM watchlist")
-            contracts = cursor.fetchall()
-            conn.close()
+            from database import get_watchlist_contracts, add_monitoring_event
+            contracts = get_watchlist_contracts()
             
             # Simulated Agent Activity for Dashboard
             if contracts:
                 import random
                 import time
-                from database import DB_PATH
-                c_addr = random.choice(contracts)[0]
+                c_addr = random.choice(contracts)
                 
                 # We pretend to scan and randomly find an "issue" 5% of time to make dashboard alive
-                conn = sqlite3.connect("cache.db")
-                c = conn.cursor()
                 if random.random() < 0.05:
-                    c.execute("INSERT INTO monitoring_events (contract_address, event_type, details) VALUES (?, ?, ?)", 
-                             (c_addr, "VULN_DETECTED", "Scout Agent detected a state anomaly during CPI call."))
+                    add_monitoring_event(c_addr, "VULN_DETECTED", "Scout Agent detected a state anomaly during CPI call.")
                 else:
-                    c.execute("INSERT INTO monitoring_events (contract_address, event_type, details) VALUES (?, ?, ?)", 
-                             (c_addr, "SCAN_CLEAN", "Scout Agent verified program state. No anomalies."))
-                conn.commit()
-                conn.close()
+                    add_monitoring_event(c_addr, "SCAN_CLEAN", "Scout Agent verified program state. No anomalies.")
         except Exception as e:
             print(f"Scout Error: {e}")
             
@@ -397,15 +387,10 @@ def scan_contract(request: Request, payload: ScanRequest):
     
     # ── Automatically add to Watchlist for dashboard monitoring ──
     if address:
-        from database import DB_PATH
+        from database import add_to_watchlist
         try:
-            conn = sqlite3.connect(DB_PATH)
-            c = conn.cursor()
             risk = _risk_level_from_vulns(vulns_dicts)
-            c.execute("INSERT OR REPLACE INTO watchlist (contract_address, added_by, risk_level) VALUES (?, ?, ?)", 
-                     (address, payload.wallet_address or "System", risk))
-            conn.commit()
-            conn.close()
+            add_to_watchlist(address, payload.wallet_address or "System", risk)
         except:
             pass
     
@@ -828,12 +813,8 @@ def get_live_metrics(request: Request):
             
     # Add off-chain and user local totals dynamically
     try:
-        import sqlite3
-        conn = sqlite3.connect("cache.db")
-        cur = conn.cursor()
-        cur.execute("SELECT SUM(audit_count) FROM users")
-        user_scans = cur.fetchone()[0] or 0
-        conn.close()
+        from database import get_total_user_scans
+        user_scans = get_total_user_scans()
         total_audits = max(total_audits, user_scans)
     except:
         pass
@@ -851,13 +832,9 @@ class WatchlistRequest(BaseModel):
 
 @app.post("/watchlist/add")
 @limiter.limit("10/minute")
-def add_to_watchlist(request: Request, payload: WatchlistRequest):
-    conn = sqlite3.connect("cache.db")
-    c = conn.cursor()
-    c.execute("INSERT OR REPLACE INTO watchlist (contract_address, added_by, risk_level) VALUES (?, ?, ?)",
-              (payload.contract_address, payload.added_by, payload.risk_level))
-    conn.commit()
-    conn.close()
+def add_to_watchlist_endpoint(request: Request, payload: WatchlistRequest):
+    from database import add_to_watchlist as db_add_to_watchlist
+    db_add_to_watchlist(payload.contract_address, payload.added_by, payload.risk_level)
     return {"message": "Success"}
 
 
