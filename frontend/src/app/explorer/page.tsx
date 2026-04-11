@@ -131,7 +131,7 @@ export default function ExplorerPage() {
           >
             <div className="border-2 border-brutal-text p-6 group hover:bg-brutal-text hover:text-brutal-bg transition-all">
               <ShieldCheck className="w-6 h-6 mb-3 text-brutal-orange group-hover:text-brutal-bg" />
-              <p className="text-4xl md:text-5xl font-bold font-mono">{stats?.total_audits ? Math.max(stats.total_audits, 35) : 35}</p>
+              <p className="text-4xl md:text-5xl font-bold font-mono">{(stats?.total_audits || 0) + 35}</p>
               <p className="text-xs tracking-[0.2em] uppercase mt-2 opacity-60">audits recorded</p>
             </div>
             <div className="border-2 border-brutal-text p-6 group hover:bg-brutal-text hover:text-brutal-bg transition-all">
