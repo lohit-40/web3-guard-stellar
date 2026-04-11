@@ -212,8 +212,8 @@ export default function App() {
     }, 2500);
 
     const payload = inputMode === 'address' 
-      ? { contract_address: address, chain_id: chainId, ecosystem } 
-      : { source_code: sourceCode, chain_id: chainId, ecosystem };
+      ? { contract_address: address, chain_id: chainId, ecosystem, wallet_address: userAddress } 
+      : { source_code: sourceCode, chain_id: chainId, ecosystem, wallet_address: userAddress };
 
     try {
       // ── Step 1: Run AI Analysis (backend) ──────────────────────────────────

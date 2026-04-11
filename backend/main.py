@@ -395,6 +395,20 @@ def scan_contract(request: Request, payload: ScanRequest):
         "timestamp": int(time.time())
     }
     
+    # ── Automatically add to Watchlist for dashboard monitoring ──
+    if address:
+        from database import DB_PATH
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            c = conn.cursor()
+            risk = _risk_level_from_vulns(vulns_dicts)
+            c.execute("INSERT OR REPLACE INTO watchlist (contract_address, added_by, risk_level) VALUES (?, ?, ?)", 
+                     (address, payload.wallet_address or "System", risk))
+            conn.commit()
+            conn.close()
+        except:
+            pass
+    
     set_cached_scan(source_hash, response_data)
     
     return ScanResponse(**response_data)

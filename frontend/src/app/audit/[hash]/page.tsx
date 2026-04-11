@@ -183,10 +183,10 @@ export default function SharedAuditPage() {
             {result.audit_tx_hash && (() => {
               const chain = result.audit_chain;
               const explorerUrl =
-                chain === 'solana' && result.solana_explorer_url
-                  ? result.solana_explorer_url
-                  : chain === 'stellar' && result.stellar_explorer_url
-                  ? result.stellar_explorer_url
+                chain === 'solana'
+                  ? result.solana_explorer_url || `https://explorer.solana.com/tx/${result.audit_tx_hash}?cluster=devnet`
+                  : chain === 'stellar'
+                  ? result.stellar_explorer_url || `https://stellar.expert/explorer/testnet/tx/${result.audit_tx_hash}`
                   : `https://sepolia.etherscan.io/tx/${result.audit_tx_hash}`;
               const label =
                 chain === 'solana' ? 'Verify on Solana'
