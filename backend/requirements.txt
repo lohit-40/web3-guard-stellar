@@ -8,3 +8,5 @@ web3
 slowapi
 solana
 solders
+
+psycopg2-binary

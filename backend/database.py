@@ -1,17 +1,31 @@
 import sqlite3
 import json
+import os
+from dotenv import load_dotenv
 
+load_dotenv(override=True)
+DB_URL = os.getenv("DATABASE_URL")
 DB_PATH = "cache.db"
 
+def get_connection():
+    if DB_URL:
+        import psycopg2
+        return psycopg2.connect(DB_URL)
+    return sqlite3.connect(DB_PATH)
+
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     cursor = conn.cursor()
+    
+    # scan_cache
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS scan_cache (
             hash_key TEXT PRIMARY KEY,
             response_data TEXT
         )
     ''')
+    
+    # users
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             wallet_address TEXT PRIMARY KEY,
@@ -19,6 +33,8 @@ def init_db():
             audit_count INTEGER DEFAULT 0
         )
     ''')
+    
+    # watchlist
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS watchlist (
             contract_address TEXT PRIMARY KEY,
@@ -27,28 +43,49 @@ def init_db():
             risk_level TEXT
         )
     ''')
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS monitoring_events (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            contract_address TEXT,
-            event_type TEXT,
-            details TEXT,
-            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
+    
+    # monitoring_events
+    if DB_URL:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS monitoring_events (
+                id SERIAL PRIMARY KEY,
+                contract_address TEXT,
+                event_type TEXT,
+                details TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+    else:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS monitoring_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                contract_address TEXT,
+                event_type TEXT,
+                details TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
     conn.commit()
     conn.close()
 
 def record_user_activity(wallet_address: str):
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT OR IGNORE INTO users (wallet_address) VALUES (?)", (wallet_address,))
-    cursor.execute("UPDATE users SET audit_count = audit_count + 1 WHERE wallet_address = ?", (wallet_address,))
+    if DB_URL:
+        cursor.execute('''
+            INSERT INTO users (wallet_address, audit_count) 
+            VALUES (%s, 1) 
+            ON CONFLICT (wallet_address) DO UPDATE 
+            SET audit_count = users.audit_count + 1
+        ''', (wallet_address,))
+    else:
+        cursor.execute("INSERT OR IGNORE INTO users (wallet_address) VALUES (?)", (wallet_address,))
+        cursor.execute("UPDATE users SET audit_count = audit_count + 1 WHERE wallet_address = ?", (wallet_address,))
     conn.commit()
     conn.close()
 
 def get_dashboard_metrics():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     cursor = conn.cursor()
     
     cursor.execute("SELECT COUNT(*) FROM users")
@@ -57,7 +94,7 @@ def get_dashboard_metrics():
     cursor.execute("SELECT COUNT(*) FROM watchlist")
     watchlist_count = cursor.fetchone()[0]
     
-    cursor.execute("SELECT * FROM monitoring_events ORDER BY timestamp DESC LIMIT 10")
+    cursor.execute("SELECT id, contract_address, event_type, details, timestamp FROM monitoring_events ORDER BY timestamp DESC LIMIT 10")
     recent_events = [
         {"id": r[0], "contract": r[1], "type": r[2], "details": r[3], "time": r[4]} 
         for r in cursor.fetchall()
@@ -71,9 +108,12 @@ def get_dashboard_metrics():
     }
 
 def get_cached_scan(hash_key: str):
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT response_data FROM scan_cache WHERE hash_key=?", (hash_key,))
+    if DB_URL:
+        cursor.execute("SELECT response_data FROM scan_cache WHERE hash_key=%s", (hash_key,))
+    else:
+        cursor.execute("SELECT response_data FROM scan_cache WHERE hash_key=?", (hash_key,))
     row = cursor.fetchone()
     conn.close()
     if row:
@@ -81,17 +121,25 @@ def get_cached_scan(hash_key: str):
     return None
 
 def set_cached_scan(hash_key: str, response_data: dict):
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('''
-        INSERT OR REPLACE INTO scan_cache (hash_key, response_data)
-        VALUES (?, ?)
-    ''', (hash_key, json.dumps(response_data)))
+    if DB_URL:
+        cursor.execute('''
+            INSERT INTO scan_cache (hash_key, response_data)
+            VALUES (%s, %s)
+            ON CONFLICT (hash_key) DO UPDATE 
+            SET response_data = EXCLUDED.response_data
+        ''', (hash_key, json.dumps(response_data)))
+    else:
+        cursor.execute('''
+            INSERT OR REPLACE INTO scan_cache (hash_key, response_data)
+            VALUES (?, ?)
+        ''', (hash_key, json.dumps(response_data)))
     conn.commit()
     conn.close()
 
 def get_recent_non_evm_audits(limit: int = 20):
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT response_data FROM scan_cache")
     rows = cursor.fetchall()
@@ -101,7 +149,6 @@ def get_recent_non_evm_audits(limit: int = 20):
     for row in rows:
         try:
             data = json.loads(row[0])
-            # Only include audits that have an audit_chain other than None or ethereum
             chain = data.get("audit_chain")
             if chain and chain != "ethereum":
                 audits.append({
@@ -115,7 +162,6 @@ def get_recent_non_evm_audits(limit: int = 20):
         except Exception:
             continue
             
-    # Sort by timestamp descending
     audits.sort(key=lambda x: x["timestamp"], reverse=True)
     return audits[:limit]
 
