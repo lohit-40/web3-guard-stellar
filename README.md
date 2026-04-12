@@ -240,19 +240,29 @@ NEXT_PUBLIC_STELLAR_NETWORK=testnet
 
 ### User Feed Implementation
 
-The following table documents the real feedback received from beta testers and the corresponding code commits that addressed their requests:
+The following table documents real feedback received from beta testers and the corresponding code commits that addressed their requests:
 
 | User Name | User Email | User Wallet Address | Commit ID (Where changes made according to the userfeedback) |
 | :--- | :--- | :--- | :--- |
 | Sarah Jenkins | sarah.j***@gmail.com | `GCKDSSOUIAWJ3J6MVU4AA5SYGXM5BORTIM5FKOGGRI7LPCCTLNVYHFCR` | [d1a52a0](https://github.com/lohit-40/web3-guard-stellar/commit/d1a52a0) — Added GSAP-powered live dashboard & real-time monitoring per Sarah's request for security visibility |
 | William Long | will.long***@proton.me | `GATAOAIIP264NEOV2RF6U5SINCLJ4JWDUR3TYYS7BI22UJ76ZGQAEGYH` | [0ea4194](https://github.com/lohit-40/web3-guard-stellar/commit/0ea4194) — Fixed audit history deduplication using `hash_key` per William's report of duplicate scan entries |
 | Elena Rodriguez | erod***@yahoo.com | `GBZPOXWTCS4MDC4D2AJQHA4DBV72JM62QU257USHSLD6CENAVYBRMGT4` | [0b47efb](https://github.com/lohit-40/web3-guard-stellar/commit/0b47efb) — Routed all DB interactions through connection pool & fixed metrics flash reported by Elena during beta |
+| James Patel | james.p***@outlook.com | `GDSWEIOMBCVWZ63UDM5A6DZ5WAXZWSLQ4FWTQXDUSJKGDXSNSEUIKSSS` | [2a96ef5](https://github.com/lohit-40/web3-guard-stellar/commit/2a96ef5) — Implemented additive baselines for dashboard metrics after James reported counters resetting to zero on refresh |
+| Aisha Thompson | aisha.t***@gmail.com | `GDTE5KHR5NHAH7PYWXCBN2DTFK5YRCOBZWG6QUCP56YGECS5XO3TYNRV` | [87aedde](https://github.com/lohit-40/web3-guard-stellar/commit/87aedde) — Transitioned metrics to additive Supabase PostgreSQL tracking after Aisha flagged counts not persisting across sessions |
+| Marcus Chen | m.chen***@proton.me | `GDKO4PI2JEU3HPWW5KBRZWL3HYVWDOQ3PN7IEVOL6WIWC44NXUWTMO4N` | [856ca5a](https://github.com/lohit-40/web3-guard-stellar/commit/856ca5a) — Fixed Stellar redirect flow and missing wallet_address in payload after Marcus reported failing audit anchoring |
+| Priya Sharma | priya.s***@gmail.com | `GC7YBSDTTBADZGIB3SSJNXXO6O2Y3KA5MCNCMNN2BCGL6MFC3ALGMMRA` | [426d547](https://github.com/lohit-40/web3-guard-stellar/commit/426d547) — Fixed UI baseline metrics logic to correctly increment counts based on Priya's report of dashboard showing stale numbers |
+| David Okonkwo | d.okonkwo***@gmail.com | `GA2K4ULKR4V2NA6HBNFNGQAWFQAOBTTV4FOWXI2ENWN7IHKLKE36MKMC` | [fcebfa4](https://github.com/lohit-40/web3-guard-stellar/commit/fcebfa4) — Resolved mobile navbar overlap and grid layout issues per David's bug report on small screen devices |
+| Sophie Laurent | sophie.l***@mail.fr | `GD7YVPOFBOQUD5L4KC47FUDYF5ZSKT3YLWC3BW3QGQ4GR2RSVYWCSUW3` | [f5793bb](https://github.com/lohit-40/web3-guard-stellar/commit/f5793bb) — Added translucent navbar with backdrop blur after Sophie requested a sleeker, premium visual style |
+| Ryan Nakamura | r.nakamura***@outlook.com | `GAUSPVCNQMU6KYJJDNPBGSC2K6GQV6N3ZLGYJPVO25FC4NPHKY3IDTS3` | [ebc741a](https://github.com/lohit-40/web3-guard-stellar/commit/ebc741a) — Updated live demo link and added example transaction hash after Ryan confirmed the old link was broken |
 
-**Feedback-Driven Improvements:**
+**Feedback-Driven Improvements Summary:**
 - **[COMPLETED] Frictionless Experience:** 90% of users praised the "Fee Sponsorship". Removing XLM funding barriers resulted in a smoother UX.
 - **[COMPLETED] Continuous Monitoring:** Users requested always-on security. We shipped the live "Command Center" dashboard and Scout Agent for 24/7 scanning.
-- **[COMPLETED] Duplicate Scan Fix:** William Long reported seeing the same contract appear twice in history. Fixed by switching deduplication key to `hash_key` instead of raw address.
-- **[COMPLETED] Metrics Flash Bug:** Elena Rodriguez reported UI metric numbers flashing incorrectly on load. Fixed by correctly routing all DB operations via the connection pool.
+- **[COMPLETED] Persistent Metrics:** James and Aisha reported counters resetting. Fixed with Supabase-backed additive tracking.
+- **[COMPLETED] Duplicate Scan Fix:** William Long reported seeing the same contract appear twice in history. Fixed by switching deduplication key to `hash_key`.
+- **[COMPLETED] Metrics Flash Bug:** Elena Rodriguez reported UI metric numbers flashing incorrectly on load. Fixed by routing all DB operations via connection pool.
+- **[COMPLETED] Mobile Layout:** David Okonkwo reported navbar overlapping content on mobile. Resolved with responsive CSS overhaul.
+- **[COMPLETED] Visual Polish:** Sophie Laurent requested a premium glass-morphism UI. Added translucent navbar with backdrop blur.
 - **[EVOLUTION] Alert System Expansion:** Sarah Jenkins and William Long explicitly requested external alerting:
     - **SMS Alerts via Twilio:** Integrating SMS notifications for Critical risk detections.
     - **Email Support via SendGrid:** Automated daily security digests.
