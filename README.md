@@ -240,7 +240,7 @@ NEXT_PUBLIC_STELLAR_NETWORK=testnet
 
 ### User Feed Implementation
 
-The following table documents real feedback received from beta testers and the corresponding code commits that addressed their requests:
+The following table documents real feedback received from beta testers and the corresponding code commits that addressed their requests. Full raw data: [📊 View beta_tester_feedback.csv](./docs/beta_tester_feedback.csv) | [📋 View on GitHub](https://github.com/lohit-40/web3-guard-stellar/blob/main/docs/beta_tester_feedback.csv)
 
 | User Name | User Email | User Wallet Address | Commit ID (Where changes made according to the userfeedback) |
 | :--- | :--- | :--- | :--- |
