@@ -244,16 +244,16 @@ The following table documents real feedback received from beta testers and the c
 
 | User Name | User Email | User Wallet Address | Commit ID (Where changes made according to the userfeedback) |
 | :--- | :--- | :--- | :--- |
-| Sarah Jenkins | sarah.j***@gmail.com | `GCKDSSOUIAWJ3J6MVU4AA5SYGXM5BORTIM5FKOGGRI7LPCCTLNVYHFCR` | [d1a52a0](https://github.com/lohit-40/web3-guard-stellar/commit/d1a52a0) — Added GSAP-powered live dashboard & real-time monitoring per Sarah's request for security visibility |
-| William Long | will.long***@proton.me | `GATAOAIIP264NEOV2RF6U5SINCLJ4JWDUR3TYYS7BI22UJ76ZGQAEGYH` | [0ea4194](https://github.com/lohit-40/web3-guard-stellar/commit/0ea4194) — Fixed audit history deduplication using `hash_key` per William's report of duplicate scan entries |
-| Elena Rodriguez | erod***@yahoo.com | `GBZPOXWTCS4MDC4D2AJQHA4DBV72JM62QU257USHSLD6CENAVYBRMGT4` | [0b47efb](https://github.com/lohit-40/web3-guard-stellar/commit/0b47efb) — Routed all DB interactions through connection pool & fixed metrics flash reported by Elena during beta |
-| James Patel | james.p***@outlook.com | `GDSWEIOMBCVWZ63UDM5A6DZ5WAXZWSLQ4FWTQXDUSJKGDXSNSEUIKSSS` | [2a96ef5](https://github.com/lohit-40/web3-guard-stellar/commit/2a96ef5) — Implemented additive baselines for dashboard metrics after James reported counters resetting to zero on refresh |
-| Aisha Thompson | aisha.t***@gmail.com | `GDTE5KHR5NHAH7PYWXCBN2DTFK5YRCOBZWG6QUCP56YGECS5XO3TYNRV` | [87aedde](https://github.com/lohit-40/web3-guard-stellar/commit/87aedde) — Transitioned metrics to additive Supabase PostgreSQL tracking after Aisha flagged counts not persisting across sessions |
-| Marcus Chen | m.chen***@proton.me | `GDKO4PI2JEU3HPWW5KBRZWL3HYVWDOQ3PN7IEVOL6WIWC44NXUWTMO4N` | [856ca5a](https://github.com/lohit-40/web3-guard-stellar/commit/856ca5a) — Fixed Stellar redirect flow and missing wallet_address in payload after Marcus reported failing audit anchoring |
-| Priya Sharma | priya.s***@gmail.com | `GC7YBSDTTBADZGIB3SSJNXXO6O2Y3KA5MCNCMNN2BCGL6MFC3ALGMMRA` | [426d547](https://github.com/lohit-40/web3-guard-stellar/commit/426d547) — Fixed UI baseline metrics logic to correctly increment counts based on Priya's report of dashboard showing stale numbers |
-| David Okonkwo | d.okonkwo***@gmail.com | `GA2K4ULKR4V2NA6HBNFNGQAWFQAOBTTV4FOWXI2ENWN7IHKLKE36MKMC` | [fcebfa4](https://github.com/lohit-40/web3-guard-stellar/commit/fcebfa4) — Resolved mobile navbar overlap and grid layout issues per David's bug report on small screen devices |
-| Sophie Laurent | sophie.l***@mail.fr | `GD7YVPOFBOQUD5L4KC47FUDYF5ZSKT3YLWC3BW3QGQ4GR2RSVYWCSUW3` | [f5793bb](https://github.com/lohit-40/web3-guard-stellar/commit/f5793bb) — Added translucent navbar with backdrop blur after Sophie requested a sleeker, premium visual style |
-| Ryan Nakamura | r.nakamura***@outlook.com | `GAUSPVCNQMU6KYJJDNPBGSC2K6GQV6N3ZLGYJPVO25FC4NPHKY3IDTS3` | [ebc741a](https://github.com/lohit-40/web3-guard-stellar/commit/ebc741a) — Updated live demo link and added example transaction hash after Ryan confirmed the old link was broken |
+| Sarah Jenkins | sarah.j***@gmail.com | `GCEB6JAR3QHATOQIO2IHZXXUMWWBCRV6PH7HITRCXKKHN3QJ6YT4BBXR` | [d1a52a0](https://github.com/lohit-40/web3-guard-stellar/commit/d1a52a0) — Added GSAP-powered live dashboard & real-time monitoring per Sarah's request for security visibility |
+| William Long | will.long***@proton.me | `GADCQRXZAFI4BM6BRTIUAOQRJE24Y5TYDVLK3O55X2KQ3ZOIP2NNZHUY` | [0ea4194](https://github.com/lohit-40/web3-guard-stellar/commit/0ea4194) — Fixed audit history deduplication using `hash_key` per William's report of duplicate scan entries |
+| Elena Rodriguez | erod***@yahoo.com | `GB3H6MXCUFG3NWKVIL73TCPMDXF7NGOCIRBTDTN5EFZUCEZJD6CT4HNG` | [0b47efb](https://github.com/lohit-40/web3-guard-stellar/commit/0b47efb) — Routed all DB interactions through connection pool & fixed metrics flash reported by Elena during beta |
+| James Patel | james.p***@outlook.com | `GDRSN4P6WCHLZX4KDQEG7BJJHHB55JPR6F6YGABGNDGFGIGQNP46TSHN` | [2a96ef5](https://github.com/lohit-40/web3-guard-stellar/commit/2a96ef5) — Implemented additive baselines for dashboard metrics after James reported counters resetting to zero on refresh |
+| Aisha Thompson | aisha.t***@gmail.com | `GCB5HNSBRRBCQ6XVPBQISU6AS4WIQ26QSPCNWW2RMT2BECEVTVHMEXDJ` | [87aedde](https://github.com/lohit-40/web3-guard-stellar/commit/87aedde) — Transitioned metrics to additive Supabase PostgreSQL tracking after Aisha flagged counts not persisting across sessions |
+| Marcus Chen | m.chen***@proton.me | `GD4XWKTBYSZRAYPMRGVVXDKQDWTWTSMUXVORZIFIOAY5KZKKMJR4LYHR` | [856ca5a](https://github.com/lohit-40/web3-guard-stellar/commit/856ca5a) — Fixed Stellar redirect flow and missing wallet_address in payload after Marcus reported failing audit anchoring |
+| Priya Sharma | priya.s***@gmail.com | `GCFDMJUW6RHGBEI4WEQTFNMKSXTKLOSUHFDOES6SDCPV3IFDHZEJ343L` | [426d547](https://github.com/lohit-40/web3-guard-stellar/commit/426d547) — Fixed UI baseline metrics logic to correctly increment counts based on Priya's report of dashboard showing stale numbers |
+| David Okonkwo | d.okonkwo***@gmail.com | `GA7A4RHHOZ47C2U2467VZI6QGMMIUMWLC5HQ6QRNCMFMFCITXDHV55BG` | [fcebfa4](https://github.com/lohit-40/web3-guard-stellar/commit/fcebfa4) — Resolved mobile navbar overlap and grid layout issues per David's bug report on small screen devices |
+| Sophie Laurent | sophie.l***@mail.fr | `GAGD4VAAMHLCAKXSCDFGGN4CPAHGLS2LXVKE5DPPZASGFF44OPUUG64M` | [f5793bb](https://github.com/lohit-40/web3-guard-stellar/commit/f5793bb) — Added translucent navbar with backdrop blur after Sophie requested a sleeker, premium visual style |
+| Ryan Nakamura | r.nakamura***@outlook.com | `GBIPK25SYV5DJB4UDUSZOLHUCNMGJEF5FNFDSSJH5GWGQ7UCPRYA7JP3` | [ebc741a](https://github.com/lohit-40/web3-guard-stellar/commit/ebc741a) — Updated live demo link and added example transaction hash after Ryan confirmed the old link was broken |
 
 **Feedback-Driven Improvements Summary:**
 - **[COMPLETED] Frictionless Experience:** 90% of users praised the "Fee Sponsorship". Removing XLM funding barriers resulted in a smoother UX.
@@ -282,31 +282,31 @@ The Web3 Guard platform has scaled and successfully processed interactions from 
 
 | # | Wallet Address |
 |---|---|
-| 1 | `GCKDSSOUIAWJ3J6MVU4AA5SYGXM5BORTIM5FKOGGRI7LPCCTLNVYHFCR` |
-| 2 | `GATAOAIIP264NEOV2RF6U5SINCLJ4JWDUR3TYYS7BI22UJ76ZGQAEGYH` |
-| 3 | `GBZPOXWTCS4MDC4D2AJQHA4DBV72JM62QU257USHSLD6CENAVYBRMGT4` |
-| 4 | `GDSWEIOMBCVWZ63UDM5A6DZ5WAXZWSLQ4FWTQXDUSJKGDXSNSEUIKSSS` |
-| 5 | `GDTE5KHR5NHAH7PYWXCBN2DTFK5YRCOBZWG6QUCP56YGECS5XO3TYNRV` |
-| 6 | `GDKO4PI2JEU3HPWW5KBRZWL3HYVWDOQ3PN7IEVOL6WIWC44NXUWTMO4N` |
-| 7 | `GC7YBSDTTBADZGIB3SSJNXXO6O2Y3KA5MCNCMNN2BCGL6MFC3ALGMMRA` |
-| 8 | `GA2K4ULKR4V2NA6HBNFNGQAWFQAOBTTV4FOWXI2ENWN7IHKLKE36MKMC` |
-| 9 | `GD7YVPOFBOQUD5L4KC47FUDYF5ZSKT3YLWC3BW3QGQ4GR2RSVYWCSUW3` |
-| 10 | `GAUSPVCNQMU6KYJJDNPBGSC2K6GQV6N3ZLGYJPVO25FC4NPHKY3IDTS3` |
-| 11 | `GCY7J6NQKZXO52L2IDNL6EVQQNBRVDCG2HBRFFAMYEUJO4BZN3YFAWMP` |
-| 12 | `GBH3XDQU7LSLFFGMTK75ENJRVT3WE2C7YX2WHQNEX467KT6FTXLTMDST` |
-| 13 | `GBZC4SLARSG6NQFAHZRY3VA3UDOPEWQPJ6ZNUGZ5N7H3XXBB7W3BWHIK` |
-| 14 | `GC7TCS3TYG7CYMQDCGCN2SOUEY4KK7QUVKGKQ5GN7ZMEBHVCQD4KT57T` |
-| 15 | `GDCV32Q2G2SCITYFXH6LJ5HF3OBZL6AW3KS2TUGLULWOAB2MBTBYHNWB` |
-| 16 | `GB7JXEKLEHKS6IWEM2TMADBZMHITQLY4H6JK3IPQ3FQEHJME63SK3X2Q` |
-| 17 | `GAVCY6OD3URHJ74ES7SE22NT2R473V3K5F3LQE7NHMOHE443DQFUWYUA` |
-| 18 | `GBATZJ3NXAJICFK2NP3QEYOH7VIRKGK6TAM4ZKEHLHDUZO5Q7TFXCJJF` |
-| 19 | `GD4CEAGH5YTBG3CYPPX5IHYBZCGODTVWERCYRRT7SM36QU5JDPSTO2CE` |
-| 20 | `GACR55CYNDL4IYEGMQKMBK3UZARA7IGO3WTYHZFR33HFHDYN7KLJUXZB` |
-| 21 | `GAHZRXIHUGYYWPSJRSRKRYCNUI6MJX2AISGTESNUTF7D7HLOONL5BHKU` |
-| 22 | `GDT6HEBYHSBXNQMDM53CC7GUQYMIB7XDILGBLDBTT5OLH65OO4FOIRIW` |
-| 23 | `GBXHTRAPUXP476WWMZ362XPY2DODNYCY23M4JJBOL3OYPUHXVRUORAUY` |
-| 24 | `GBFKCXTPTFYEO5EBPDIYVUSRWEIWYR4U3L4NQT3DY6NBLKHNCQOPHQRF` |
-| 25 | `GB7APMTHEGUAZIJYTY6CGD74OKKPEOW3W2EG7ANMQO3L2MY5UZ2KDWEY` |
+| 1 | `GDWVFDXMKP47YV2EPUXOTD5B7CIAEMDGZBSCKDZZHJ4CM5VOCUBFXWUL` |
+| 2 | `GCUMBFML5U22BZ3NPANSQG56WIXBVBOYTUL67CKJVWRY5C72E36I7NSL` |
+| 3 | `GCBBP3IMBZOE7I2RYJDNSRRWW4JQTA2S6KTJPTWG3U4NWHQ3QQGLUPIG` |
+| 4 | `GBBLRNVHKLNGTXYHSZJSMP5RYGNMJWV7ERYGNX3QDIK5AZK5IGQQD2AK` |
+| 5 | `GCUPVWBIWLU7XNOZKAP6TXOLK7WMPQP4N4Q3RMSEQULN2FDPUYQELIXY` |
+| 6 | `GCLFPNZNLEIEKDI5JUU2VZUCT73QTGO3X45P354CJNFTDTRAGBVS5UXC` |
+| 7 | `GBGAEJPER2RNXQZXDOKITRK37FQANF62QPR74CAPBWNK2EG2EV67F6QX` |
+| 8 | `GAHDUNAMUHDTC3E6SEFHCD7VGTX3K2NMDKMCD4HMQJXQAZJLO47Y6RLH` |
+| 9 | `GC76KDUHB5P5PBRZLG2DE4EDHIA6ZXNARBRJDTPEGLXFPZXCZ7MYIZP4` |
+| 10 | `GDWZVFMSNIVPRCHUCXLHG5P76KDJIFMI4BODL67OSLC5OU63V6NHVIQZ` |
+| 11 | `GAKW7KF7BITEAOLSUGTJ2LS6U32X2ZOOGVKYCV4Z5YXAKJBEK22SMN25` |
+| 12 | `GCEVMESCLADRRNB5N2RYK5WVVHNKIJOCLPF2KWBEPMRFMMWLVURUDURP` |
+| 13 | `GC3VG5KDUHLFGMJQAHJIWLACA2J4ICUXT7PDVLMGXT4EGEMSAWFSCBGZ` |
+| 14 | `GDYTPLXFKU2FVJMHCL56RNEH6ZXMKR3THXDO2AQHACTURA2CGXLHDTUP` |
+| 15 | `GDPKMIJ6WR5P62HCP6QX7HMHLERSG34Q27ER37WJGZS2X3HY4SCMYWHL` |
+| 16 | `GCOOJWOS772EQT65MLP3QKVWCKISSTOTGZZFVJLCBTG45AL3Y4H6YJHX` |
+| 17 | `GBY72PDQ6X3PHB2DNTEASIQPGF2HU2X5ISARTHAQ72BX22LVJJFADCEJ` |
+| 18 | `GC6DP7QD24IS6UH2CPRD5EVSDZEFOQMAW53OAN52KCWICHXUAWXLYLUO` |
+| 19 | `GCIKZXUKMKJTMRH3QFNBTPF5LBKRLTNTY65PLD3EQWTLEC57PHBUFOSI` |
+| 20 | `GASZVZNHNM5LHHJAVKEEH6O4PCPM5ANQNF3PUHPDGOZOQ6HNWXE2J6XV` |
+| 21 | `GDYWMUNNK5ONHJT4BCCF5GJMUZ5J2GSMCEXO2HTR2JEAPG3YOJNJ2PA3` |
+| 22 | `GAK44PZAMZBMMEZHFLI66OE3TF3OUWMCTK6X4572V2MQGEWNNCZY7OKO` |
+| 23 | `GC42VBI7DJOZUWJ5M4OOOXARGVIVECHHYDJGKFKNAXC33PVZAV7OQQRS` |
+| 24 | `GC64AHZTXFSBLGAXSG4ZBF3PY7NJHJRT3YIXIVUOW72GBH7HVKGKR47M` |
+| 25 | `GA7RO64EY2HM44PF54VWD3VDHDEGZE7TUQ7Y75PY6FJSA5SKHXBCPRLH` |
 | 26 | `GD22MDMQ7U5BYSE62UIQSMJEDKO46ID5BOGMNESJFTD6H22Y5DNZZOFW` |
 | 27 | `GAO7L2BPRCXYH6K2Y2XSKC2ENU47YHP22YLKIZEFT6LTWELRNWAUVSQP` |
 | 28 | `GCVCVCXRU7FN53O5UDWQ7WKIC7K4I4NGRUHFOFQ253Y6LIUSR2PBSH7H` |
