@@ -32,6 +32,6 @@ graph TD;
 
 ## 3. Vulnerability Reporting
 If you discover a vulnerability in the Web3 Guard infrastructure (such as an SSRF via Etherscan/Helius lookup bypass, or an injection logic bomb), please reach out directly:
-- **Email**: security@web3guard.io
+- **Email**: lohitmishra25@gmail.com
 - **SLA**: Maximum 24-hour response metric during active monitoring.
 - **Bounty**: Active bounties up to 5,000 XLM for Critical severity disclosures regarding the Web3 Guard anchor infrastructure.
