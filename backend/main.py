@@ -739,7 +739,14 @@ def explorer_stats(request: Request):
         stats["total_audits"] += len(non_evm_audits)
     except Exception as e:
         print(f"Error fetching non_evm audits: {e}")
-    
+
+    # Include user audit_count sum — same source as /metrics/live dashboard
+    try:
+        user_scans = get_total_user_scans()
+        stats["total_audits"] = max(stats["total_audits"], user_scans)
+    except Exception as e:
+        print(f"Error fetching user scans for explorer stats: {e}")
+
     return stats
 
 @app.get("/explorer/audits")
