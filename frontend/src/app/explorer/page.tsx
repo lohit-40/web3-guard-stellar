@@ -41,6 +41,7 @@ interface Stats {
 
 export default function ExplorerPage() {
   const [stats, setStats] = useState<Stats | null>(null);
+  const [liveTotal, setLiveTotal] = useState<number | null>(null);
   const [audits, setAudits] = useState<AuditRecord[]>([]);
   const [badges, setBadges] = useState<BadgeRecord[]>([]);
   const [activeTab, setActiveTab] = useState<"audits" | "badges">("audits");
@@ -58,12 +59,17 @@ export default function ExplorerPage() {
     const fetchAll = async () => {
       setLoading(true);
       try {
-        const [statsRes, auditsRes, badgesRes] = await Promise.all([
+        const [statsRes, auditsRes, badgesRes, liveRes] = await Promise.all([
           fetch(`${API_URL}/explorer/stats`),
           fetch(`${API_URL}/explorer/audits`),
-          fetch(`${API_URL}/explorer/badges`)
+          fetch(`${API_URL}/explorer/badges`),
+          fetch(`${API_URL}/metrics/live`)
         ]);
         if (statsRes.ok) setStats(await statsRes.json());
+        if (liveRes.ok) {
+          const liveData = await liveRes.json();
+          setLiveTotal(liveData.total_audits || 0);
+        }
         if (auditsRes.ok) {
           const data = await auditsRes.json();
           setAudits(data.audits || []);
@@ -134,7 +140,7 @@ export default function ExplorerPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
             <div className="gsap-exp-stat opacity-0 border-2 border-brutal-text p-6 group hover:bg-brutal-text hover:text-brutal-bg transition-all">
               <ShieldCheck className="w-6 h-6 mb-3 text-brutal-orange group-hover:text-brutal-bg" />
-              <p className="text-4xl md:text-5xl font-bold font-mono">{stats ? 35 + (stats.total_audits || 0) : "—"}</p>
+              <p className="text-4xl md:text-5xl font-bold font-mono">{liveTotal !== null ? liveTotal : (stats ? 35 + (stats.total_audits || 0) : "—")}</p>
               <p className="text-xs tracking-[0.2em] uppercase mt-2 opacity-60">audits recorded</p>
             </div>
             <div className="gsap-exp-stat opacity-0 border-2 border-brutal-text p-6 group hover:bg-brutal-text hover:text-brutal-bg transition-all">
