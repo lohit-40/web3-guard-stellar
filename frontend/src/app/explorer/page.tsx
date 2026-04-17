@@ -265,9 +265,14 @@ export default function ExplorerPage() {
                     iconColorClass = "group-hover:text-[#fff] hover:opacity-70 text-[#08B5E5]";
                   }
 
-                  const explorerLink = audit.explorer_url 
-                    ? audit.explorer_url 
-                    : `https://sepolia.etherscan.io/address/${stats?.contract_audit_address}`;
+                  const SOROBAN_CONTRACT = "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU";
+                  const isBadUrl = !audit.explorer_url || audit.explorer_url.includes("pending_user_signature") || audit.explorer_url.includes("undefined");
+                  const explorerLink = isBadUrl
+                    ? (audit.audit_chain === "stellar"
+                        ? `https://stellar.expert/explorer/testnet/contract/${SOROBAN_CONTRACT}?filter=history`
+                        : `https://sepolia.etherscan.io/address/${stats?.contract_audit_address}`)
+                    : audit.explorer_url;
+
                     
                   // Navigate to detailed audit report page on click
                   const reportHash = audit.report_hash.replace(/^0x/, "");
