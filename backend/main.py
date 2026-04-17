@@ -171,22 +171,22 @@ def scan_for_vulnerabilities(source_code: str, ecosystem: str = "Solidity") -> l
     {source_code}
     """
     
+    import time as _time
     for i, key in enumerate(current_keys):
         try:
             client = genai.Client(api_key=key)
-            try:
-                response = client.models.generate_content(
-                    model='gemini-2.5-flash',
-                    contents=prompt
-                )
-            except Exception as e:
-                if "503" in str(e) or "UNAVAILABLE" in str(e):
-                    response = client.models.generate_content(
-                        model='gemini-2.0-flash',
-                        contents=prompt
-                    )
-                else:
-                    raise e
+            # Try gemini-2.5-flash first, then 2.0 as fallback
+            for model in ['gemini-2.5-flash', 'gemini-2.0-flash']:
+                try:
+                    response = client.models.generate_content(model=model, contents=prompt)
+                    break
+                except Exception as model_err:
+                    model_err_str = str(model_err)
+                    if "503" in model_err_str or "UNAVAILABLE" in model_err_str:
+                        if model == 'gemini-2.5-flash':
+                            continue  # try next model
+                    raise model_err
+
             text = response.text.strip()
             
             if text.startswith("```json"): text = text[7:]
@@ -209,9 +209,29 @@ def scan_for_vulnerabilities(source_code: str, ecosystem: str = "Solidity") -> l
             
         except Exception as e:
             err_str = str(e)
-            is_quota = "429" in err_str or "quota" in err_str.lower()
-            if is_quota and i < len(current_keys) - 1:
+            is_rate_limit = "429" in err_str or "rate" in err_str.lower()
+            is_quota = is_rate_limit and ("quota" in err_str.lower() or "daily" in err_str.lower() or "exhausted" in err_str.lower())
+            
+            if is_rate_limit and not is_quota and i < len(current_keys) - 1:
+                # Per-minute rate limit on this key → wait 5s and try next key
+                _time.sleep(5)
                 continue
+            elif is_rate_limit and not is_quota:
+                # Only one key and it's rate-limited → wait and retry once
+                _time.sleep(15)
+                try:
+                    client = genai.Client(api_key=key)
+                    response = client.models.generate_content(model='gemini-2.0-flash', contents=prompt)
+                    text = response.text.strip()
+                    if text.startswith("```json"): text = text[7:]
+                    if text.startswith("```"): text = text[3:]
+                    if text.endswith("```"): text = text[:-3]
+                    vulns_data = json.loads(text.strip())
+                    return [Vulnerability(type=v.get("type","Unknown"), severity=str(v.get("severity","Medium")), line_number=v.get("line_number") if isinstance(v.get("line_number"),int) else None, description=v.get("description",""), remediation=v.get("remediation")) for v in vulns_data]
+                except Exception:
+                    raise HTTPException(status_code=429, detail="Rate limit hit. Please wait 1 minute and try again.")
+            elif is_quota and i < len(current_keys) - 1:
+                continue  # try next key
             elif is_quota:
                 raise HTTPException(status_code=429, detail="All provided Gemini API keys have exhausted their Free Tier daily quotas!")
             else:
