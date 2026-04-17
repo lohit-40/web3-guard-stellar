@@ -42,9 +42,9 @@ export default function Dashboard() {
       
       // Map metrics from API
       if (data) {
-        data.active_users = (data.active_users || 0) + 35;
-        data.watched_contracts = (data.watched_contracts || 0) + 12;
-        data.total_audits = (data.total_audits || 0); // No longer hardcoded
+        data.active_users = data.active_users || 0;
+        data.watched_contracts = data.watched_contracts || 0;
+        data.total_audits = data.total_audits || 0; 
       }
       
       setMetrics(data);
@@ -159,7 +159,7 @@ export default function Dashboard() {
                         <span className={`px-2 py-0.5 text-xs font-bold uppercase tracking-widest border-2 ${
                           event.type === 'VULN_DETECTED' ? 'border-brutal-orange text-brutal-orange' : 'border-green-600 text-green-600'
                         }`}>
-                          {event.type}
+                          {event.type === 'SCAN_CLEAN' ? 'SECURE' : event.type === 'AUDIT_COMPLETED' ? 'AUDITED' : event.type}
                         </span>
                         <span className="font-mono text-xs opacity-50 uppercase">{new Date(event.time).toLocaleString()}</span>
                       </div>

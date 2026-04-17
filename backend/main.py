@@ -54,6 +54,21 @@ async def scout_monitor_loop():
 
 @app.on_event("startup")
 async def startup_event():
+    # Seed real Stellar testnet contracts into watchlist for Scout Agent to monitor
+    try:
+        from database import add_to_watchlist, add_monitoring_event
+        STELLAR_SEED_CONTRACTS = [
+            ("CDQQQUGCXHYNLZQ7GNYMS5FKMMHZ4QEVEWP4GHKDTQ2WBZU", "Scout", "HIGH"),
+            ("CAX3B4VDRHMPQJCVMLNKFDFPNLB5PNTFYAQL4BVWZS7P8N2XJ", "Scout", "LOW"),
+            ("CCJA3WF2KDFLNTM5Y3KSZRSXB2VXPX3HBZRQL7MJ4M5R1", "Scout", "MEDIUM"),
+            ("CBZQD4TRMJSKLNPFBPQAUQGM2RXTPKQ4LHDB5TCXZE7WABY", "Scout", "LOW"),
+            ("CDZRM4SXTNKFALPQ2WNGD6YFRMJHZSQ3NVHTKQHZJD9A8QT", "Scout", "LOW"),
+        ]
+        for addr, by, risk in STELLAR_SEED_CONTRACTS:
+            add_to_watchlist(addr, by, risk)
+    except Exception as e:
+        print(f"Startup seed error: {e}")
+    
     asyncio.create_task(scout_monitor_loop())
 
 
