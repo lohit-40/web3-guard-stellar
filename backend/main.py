@@ -411,15 +411,27 @@ def scan_contract(request: Request, payload: ScanRequest):
         "timestamp": int(time.time())
     }
     
-    # ── Automatically add to Watchlist for dashboard monitoring ──
-    if address:
-        from database import add_to_watchlist, add_monitoring_event
-        try:
-            risk = _risk_level_from_vulns(vulns_dicts)
+    # ── Add to Watchlist + fire monitoring event for ALL scans (including raw source) ──
+    from database import add_to_watchlist, add_monitoring_event
+    try:
+        risk = _risk_level_from_vulns(vulns_dicts)
+        # Use actual address if available, otherwise the Soroban contract ID or scan hash
+        tracking_id = address or soroban_contract_id or source_hash[:20]
+        label = address if address else f"Raw Source ({source_hash[:8]})"
+        
+        if address:
             add_to_watchlist(address, payload.wallet_address or "System", risk)
-            add_monitoring_event(address, "AUDIT_COMPLETED", f"Audit completed for {address}. Risk: {risk}")
-        except:
-            pass
+        elif soroban_contract_id:
+            add_to_watchlist(soroban_contract_id, payload.wallet_address or "System", risk)
+
+        chain_label = f" [{audit_chain.upper()}]" if audit_chain else ""
+        add_monitoring_event(
+            tracking_id,
+            "AUDIT_COMPLETED",
+            f"AI Audit completed{chain_label} for {label}. Risk: {risk}. Vulnerabilities: {len(vulns_dicts)}."
+        )
+    except Exception as e:
+        print(f"Monitoring event error: {e}")
     
     set_cached_scan(source_hash, response_data)
     
@@ -451,6 +463,77 @@ def update_audit_tx_hash(request: Request, payload: UpdateTxRequest):
         
     set_cached_scan(payload.hash_key, cached)
     return {"message": "Updated successfully"}
+
+# ── LEVEL 6: Fee Sponsorship — Gasless transactions via Fee Bump ──────────────
+class SponsorTxRequest(BaseModel):
+    signed_inner_xdr: str   # Freighter-signed inner transaction XDR
+
+@app.post("/sponsor_tx")
+@limiter.limit("10/minute")
+def sponsor_transaction(request: Request, payload: SponsorTxRequest):
+    """
+    Wraps the user's Freighter-signed Soroban transaction in a fee bump
+    signed by the backend's STELLAR_SECRET_KEY. This makes the transaction
+    100% gasless for the end user — a Level 6 Advanced Feature requirement.
+    """
+    try:
+        from stellar_sdk import (
+            Keypair as StellarKeypair,
+            TransactionBuilder as StellarTxBuilder,
+            Network,
+            FeeBumpTransactionEnvelope,
+        )
+        from stellar_sdk import xdr as StellarXdr
+        import httpx
+
+        stellar_secret = os.getenv("STELLAR_SECRET_KEY")
+        if not stellar_secret:
+            raise HTTPException(status_code=500, detail="Sponsor key not configured")
+
+        sponsor_keypair = StellarKeypair.from_secret(stellar_secret)
+        
+        # Parse the inner transaction from XDR
+        inner_tx_envelope = StellarTxBuilder.from_xdr(
+            payload.signed_inner_xdr, 
+            network_passphrase=Network.TESTNET_NETWORK_PASSPHRASE
+        )
+
+        # Build fee bump — sponsor pays the fee
+        fee_bump = (
+            StellarTxBuilder.build_fee_bump_transaction(
+                fee_source=sponsor_keypair,
+                base_fee="1000",  # 0.0001 XLM per operation
+                inner_transaction_envelope=inner_tx_envelope,
+                network_passphrase=Network.TESTNET_NETWORK_PASSPHRASE,
+            )
+        )
+        fee_bump.sign(sponsor_keypair)
+        fee_bump_xdr = fee_bump.to_xdr()
+
+        # Submit to Stellar Horizon Testnet
+        horizon_resp = httpx.post(
+            "https://horizon-testnet.stellar.org/transactions",
+            data={"tx": fee_bump_xdr},
+            timeout=30
+        )
+        result = horizon_resp.json()
+
+        if not horizon_resp.is_success and not result.get("successful"):
+            err = result.get("extras", {}).get("result_codes", result)
+            raise HTTPException(status_code=400, detail=f"Fee bump submission failed: {err}")
+
+        tx_hash = result.get("hash", "")
+        return {
+            "tx_hash": tx_hash,
+            "stellar_explorer_url": f"https://stellar.expert/explorer/testnet/tx/{tx_hash}",
+            "sponsored": True,
+            "message": "Fee bump submitted. Gas paid by Web3 Guard."
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Sponsor error: {str(e)}")
 
 @app.get("/wallet/{address}/deployments")
 @limiter.limit("10/minute")

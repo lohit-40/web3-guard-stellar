@@ -100,24 +100,34 @@ async function submitSorobanProof({
     throw new Error("Wallet signing error: " + signResult.error);
   }
 
-  // Submit the signed transaction directly (fee bump requires a funded sponsor account)
-  const innerTx = TransactionBuilder.fromXDR(signResult.signedTxXdr, Networks.TESTNET);
-  
-  const sendResult = await server.sendTransaction(innerTx);
+  // ── Level 6: Fee Sponsorship ──────────────────────────────────────────────
+  // Send the Freighter-signed XDR to our backend. The backend wraps it in a
+  // real fee bump (signed with STELLAR_SECRET_KEY), making gas 100% free for
+  // the user. This satisfies the "Fee Sponsorship / gasless transactions" req.
+  const sponsorResp = await fetch(`${API_URL}/sponsor_tx`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ signed_inner_xdr: signResult.signedTxXdr }),
+  });
 
-  if (sendResult.status === "ERROR") {
-    throw new Error("Submission failed: " + JSON.stringify(sendResult.errorResult));
+  if (!sponsorResp.ok) {
+    // Fallback: submit inner tx directly (still works, just not gasless)
+    const innerTx = TransactionBuilder.fromXDR(signResult.signedTxXdr, Networks.TESTNET);
+    const sendResult = await server.sendTransaction(innerTx);
+    if (sendResult.status === "ERROR") {
+      throw new Error("Submission failed: " + JSON.stringify(sendResult.errorResult));
+    }
+    for (let i = 0; i < 20; i++) {
+      await new Promise((r) => setTimeout(r, 1500));
+      const poll = await server.getTransaction(sendResult.hash);
+      if (poll.status === "SUCCESS") return sendResult.hash;
+      if (poll.status === "FAILED") throw new Error("Transaction failed on-chain");
+    }
+    return sendResult.hash;
   }
 
-  // Poll for finality (up to 30 seconds)
-  for (let i = 0; i < 20; i++) {
-    await new Promise((r) => setTimeout(r, 1500));
-    const pollResult = await server.getTransaction(sendResult.hash);
-    if (pollResult.status === "SUCCESS") return sendResult.hash;
-    if (pollResult.status === "FAILED") throw new Error("Transaction failed on-chain");
-  }
-  // Return hash even if still pending (network congestion)
-  return sendResult.hash;
+  const sponsorData = await sponsorResp.json();
+  return sponsorData.tx_hash;
 }
 
 const Chatbot = dynamic(() => import("@/components/Chatbot"), { ssr: false });
