@@ -54,15 +54,12 @@ async def scout_monitor_loop():
 
 @app.on_event("startup")
 async def startup_event():
-    # Seed real Stellar testnet contracts into watchlist for Scout Agent to monitor
+    # Seed the REAL deployed Soroban contract into watchlist for Scout Agent to monitor
     try:
-        from database import add_to_watchlist, add_monitoring_event
+        from database import add_to_watchlist
+        soroban_id = os.getenv("SOROBAN_CONTRACT_ID", "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU")
         STELLAR_SEED_CONTRACTS = [
-            ("CDQQQUGCXHYNLZQ7GNYMS5FKMMHZ4QEVEWP4GHKDTQ2WBZU", "Scout", "HIGH"),
-            ("CAX3B4VDRHMPQJCVMLNKFDFPNLB5PNTFYAQL4BVWZS7P8N2XJ", "Scout", "LOW"),
-            ("CCJA3WF2KDFLNTM5Y3KSZRSXB2VXPX3HBZRQL7MJ4M5R1", "Scout", "MEDIUM"),
-            ("CBZQD4TRMJSKLNPFBPQAUQGM2RXTPKQ4LHDB5TCXZE7WABY", "Scout", "LOW"),
-            ("CDZRM4SXTNKFALPQ2WNGD6YFRMJHZSQ3NVHTKQHZJD9A8QT", "Scout", "LOW"),
+            (soroban_id, "Scout", "LOW"),
         ]
         for addr, by, risk in STELLAR_SEED_CONTRACTS:
             add_to_watchlist(addr, by, risk)
@@ -817,12 +814,46 @@ def explorer_audits(request: Request):
     try:
         non_evm = get_recent_non_evm_audits(20)
         audits.extend(non_evm)
-        audits.sort(key=lambda x: x["timestamp"], reverse=True)
-        audits = audits[:20]
     except Exception as e:
         print(f"Explorer multi-chain audits error: {e}")
-    
-    return {"audits": audits}
+
+    # ── Pull REAL on-chain store_proof calls from Stellar Horizon API ──
+    try:
+        soroban_id = os.getenv("SOROBAN_CONTRACT_ID", "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU")
+        h_resp = requests.get(
+            f"https://horizon-testnet.stellar.org/contracts/{soroban_id}/operations?order=desc&limit=20",
+            timeout=8
+        )
+        if h_resp.status_code == 200:
+            from datetime import datetime as _dt
+            for op in h_resp.json().get("_embedded", {}).get("records", []):
+                if op.get("type") == "invoke_host_function":
+                    tx_hash = op.get("transaction_hash", "")
+                    try:
+                        ts = int(_dt.strptime(op.get("created_at", ""), "%Y-%m-%dT%H:%M:%SZ").timestamp())
+                    except Exception:
+                        ts = 0
+                    audits.append({
+                        "id": tx_hash[:8] if tx_hash else "unknown",
+                        "audited_contract": soroban_id,
+                        "report_hash": "0x" + tx_hash[:40] if tx_hash else "0x" + "0" * 40,
+                        "timestamp": ts,
+                        "audit_chain": "stellar",
+                        "explorer_url": f"https://stellar.expert/explorer/testnet/tx/{tx_hash}"
+                    })
+    except Exception as e:
+        print(f"Horizon fetch error: {e}")
+
+    # Deduplicate and sort newest-first
+    seen, deduped = set(), []
+    for a in audits:
+        key = a.get("explorer_url") or a.get("report_hash") or ""
+        if key not in seen:
+            seen.add(key)
+            deduped.append(a)
+    deduped.sort(key=lambda x: x["timestamp"], reverse=True)
+
+    return {"audits": deduped[:20]}
 
 # ──────────────────────────────────────────────────────
 #  LEVEL 6: METRICS DASHBOARD ENDPOINTS
