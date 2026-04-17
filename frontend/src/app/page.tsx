@@ -22,7 +22,6 @@ import {
   Contract,
   nativeToScVal,
   Address,
-  Keypair,
   rpc as SorobanRpc,
 } from "@stellar/stellar-sdk";
 import { signTransaction } from "@stellar/freighter-api";
@@ -101,27 +100,16 @@ async function submitSorobanProof({
     throw new Error("Wallet signing error: " + signResult.error);
   }
 
-  // Submit the signed transaction with FEE BUMP (L6 Advanced Feature)
+  // Submit the signed transaction directly (fee bump requires a funded sponsor account)
   const innerTx = TransactionBuilder.fromXDR(signResult.signedTxXdr, Networks.TESTNET);
   
-  // Create a randomized sponsor Keypair for demonstration (in production, backend signs this)
-  const sponsorKey = Keypair.random();
-  const feeBumpTx = TransactionBuilder.buildFeeBumpTransaction(
-    sponsorKey,
-    String(Number(BASE_FEE) * 2),
-    innerTx as any,
-    Networks.TESTNET
-  );
-  feeBumpTx.sign(sponsorKey);
-
-  const sendResult = await server.sendTransaction(feeBumpTx);
+  const sendResult = await server.sendTransaction(innerTx);
 
   if (sendResult.status === "ERROR") {
     throw new Error("Submission failed: " + JSON.stringify(sendResult.errorResult));
   }
 
-  // Poll for finality
-  let txStatus = sendResult;
+  // Poll for finality (up to 30 seconds)
   for (let i = 0; i < 20; i++) {
     await new Promise((r) => setTimeout(r, 1500));
     const pollResult = await server.getTransaction(sendResult.hash);
