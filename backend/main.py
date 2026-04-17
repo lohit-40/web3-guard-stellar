@@ -253,6 +253,20 @@ def scan_contract(request: Request, payload: ScanRequest):
     cached = get_cached_scan(source_hash)
     if cached:
         cached["address"] = address if address else "Raw Source Code Provided"
+        
+        if address:
+            from database import add_to_watchlist, add_monitoring_event
+            try:
+                risk = _risk_level_from_vulns(cached.get("vulnerabilities", []))
+                add_to_watchlist(address, payload.wallet_address or "System", risk)
+                add_monitoring_event(address, "AUDIT_COMPLETED", f"Audit completed for {address}. Risk: {risk}")
+            except Exception as e:
+                pass
+
+        import time
+        cached["timestamp"] = int(time.time())
+        set_cached_scan(source_hash, cached)
+        
         return ScanResponse(**cached)
         
     # 3. Run Analysis & AI Remediation
@@ -387,10 +401,11 @@ def scan_contract(request: Request, payload: ScanRequest):
     
     # ── Automatically add to Watchlist for dashboard monitoring ──
     if address:
-        from database import add_to_watchlist
+        from database import add_to_watchlist, add_monitoring_event
         try:
             risk = _risk_level_from_vulns(vulns_dicts)
             add_to_watchlist(address, payload.wallet_address or "System", risk)
+            add_monitoring_event(address, "AUDIT_COMPLETED", f"Audit completed for {address}. Risk: {risk}")
         except:
             pass
     

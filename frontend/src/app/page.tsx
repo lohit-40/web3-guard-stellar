@@ -768,10 +768,10 @@ export default function App() {
                       {result.audit_tx_hash && (
                         <a 
                           href={
-                            result.audit_chain === 'solana' && result.solana_explorer_url
-                              ? result.solana_explorer_url
-                              : result.audit_chain === 'stellar' && result.stellar_explorer_url
-                              ? result.stellar_explorer_url
+                            result.audit_chain === 'solana'
+                              ? (result.solana_explorer_url || `https://explorer.solana.com/tx/${result.audit_tx_hash}?cluster=devnet`)
+                              : result.audit_chain === 'stellar'
+                              ? (result.stellar_explorer_url || `https://stellar.expert/explorer/testnet/tx/${result.audit_tx_hash}`)
                               : `https://sepolia.etherscan.io/tx/${result.audit_tx_hash}`
                           } 
                           target="_blank" 
