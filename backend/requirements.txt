@@ -1,6 +1,7 @@
 fastapi
 uvicorn
 requests
+httpx
 python-dotenv
 pydantic
 google-genai
@@ -8,5 +9,5 @@ web3
 slowapi
 solana
 solders
-
+stellar-sdk
 psycopg2-binary

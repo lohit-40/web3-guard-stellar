@@ -92,42 +92,63 @@ async function submitSorobanProof({
   const preparedTxXdr = preparedTx.toXDR();
 
   // Sign via Freighter wallet (user must click "Approve")
-  const signResult = await signTransaction(preparedTxXdr, {
+  // Freighter API v6 returns { signedTxXdr: string } on approve, throws on reject
+  const rawSignResult = await signTransaction(preparedTxXdr, {
     networkPassphrase: Networks.TESTNET,
   });
 
-  if (signResult.error) {
-    throw new Error("Wallet signing error: " + signResult.error);
+  // Handle both old API (string) and new API (object with signedTxXdr)
+  const signedXdr: string = typeof rawSignResult === "string"
+    ? rawSignResult
+    : (rawSignResult as any).signedTxXdr ?? (rawSignResult as any).signedTransactionXDR;
+
+  if (!signedXdr || signedXdr === "pending_user_signature") {
+    throw new Error("Freighter did not return a signed XDR. Please approve the transaction.");
   }
 
-  // ── Level 6: Fee Sponsorship ──────────────────────────────────────────────
-  // Send the Freighter-signed XDR to our backend. The backend wraps it in a
-  // real fee bump (signed with STELLAR_SECRET_KEY), making gas 100% free for
-  // the user. This satisfies the "Fee Sponsorship / gasless transactions" req.
-  const sponsorResp = await fetch(`${API_URL}/sponsor_tx`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ signed_inner_xdr: signResult.signedTxXdr }),
-  });
+  console.log("[Soroban] signed XDR length:", signedXdr.length);
 
-  if (!sponsorResp.ok) {
-    // Fallback: submit inner tx directly (still works, just not gasless)
-    const innerTx = TransactionBuilder.fromXDR(signResult.signedTxXdr, Networks.TESTNET);
+  // ── Level 6: Fee Sponsorship ──────────────────────────────────────────────
+  // Send Freighter-signed XDR to backend → backend wraps in fee bump (STELLAR_SECRET_KEY)
+  // This makes the network fee 100% gasless for the user.
+  let txHash: string | undefined;
+  try {
+    const sponsorResp = await fetch(`${API_URL}/sponsor_tx`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ signed_inner_xdr: signedXdr }),
+    });
+    if (sponsorResp.ok) {
+      const sponsorData = await sponsorResp.json();
+      txHash = sponsorData.tx_hash;
+      console.log("[Soroban] fee-bumped tx hash:", txHash);
+    } else {
+      const errText = await sponsorResp.text();
+      console.warn("[Soroban] /sponsor_tx failed, falling back to direct submit:", errText);
+    }
+  } catch (e) {
+    console.warn("[Soroban] /sponsor_tx network error, falling back:", e);
+  }
+
+  // Fallback: submit inner tx directly if fee bump failed
+  if (!txHash) {
+    const innerTx = TransactionBuilder.fromXDR(signedXdr, Networks.TESTNET);
     const sendResult = await server.sendTransaction(innerTx);
+    console.log("[Soroban] sendTransaction status:", sendResult.status, "hash:", sendResult.hash);
     if (sendResult.status === "ERROR") {
       throw new Error("Submission failed: " + JSON.stringify(sendResult.errorResult));
     }
+    // Poll for finality (up to 30 seconds)
     for (let i = 0; i < 20; i++) {
       await new Promise((r) => setTimeout(r, 1500));
       const poll = await server.getTransaction(sendResult.hash);
-      if (poll.status === "SUCCESS") return sendResult.hash;
+      if (poll.status === "SUCCESS") { txHash = sendResult.hash; break; }
       if (poll.status === "FAILED") throw new Error("Transaction failed on-chain");
     }
-    return sendResult.hash;
+    if (!txHash) txHash = sendResult.hash; // Return even if still pending
   }
 
-  const sponsorData = await sponsorResp.json();
-  return sponsorData.tx_hash;
+  return txHash;
 }
 
 const Chatbot = dynamic(() => import("@/components/Chatbot"), { ssr: false });
