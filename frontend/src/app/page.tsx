@@ -364,6 +364,13 @@ export default function App() {
             vulnCount,
           });
 
+          // Validate the hash is a real 64-char hex Stellar tx hash
+          const isRealHash = txHash && /^[a-f0-9]{64}$/i.test(txHash);
+          if (!isRealHash) {
+            console.error("[Soroban] Got invalid tx hash:", txHash);
+            throw new Error(`Invalid transaction hash received: "${txHash}". Transaction may not have submitted.`);
+          }
+
           // Attach the on-chain proof to the result locally
           data.audit_tx_hash = txHash;
           data.stellar_explorer_url = `https://stellar.expert/explorer/testnet/tx/${txHash}`;
