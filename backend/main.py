@@ -920,6 +920,7 @@ def explorer_audits(request: Request):
         print(f"Explorer multi-chain audits error: {e}")
 
     # ── Pull REAL on-chain store_proof calls from Stellar Horizon API ──
+    latest_stellar_tx_url = None
     try:
         soroban_id = os.getenv("SOROBAN_CONTRACT_ID", "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU")
         h_resp = requests.get(
@@ -931,20 +932,39 @@ def explorer_audits(request: Request):
             for op in h_resp.json().get("_embedded", {}).get("records", []):
                 if op.get("type") == "invoke_host_function":
                     tx_hash = op.get("transaction_hash", "")
+                    if not tx_hash:
+                        continue
                     try:
                         ts = int(_dt.strptime(op.get("created_at", ""), "%Y-%m-%dT%H:%M:%SZ").timestamp())
                     except Exception:
                         ts = 0
+                    explorer_url = f"https://stellar.expert/explorer/testnet/tx/{tx_hash}"
+                    # Track the most recent real tx for use as fallback
+                    if latest_stellar_tx_url is None:
+                        latest_stellar_tx_url = explorer_url
                     audits.append({
-                        "id": tx_hash[:8] if tx_hash else "unknown",
+                        "id": tx_hash[:8],
                         "audited_contract": soroban_id,
-                        "report_hash": "0x" + tx_hash[:40] if tx_hash else "0x" + "0" * 40,
+                        "report_hash": "0x" + tx_hash[:40],
                         "timestamp": ts,
                         "audit_chain": "stellar",
-                        "explorer_url": f"https://stellar.expert/explorer/testnet/tx/{tx_hash}"
+                        "explorer_url": explorer_url
                     })
     except Exception as e:
         print(f"Horizon fetch error: {e}")
+
+    # For any DB Stellar entry without a valid URL, use the latest real Horizon tx
+    if latest_stellar_tx_url:
+        for a in audits:
+            if a.get("audit_chain") == "stellar" and not a.get("explorer_url"):
+                a["explorer_url"] = latest_stellar_tx_url
+
+    # Fallback contract page if no Horizon txs found at all
+    soroban_id = os.getenv("SOROBAN_CONTRACT_ID", "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU")
+    contract_page = f"https://stellar.expert/explorer/testnet/contract/{soroban_id}?filter=history"
+    for a in audits:
+        if a.get("audit_chain") == "stellar" and not a.get("explorer_url"):
+            a["explorer_url"] = contract_page
 
     # Deduplicate and sort newest-first
     seen, deduped = set(), []

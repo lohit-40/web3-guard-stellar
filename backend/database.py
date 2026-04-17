@@ -196,13 +196,17 @@ def get_recent_non_evm_audits(limit: int = 20):
             data = json.loads(row[0])
             chain = data.get("audit_chain")
             if chain and chain != "ethereum":
+                # Build explorer_url, filtering out known-bad placeholder values
+                raw_url = data.get("solana_explorer_url") or data.get("stellar_explorer_url") or ""
+                bad_url = any(bad in raw_url for bad in ["pending_user_signature", "undefined", "/tx/None", "/tx/\""])
+                explorer_url = raw_url if raw_url and not bad_url else None
                 audits.append({
                     "id": data.get("hash_key", "unknown")[:6],
                     "audited_contract": data.get("address", "Raw Source Code Provided"),
                     "report_hash": "0x" + data.get("hash_key", "0"*40)[:40],
                     "timestamp": data.get("timestamp", 0),
                     "audit_chain": chain,
-                    "explorer_url": data.get("solana_explorer_url") or data.get("stellar_explorer_url")
+                    "explorer_url": explorer_url
                 })
         except Exception:
             continue
