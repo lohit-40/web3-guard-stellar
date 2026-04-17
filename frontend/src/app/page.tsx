@@ -220,6 +220,31 @@ export default function App() {
   const [scanStep, setScanStep] = useState(0);
   const [result, setResult] = useState<ScanResponse | null>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [isFunding, setIsFunding] = useState(false);
+
+  // Fund Freighter wallet with testnet XLM via Stellar Friendbot (free)
+  const handleFundWallet = async () => {
+    if (!userAddress) { toast.error("Connect your Freighter wallet first."); return; }
+    setIsFunding(true);
+    try {
+      const res = await fetch(`https://friendbot.stellar.org?addr=${encodeURIComponent(userAddress)}`);
+      if (res.ok) {
+        toast.success("✅ Wallet funded! You received 10,000 testnet XLM from Stellar Friendbot.", { duration: 5000 });
+      } else {
+        const err = await res.json();
+        // Already funded wallets get a specific error - handle gracefully
+        if (JSON.stringify(err).includes("op_already_exists") || JSON.stringify(err).includes("existing")) {
+          toast.success("Wallet already funded with testnet XLM. You're good to go!", { duration: 4000 });
+        } else {
+          toast.error("Friendbot error: " + (err?.detail || JSON.stringify(err)).slice(0, 100));
+        }
+      }
+    } catch (e: any) {
+      toast.error("Failed to reach Stellar Friendbot: " + e.message);
+    } finally {
+      setIsFunding(false);
+    }
+  };
 
   // Auto-switch wallet chain when ecosystem changes
   useEffect(() => {
@@ -349,7 +374,20 @@ export default function App() {
           if (msg.toLowerCase().includes("reject") || msg.toLowerCase().includes("cancel") || msg.toLowerCase().includes("denied")) {
             toast.error("Transaction rejected. Audit result saved locally.", { duration: 4000 });
           } else if (msg.toLowerCase().includes("insufficient") || msg.toLowerCase().includes("balance")) {
-            toast.error("Insufficient XLM balance. Fund your Freighter wallet and retry.", { duration: 5000 });
+            toast.error(
+              (t) => (
+                <span>
+                  Insufficient XLM.{" "}
+                  <button
+                    onClick={() => { toast.dismiss(t.id); handleFundWallet(); }}
+                    style={{ textDecoration: "underline", fontWeight: "bold", cursor: "pointer", background: "none", border: "none", color: "#08B5E5" }}
+                  >
+                    Click to get free testnet XLM →
+                  </button>
+                </span>
+              ),
+              { duration: 8000 }
+            );
           } else {
             toast.error("Soroban signing error: " + msg.slice(0, 100), { duration: 5000 });
           }
@@ -635,6 +673,23 @@ export default function App() {
                 )}
               </div>
             </motion.div>
+
+            {/* Stellar: Fund Wallet via Friendbot banner */}
+            {chainId === 'stellar' && isConnected && (
+              <div className="flex items-center justify-between gap-4 mb-4 px-4 py-3 border border-[#08B5E5]/30 bg-[#08B5E5]/5">
+                <div className="flex items-center gap-2 text-xs font-mono text-[#08B5E5]/80">
+                  <span>⚡</span>
+                  <span>Stellar audit requires <strong>1 XLM</strong> fee. Get free testnet XLM instantly:</span>
+                </div>
+                <button
+                  onClick={handleFundWallet}
+                  disabled={isFunding}
+                  className="shrink-0 px-4 py-1.5 border border-[#08B5E5] text-[#08B5E5] text-xs font-mono font-bold uppercase tracking-widest hover:bg-[#08B5E5]/10 transition-all disabled:opacity-50"
+                >
+                  {isFunding ? "Funding..." : "Fund via Friendbot →"}
+                </button>
+              </div>
+            )}
 
             {/* Toggle Input Mode */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
