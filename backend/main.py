@@ -136,106 +136,105 @@ def fetch_contract_source(address: str, chain_id: str = "1") -> str:
             return f"ERROR: Etherscan v2 said - {data.get('message', 'Unknown error')} - {err_msg}"
     return "ERROR: Network request to Etherscan failed."
 
+def _parse_vulns(text: str, Vuln) -> list:
+    """Parse JSON vulnerability list from AI response text."""
+    if text.startswith("```json"): text = text[7:]
+    if text.startswith("```"):     text = text[3:]
+    if text.endswith("```"):       text = text[:-3]
+    data = json.loads(text.strip())
+    return [Vuln(
+        type=v.get("type", "Unknown Flaw"),
+        severity=str(v.get("severity", "Medium")),
+        line_number=v.get("line_number") if isinstance(v.get("line_number"), int) else None,
+        description=v.get("description", "No description provided."),
+        remediation=v.get("remediation")
+    ) for v in data]
+
+def _scan_with_groq(prompt: str, Vuln) -> list:
+    """Fallback: use Groq (llama-3.3-70b-versatile) — 14,400 req/day free tier."""
+    import httpx, json as _json
+    groq_key = os.getenv("GROQ_API_KEY", "")
+    if not groq_key:
+        raise Exception("GROQ_API_KEY not configured")
+    resp = httpx.post(
+        "https://api.groq.com/openai/v1/chat/completions",
+        headers={"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json"},
+        json={
+            "model": "llama-3.3-70b-versatile",
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.2,
+            "max_tokens": 4096,
+        },
+        timeout=60
+    )
+    resp.raise_for_status()
+    text = resp.json()["choices"][0]["message"]["content"].strip()
+    return _parse_vulns(text, Vuln)
+
 def scan_for_vulnerabilities(source_code: str, ecosystem: str = "Solidity") -> list[Vulnerability]:
-    # Reload dotenv dynamically
     load_dotenv(dotenv_path=Path(__file__).parent / ".env", override=True)
     raw_keys = os.getenv("GEMINI_API_KEY", "")
     current_keys = [k.strip() for k in raw_keys.split(",") if k.strip() and k.strip() != "PASTE_YOUR_GEMINI_KEY_HERE"]
-    
-    if not current_keys:
-        return [Vulnerability(
-            type="AI Pipeline Offline",
-            severity="High",
-            line_number=None,
-            description="The AI Agent cannot scan this code because GEMINI_API_KEY is missing in backend/.env.",
-            remediation="Please configure your GEMINI_API_KEY to enable the Web3 Guard Advanced AI Scanner."
-        )]
-    
-    prompt = f"""
-    You are an elite Web3 smart contract security auditor specializing in {ecosystem}.
-    Analyze the following {ecosystem} source code for all security vulnerabilities.
-    
-    Return ONLY a raw JSON array of objects. Do NOT include markdown blocks like ```json. Just output the array.
-    If the code is perfectly secure, return an empty array [].
-    
-    Each vulnerability object MUST strictly follow this mapping:
-    {{
-        "type": "string (e.g. 'Reentrancy')",
-        "severity": "string ('High', 'Medium', or 'Low')",
-        "line_number": integer (if a specific line is culpable, else null),
-        "description": "string (Detailed explanation of why it is vulnerable)",
-        "remediation": "string (Markdown explained fix and code)"
-    }}
-    
-    Source Code:
-    {source_code}
-    """
-    
+
+    prompt = f"""You are an elite Web3 smart contract security auditor specializing in {ecosystem}.
+Analyze the following {ecosystem} source code for all security vulnerabilities.
+
+Return ONLY a raw JSON array of objects. Do NOT include markdown blocks like ```json. Just output the array.
+If the code is perfectly secure, return an empty array [].
+
+Each vulnerability object MUST strictly follow this mapping:
+{{
+    "type": "string (e.g. 'Reentrancy')",
+    "severity": "string ('High', 'Medium', or 'Low')",
+    "line_number": integer (if a specific line is culpable, else null),
+    "description": "string (Detailed explanation of why it is vulnerable)",
+    "remediation": "string (Markdown explained fix and code)"
+}}
+
+Source Code:
+{source_code}
+"""
+
     import time as _time
+    gemini_exhausted = not current_keys
+
+    # ── Try Gemini keys ───────────────────────────────────────────────────────
     for i, key in enumerate(current_keys):
         try:
             client = genai.Client(api_key=key)
-            # Try gemini-2.5-flash first, then 2.0 as fallback
             for model in ['gemini-2.5-flash', 'gemini-2.0-flash']:
                 try:
                     response = client.models.generate_content(model=model, contents=prompt)
                     break
-                except Exception as model_err:
-                    model_err_str = str(model_err)
-                    if "503" in model_err_str or "UNAVAILABLE" in model_err_str:
-                        if model == 'gemini-2.5-flash':
-                            continue  # try next model
-                    raise model_err
-
-            text = response.text.strip()
-            
-            if text.startswith("```json"): text = text[7:]
-            if text.startswith("```"): text = text[3:]
-            if text.endswith("```"): text = text[:-3]
-                
-            import json
-            vulns_data = json.loads(text.strip())
-            
-            vulnerabilities = []
-            for v in vulns_data:
-                vulnerabilities.append(Vulnerability(
-                    type=v.get("type", "Unknown Flaw"),
-                    severity=str(v.get("severity", "Medium")),
-                    line_number=v.get("line_number") if isinstance(v.get("line_number"), int) else None,
-                    description=v.get("description", "No description provided."),
-                    remediation=v.get("remediation")
-                ))
-            return vulnerabilities
-            
+                except Exception as me:
+                    if "503" in str(me) or "UNAVAILABLE" in str(me):
+                        if model == 'gemini-2.5-flash': continue
+                    raise me
+            return _parse_vulns(response.text.strip(), Vulnerability)
         except Exception as e:
             err_str = str(e)
-            is_rate_limit = "429" in err_str or "rate" in err_str.lower()
-            is_quota = is_rate_limit and ("quota" in err_str.lower() or "daily" in err_str.lower() or "exhausted" in err_str.lower())
-            
-            if is_rate_limit and not is_quota and i < len(current_keys) - 1:
-                # Per-minute rate limit on this key → wait 5s and try next key
-                _time.sleep(5)
+            is_429 = "429" in err_str
+            is_403 = "403" in err_str or "PERMISSION_DENIED" in err_str or "denied" in err_str.lower()
+            if (is_429 or is_403) and i < len(current_keys) - 1:
+                _time.sleep(3)
                 continue
-            elif is_rate_limit and not is_quota:
-                # Only one key and it's rate-limited → wait and retry once
-                _time.sleep(15)
-                try:
-                    client = genai.Client(api_key=key)
-                    response = client.models.generate_content(model='gemini-2.0-flash', contents=prompt)
-                    text = response.text.strip()
-                    if text.startswith("```json"): text = text[7:]
-                    if text.startswith("```"): text = text[3:]
-                    if text.endswith("```"): text = text[:-3]
-                    vulns_data = json.loads(text.strip())
-                    return [Vulnerability(type=v.get("type","Unknown"), severity=str(v.get("severity","Medium")), line_number=v.get("line_number") if isinstance(v.get("line_number"),int) else None, description=v.get("description",""), remediation=v.get("remediation")) for v in vulns_data]
-                except Exception:
-                    raise HTTPException(status_code=429, detail="Rate limit hit. Please wait 1 minute and try again.")
-            elif is_quota and i < len(current_keys) - 1:
-                continue  # try next key
-            elif is_quota:
-                raise HTTPException(status_code=429, detail="All provided Gemini API keys have exhausted their Free Tier daily quotas!")
+            elif is_429 or is_403:
+                gemini_exhausted = True
+                break
             else:
-                raise HTTPException(status_code=500, detail=f"The advanced AI Scanner encountered a systemic failure: {err_str}")
+                raise HTTPException(status_code=500, detail=f"AI Scanner error: {err_str[:200]}")
+
+    # ── Fallback: Groq (llama-3.3-70b-versatile) 14,400 req/day free ─────────
+    if gemini_exhausted:
+        try:
+            return _scan_with_groq(prompt, Vulnerability)
+        except Exception as ge:
+            groq_err = str(ge)
+            if "401" in groq_err or "api_key" in groq_err.lower():
+                raise HTTPException(status_code=429, detail="All Gemini quotas exhausted. Add GROQ_API_KEY to Railway for unlimited free fallback scans.")
+            raise HTTPException(status_code=429, detail=f"All AI providers exhausted. Gemini 20/day limit reached. Try again tomorrow or add GROQ_API_KEY. ({groq_err[:100]})")
+
+    raise HTTPException(status_code=429, detail="All provided Gemini API keys have exhausted their Free Tier daily quotas!")
 
 import hashlib
 import json
