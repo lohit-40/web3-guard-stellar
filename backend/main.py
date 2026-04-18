@@ -483,9 +483,141 @@ def update_audit_tx_hash(request: Request, payload: UpdateTxRequest):
     set_cached_scan(payload.hash_key, cached)
     return {"message": "Updated successfully"}
 
+# ── Backend-driven Soroban proof (bypasses Freighter completely) ──────────────
+class SubmitProofRequest(BaseModel):
+    caller: str            # User's Stellar public key (for on-chain attribution)
+    audit_hash: str        # 32-char audit hash
+    program_id: str        # Contract address or "source_code_audit"
+    risk_level: str        # HIGH / MEDIUM / LOW
+    vuln_count: int        # Number of vulnerabilities
+    hash_key: Optional[str] = None  # For updating the DB record
+
+@app.post("/submit_soroban_proof")
+@limiter.limit("5/minute")
+def submit_soroban_proof_backend(request: Request, payload: SubmitProofRequest):
+    """
+    Backend calls store_proof on Soroban contract using STELLAR_SECRET_KEY.
+    No Freighter required — works always.
+    Returns the real 64-char Stellar transaction hash.
+    """
+    try:
+        from stellar_sdk import (
+            Keypair as SK, Network, SorobanServer, TransactionBuilder as STB
+        )
+        from stellar_sdk import scval
+        from stellar_sdk.soroban_rpc import SendTransactionStatus
+        import time as _time
+
+        stellar_secret = os.getenv("STELLAR_SECRET_KEY", "")
+        if not stellar_secret:
+            raise HTTPException(status_code=500, detail="STELLAR_SECRET_KEY not configured on Railway")
+
+        SOROBAN_RPC  = "https://soroban-testnet.stellar.org"
+        CONTRACT_ID  = os.getenv("SOROBAN_CONTRACT_ID", "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU")
+        NATIVE_XLM   = "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+
+        keypair = SK.from_secret(stellar_secret)
+        server  = SorobanServer(SOROBAN_RPC)
+        source  = server.load_account(keypair.public_key)
+
+        # Use the user's address if valid, otherwise use backend key
+        try:
+            caller_addr = SK.from_public_key(payload.caller)
+            caller_scval = scval.to_address(payload.caller)
+        except Exception:
+            caller_scval = scval.to_address(keypair.public_key)
+
+        args = [
+            caller_scval,
+            scval.to_address(NATIVE_XLM),
+            scval.to_string(payload.audit_hash[:32]),
+            scval.to_string((payload.program_id or "source_code_audit")[:64]),
+            scval.to_string(payload.risk_level[:10]),
+            scval.to_uint32(max(0, min(payload.vuln_count, 4294967295))),
+        ]
+
+        tx = (
+            STB(
+                source_account=source,
+                network_passphrase=Network.TESTNET_NETWORK_PASSPHRASE,
+                base_fee=5000,
+            )
+            .append_invoke_contract_function_op(
+                contract_id=CONTRACT_ID,
+                function_name="store_proof",
+                parameters=args,
+            )
+            .set_timeout(90)
+            .build()
+        )
+
+        tx = server.prepare_transaction(tx)
+        tx.sign(keypair)
+
+        response = server.send_transaction(tx)
+
+        if response.status == SendTransactionStatus.ERROR:
+            raise HTTPException(status_code=400, detail=f"Soroban error: {response.error_result_xdr}")
+
+        tx_hash = response.hash
+        explorer_url = f"https://stellar.expert/explorer/testnet/tx/{tx_hash}"
+
+        # Update DB if hash_key provided
+        if payload.hash_key:
+            try:
+                cached = get_cached_scan(payload.hash_key)
+                if cached:
+                    cached["audit_tx_hash"] = tx_hash
+                    cached["stellar_explorer_url"] = explorer_url
+                    set_cached_scan(payload.hash_key, cached)
+            except Exception as db_err:
+                print(f"[submit_proof] DB update failed: {db_err}")
+
+        return {
+            "tx_hash": tx_hash,
+            "stellar_explorer_url": explorer_url,
+            "sponsored": True,
+            "message": "Soroban store_proof submitted by Web3 Guard backend."
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Backend Soroban error: {str(e)[:300]}")
+
+
+@app.post("/clean_pending_urls")
+def clean_pending_urls_in_db(request: Request):
+    """One-time cleanup: remove pending_user_signature from all cached scans."""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT hash_key, response_data FROM scan_cache")
+        rows = cursor.fetchall()
+        conn.close()
+        cleaned = 0
+        for row in rows:
+            try:
+                import json as _json
+                hk, data_str = row[0], row[1]
+                data = _json.loads(data_str)
+                url = data.get("stellar_explorer_url", "")
+                if url and "pending_user_signature" in url:
+                    data["stellar_explorer_url"] = None
+                    data["audit_tx_hash"] = None
+                    set_cached_scan(hk, data)
+                    cleaned += 1
+            except Exception:
+                continue
+        return {"cleaned": cleaned, "message": f"Removed pending_user_signature from {cleaned} records"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ── LEVEL 6: Fee Sponsorship — Gasless transactions via Fee Bump ──────────────
 class SponsorTxRequest(BaseModel):
     signed_inner_xdr: str   # Freighter-signed inner transaction XDR
+
 
 @app.post("/sponsor_tx")
 @limiter.limit("10/minute")

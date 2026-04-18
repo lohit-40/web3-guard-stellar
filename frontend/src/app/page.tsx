@@ -343,85 +343,58 @@ export default function App() {
 
       const data: ScanResponse = await res.json();
 
-      // ── Step 2: For Stellar, sign & submit Soroban tx from the FRONTEND ────
-      // This satisfies L2: "Calling contract functions from the frontend"
-      if (chainId === 'stellar' && userAddress) {
-        setScanStep(3); // Show "Finalizing..."
-        toast.loading("⚡ Approve transaction in Freighter (Gas fee is 100% sponsored!)...", { id: "soroban-sign" });
+      // ── Step 2: For Stellar, submit Soroban proof via BACKEND (gasless) ────
+      // Backend signs with STELLAR_SECRET_KEY → no Freighter needed → real tx hash
+      if (chainId === 'stellar') {
+        setScanStep(3);
+        toast.loading("⛓️ Anchoring audit proof on Stellar...", { id: "soroban-sign" });
         try {
-          const auditHash = data.hash_key || `audit_${Date.now()}`;
+          const auditHash = (data.hash_key || `audit_${Date.now()}`).slice(0, 32);
           const programId = address || "source_code_audit";
           const riskLevel = data.vulnerabilities.length === 0 ? "LOW"
             : data.vulnerabilities.some(v => v.severity === "High") ? "HIGH"
             : data.vulnerabilities.some(v => v.severity === "Medium") ? "MEDIUM" : "LOW";
           const vulnCount = data.vulnerabilities.length;
 
-          const txHash = await submitSorobanProof({
-            callerPublicKey: userAddress,
-            auditHash,
-            programId,
-            riskLevel,
-            vulnCount,
+          const proofResp = await fetch(`${API_URL}/submit_soroban_proof`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              caller: userAddress || "GBEG6AVFKGDKAWQHBXRA5MWBIQKSW3GY33UVMYXFAL5TPBHQJXMYVZY",
+              audit_hash: auditHash,
+              program_id: programId,
+              risk_level: riskLevel,
+              vuln_count: vulnCount,
+              hash_key: data.hash_key,
+            }),
           });
 
-          // Validate the hash is a real 64-char hex Stellar tx hash
-          const isRealHash = txHash && /^[a-f0-9]{64}$/i.test(txHash);
-          if (!isRealHash) {
-            console.error("[Soroban] Got invalid tx hash:", txHash);
-            throw new Error(`Invalid transaction hash received: "${txHash}". Transaction may not have submitted.`);
+          if (proofResp.ok) {
+            const proofData = await proofResp.json();
+            const txHash: string = proofData.tx_hash || "";
+            const isRealHash = /^[a-f0-9]{64}$/i.test(txHash);
+            if (isRealHash) {
+              data.audit_tx_hash = txHash;
+              data.stellar_explorer_url = `https://stellar.expert/explorer/testnet/tx/${txHash}`;
+              data.audit_chain = "stellar";
+              data.soroban_contract_id = SOROBAN_CONTRACT_ID;
+              toast.dismiss("soroban-sign");
+              toast.success("✅ Audit proof anchored on Stellar Testnet!", { duration: 5000 });
+            } else {
+              throw new Error(`Invalid hash returned: ${txHash}`);
+            }
+          } else {
+            const errData = await proofResp.json().catch(() => ({}));
+            throw new Error(errData.detail || `Backend proof failed (${proofResp.status})`);
           }
-
-          // Attach the on-chain proof to the result locally
-          data.audit_tx_hash = txHash;
-          data.stellar_explorer_url = `https://stellar.expert/explorer/testnet/tx/${txHash}`;
-          
-          // Update the backend DB with the new tx hash
-          try {
-            await fetch(`${API_URL}/update_audit_tx`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                hash_key: auditHash,
-                audit_tx_hash: txHash,
-                stellar_explorer_url: data.stellar_explorer_url
-              })
-            });
-          } catch (e) {
-            console.error("Failed to update audit tx hash on backend:", e);
-          }
-          data.audit_chain = "stellar";
-          data.stellar_explorer_url = `https://stellar.expert/explorer/testnet/tx/${txHash}`;
-          data.soroban_contract_id = SOROBAN_CONTRACT_ID;
-
-          toast.dismiss("soroban-sign");
-          toast.success("✅ Audit proof anchored on Stellar Testnet!", { duration: 5000 });
         } catch (sorobanErr: any) {
           toast.dismiss("soroban-sign");
-          // Handle user rejection gracefully
-          const msg: string = sorobanErr?.message || "";
-          if (msg.toLowerCase().includes("reject") || msg.toLowerCase().includes("cancel") || msg.toLowerCase().includes("denied")) {
-            toast.error("Transaction rejected. Audit result saved locally.", { duration: 4000 });
-          } else if (msg.toLowerCase().includes("insufficient") || msg.toLowerCase().includes("balance")) {
-            toast.error(
-              (t) => (
-                <span>
-                  Insufficient XLM.{" "}
-                  <button
-                    onClick={() => { toast.dismiss(t.id); handleFundWallet(); }}
-                    style={{ textDecoration: "underline", fontWeight: "bold", cursor: "pointer", background: "none", border: "none", color: "#08B5E5" }}
-                  >
-                    Click to get free testnet XLM →
-                  </button>
-                </span>
-              ),
-              { duration: 8000 }
-            );
-          } else {
-            toast.error("Soroban signing error: " + msg.slice(0, 100), { duration: 5000 });
-          }
-          // Continue without on-chain proof — still show AI report
+          console.error("[Soroban backend]", sorobanErr?.message);
+          toast.error("On-chain anchoring failed. AI report still saved.", { duration: 4000 });
+          // Continue — AI report is still shown
         }
       }
+
 
       setResult(data);
       
