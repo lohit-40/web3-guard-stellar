@@ -521,11 +521,9 @@ def submit_soroban_proof_backend(request: Request, payload: SubmitProofRequest):
         source  = server.load_account(keypair.public_key)
 
         # Use the user's address if valid, otherwise use backend key
-        try:
-            caller_addr = SK.from_public_key(payload.caller)
-            caller_scval = scval.to_address(payload.caller)
-        except Exception:
-            caller_scval = scval.to_address(keypair.public_key)
+        # IMPORTANT: store_proof calls caller.require_auth() — caller MUST be the tx signer.
+        # We use the backend keypair as both caller and signer (same as bulk_interact.py).
+        caller_scval = scval.to_address(keypair.public_key)
 
         args = [
             caller_scval,
@@ -535,6 +533,7 @@ def submit_soroban_proof_backend(request: Request, payload: SubmitProofRequest):
             scval.to_string(payload.risk_level[:10]),
             scval.to_uint32(max(0, min(payload.vuln_count, 4294967295))),
         ]
+
 
         tx = (
             STB(
