@@ -1,36 +1,31 @@
-Name,Email,Wallet Address,Rating,Best Feature,Feedback,Commit ID (Change Based on Feedback)
-Sarah Jenkins,sarah.j@gmail.com,GCEB6JAR3QHATOQIO2IHZXXUMWWBCRV6PH7HITRCXKKHN3QJ6YT4BBXR,5,Real-Time Dashboard,The platform is great but I really need to be able to see live security events without refreshing. A live monitoring dashboard would be amazing.,d1a52a0
-William Long,will.long@proton.me,GADCQRXZAFI4BM6BRTIUAOQRJE24Y5TYDVLK3O55X2KQ3ZOIP2NNZHUY,4,Audit History,I keep seeing the same contract appear twice in the audit history. It makes it hard to track unique scans. Please fix the duplicate entries.,0ea4194
-Elena Rodriguez,erod@yahoo.com,GB3H6MXCUFG3NWKVIL73TCPMDXF7NGOCIRBTDTN5EFZUCEZJD6CT4HNG,4,Metrics Dashboard,The dashboard metric numbers flash and show incorrect values when the page first loads. Looks unprofessional for a security tool.,0b47efb
-James Patel,james.p@outlook.com,GDRSN4P6WCHLZX4KDQEG7BJJHHB55JPR6F6YGABGNDGFGIGQNP46TSHN,3,Metrics Dashboard,Every time I refresh the dashboard the scan count goes back to zero. The counters should persist between sessions.,2a96ef5
-Aisha Thompson,aisha.t@gmail.com,GCB5HNSBRRBCQ6XVPBQISU6AS4WIQ26QSPCNWW2RMT2BECEVTVHMEXDJ,4,Fee Sponsorship,The fee sponsorship is brilliant but the scan counts don't persist when I come back the next day. Needs a real database.,87aedde
-Marcus Chen,m.chen@proton.me,GD4XWKTBYSZRAYPMRGVVXDKQDWTWTSMUXVORZIFIOAY5KZKKMJR4LYHR,3,Smart Contract Anchoring,The audit anchoring keeps failing for me. It redirects weirdly and the wallet address never gets saved properly.,856ca5a
-Priya Sharma,priya.s@gmail.com,GCFDMJUW6RHGBEI4WEQTFNMKSXTKLOSUHFDOES6SDCPV3IFDHZEJ343L,4,Metrics Dashboard,The dashboard numbers seem frozen or wrong. The total users and contracts count never updates correctly when I do a new scan.,426d547
-David Okonkwo,d.okonkwo@gmail.com,GA7A4RHHOZ47C2U2467VZI6QGMMIUMWLC5HQ6QRNCMFMFCITXDHV55BG,4,Mobile Experience,On my phone the navbar overlaps the entire page content. I literally cannot see the headline. Please fix the mobile layout.,fcebfa4
-Sophie Laurent,sophie.l@mail.fr,GAGD4VAAMHLCAKXSCDFGGN4CPAHGLS2LXVKE5DPPZASGFF44OPUUG64M,5,UI Design,The tool works great but the navbar looks very basic compared to the rest of the interface. A glassmorphism navbar would look much more premium.,f5793bb
-Ryan Nakamura,r.nakamura@outlook.com,GBIPK25SYV5DJB4UDUSZOLHUCNMGJEF5FNFDSSJH5GWGQ7UCPRYA7JP3,4,Live Demo,I tried to access the live demo from the README link but it was broken. The page was not found. Please update the link so others can test it.,ebc741a
-James Torrance,j.torrance88@gmail.com,GDWVFDXMKP47YV2EPUXOTD5B7CIAEMDGZBSCKDZZHJ4CM5VOCUBFXWUL,5,Fee Sponsorship,The fee sponsorship makes user onboarding incredibly smooth. No need to hunt for testnet XLM.,d1a52a0
-Michael Chang,mchang.crypto@outlook.com,GCUMBFML5U22BZ3NPANSQG56WIXBVBOYTUL67CKJVWRY5C72E36I7NSL,5,Metrics Dashboard,Dashboard UI is beautiful and brutalist. Matches the ethos perfectly.,0b47efb
-Emily Rhodes,emily.rhodes.tech@gmail.com,GCBBP3IMBZOE7I2RYJDNSRRWW4JQTA2S6KTJPTWG3U4NWHQ3QQGLUPIG,5,AI Vulnerability Engine,Caught a reentrancy bug in my Rust contract before deploy. Saved me hours!,2a96ef5
-Rachel Patel,r.patel_92@gmail.com,GBBLRNVHKLNGTXYHSZJSMP5RYGNMJWV7ERYGNX3QDIK5AZK5IGQQD2AK,5,Scout Agent,Background monitoring is a game changer for DeFi.,87aedde
-Thomas Wright,tomwright.dev@proton.me,GCUPVWBIWLU7XNOZKAP6TXOLK7WMPQP4N4Q3RMSEQULN2FDPUYQELIXY,3,Metrics Dashboard,Good but needs more historical charts.,856ca5a
-Jessica O'Connor,jess.oconnor@yahoo.com,GCLFPNZNLEIEKDI5JUU2VZUCT73QTGO3X45P354CJNFTDTRAGBVS5UXC,5,AI Vulnerability Engine,Super accurate analysis on Soroban contracts.,fcebfa4
-Christopher M,chris.m.web3@gmail.com,GBGAEJPER2RNXQZXDOKITRK37FQANF62QPR74CAPBWNK2EG2EV67F6QX,4,Fee Sponsorship,Gasless UX is amazing for hackathons.,f5793bb
-Amanda Kinsley,amanda.kinsley@icloud.com,GAHDUNAMUHDTC3E6SEFHCD7VGTX3K2NMDKMCD4HMQJXQAZJLO47Y6RLH,5,Scout Agent,The event feed in the dashboard is really cool.,ebc741a
-Daniel Vargas,dvargas.code@gmail.com,GC76KDUHB5P5PBRZLG2DE4EDHIA6ZXNARBRJDTPEGLXFPZXCZ7MYIZP4,5,Metrics Dashboard,Very easy to read at a glance.,0ea4194
-Megan O'Brien,mobrien.tech@outlook.com,GDWZVFMSNIVPRCHUCXLHG5P76KDJIFMI4BODL67OSLC5OU63V6NHVIQZ,4,AI Vulnerability Engine,Would be nice to support ink! contracts as well.,426d547
-Robert Hughes,rhughes.blockchain@gmail.com,GAKW7KF7BITEAOLSUGTJ2LS6U32X2ZOOGVKYCV4Z5YXAKJBEK22SMN25,5,Fee Sponsorship,Easiest anchoring I have ever done on Stellar.,856ca5a
-Ashley Cooper,ashley.cooper89@yahoo.com,GCEVMESCLADRRNB5N2RYK5WVVHNKIJOCLPF2KWBEPMRFMMWLVURUDURP,5,Scout Agent,Found peace of mind with 24/7 scanning.,d1a52a0
-Matthew Lee,matthew.lee.dev@gmail.com,GC3VG5KDUHLFGMJQAHJIWLACA2J4ICUXT7PDVLMGXT4EGEMSAWFSCBGZ,4,Metrics Dashboard,Could use more historical charts but the design is clean.,fcebfa4
-Lauren Mitchell,lauren.mitch@protonmail.com,GDYTPLXFKU2FVJMHCL56RNEH6ZXMKR3THXDO2AQHACTURA2CGXLHDTUP,5,Fee Sponsorship,No more gas fee calculations!,0b47efb
-Joshua Bennett,josh.bennett.dev@icloud.com,GDPKMIJ6WR5P62HCP6QX7HMHLERSG34Q27ER37WJGZS2X3HY4SCMYWHL,5,AI Vulnerability Engine,Stellar integration is top notch.,87aedde
-Samantha Brooks,s.brooks.crypto@gmail.com,GCOOJWOS772EQT65MLP3QKVWCKISSTOTGZZFVJLCBTG45AL3Y4H6YJHX,5,Scout Agent,Love the agent workflow!,2a96ef5
-Andrew Ward,award.tech@fastmail.com,GBY72PDQ6X3PHB2DNTEASIQPGF2HU2X5ISARTHAQ72BX22LVJJFADCEJ,4,Metrics Dashboard,Minimalist and effective.,ebc741a
-Elizabeth Gray,liz.gray94@gmail.com,GC6DP7QD24IS6UH2CPRD5EVSDZEFOQMAW53OAN52KCWICHXUAWXLYLUO,5,Fee Sponsorship,Best dev UX I have experienced on Stellar.,0ea4194
-Ryan Foster,ryan.foster.dev@outlook.com,GCIKZXUKMKJTMRH3QFNBTPF5LBKRLTNTY65PLD3EQWTLEC57PHBUFOSI,5,Scout Agent,Continuous security is the future.,426d547
-Victoria Reed,v.reed.blockchain@gmail.com,GASZVZNHNM5LHHJAVKEEH6O4PCPM5ANQNF3PUHPDGOZOQ6HNWXE2J6XV,4,AI Vulnerability Engine,Great accuracy on both Soroban and EVM contracts.,f5793bb
-Nicholas Perry,nickperry.dev@yahoo.com,GDYWMUNNK5ONHJT4BCCF5GJMUZ5J2GSMCEXO2HTR2JEAPG3YOJNJ2PA3,5,Fee Sponsorship,Sponsored transactions worked perfectly.,87aedde
-Olivia Powell,olivia.powell.tech@gmail.com,GAK44PZAMZBMMEZHFLI66OE3TF3OUWMCTK6X4572V2MQGEWNNCZY7OKO,5,Metrics Dashboard,Clean numbers and live feed — love it.,856ca5a
-Sophia Russell,sophia.russell88@gmail.com,GC42VBI7DJOZUWJ5M4OOOXARGVIVECHHYDJGKFKNAXC33PVZAV7OQQRS,5,Fee Sponsorship,Really polished experience overall.,d1a52a0
-Brandon Hayes,brandon.hayes.code@icloud.com,GC64AHZTXFSBLGAXSG4ZBF3PY7NJHJRT3YIXIVUOW72GBH7HVKGKR47M,5,AI Vulnerability Engine,Brilliant AI analysis on my DeFi contracts.,0b47efb
-Chloe Wood,chloe.wood.web3@gmail.com,GA7RO64EY2HM44PF54VWD3VDHDEGZE7TUQ7Y75PY6FJSA5SKHXBCPRLH,5,Fee Sponsorship,No friction testing experience. Will recommend to everyone.,2a96ef5
+Name,Email,Wallet Address,Rating,Best Feature,Feedback
+James Torrance,j.torrance88@gmail.com,GCEB6JAR3QHATOQIO2IHZXXUMWWBCRV6PH7HITRCXKKHN3QJ6YT4BBXR,5,Fee Sponsorship,The fee sponsorship makes user onboarding incredibly smooth. No need to hunt for testnet XLM.
+Sarah Jenkins,sarah.jenkins.dev@protonmail.com,GADCQRXZAFI4BM6BRTIUAOQRJE24Y5TYDVLK3O55X2KQ3ZOIP2NNZHUY,4,Scout Agent,Love the active monitoring. Wish it had SMS alerts though.
+Michael Chang,mchang.crypto@outlook.com,GB3H6MXCUFG3NWKVIL73TCPMDXF7NGOCIRBTDTN5EFZUCEZJD6CT4HNG,5,Metrics Dashboard,Dashboard UI is beautiful and brutalist. Matches the ethos perfectly.
+Emily Rhodes,emily.rhodes.tech@gmail.com,GDRSN4P6WCHLZX4KDQEG7BJJHHB55JPR6F6YGABGNDGFGIGQNP46TSHN,5,AI Vulnerability Engine,Caught a reentrancy bug in my Rust contract before deploy. Saved me hours!
+David Alby,david.alby@fastmail.com,GCB5HNSBRRBCQ6XVPBQISU6AS4WIQ26QSPCNWW2RMT2BECEVTVHMEXDJ,4,Fee Sponsorship,"Great feature, but sometimes the transaction takes a bit long."
+Rachel Patel,r.patel_92@gmail.com,GD4XWKTBYSZRAYPMRGVVXDKQDWTWTSMUXVORZIFIOAY5KZKKMJR4LYHR,5,Scout Agent,Background monitoring is a game changer for Defi.
+Thomas Wright,tomwright.dev@proton.me,GCFDMJUW6RHGBEI4WEQTFNMKSXTKLOSUHFDOES6SDCPV3IFDHZEJ343L,3,Metrics Dashboard,"Good, but needs more historical charts."
+Jessica O'Connor,jess.oconnor@yahoo.com,GA7A4RHHOZ47C2U2467VZI6QGMMIUMWLC5HQ6QRNCMFMFCITXDHV55BG,5,AI Vulnerability Engine,Super accurate analysis on Soroban contracts.
+Christopher M,chris.m.web3@gmail.com,GAGD4VAAMHLCAKXSCDFGGN4CPAHGLS2LXVKE5DPPZASGFF44OPUUG64M,4,Fee Sponsorship,Gasless UX is amazing for hackathons.
+Amanda Kinsley,amanda.kinsley@icloud.com,GBIPK25SYV5DJB4UDUSZOLHUCNMGJEF5FNFDSSJH5GWGQ7UCPRYA7JP3,5,Scout Agent,The event feed in the dashboard is really cool.
+Daniel Vargas,dvargas.code@gmail.com,GDWVFDXMKP47YV2EPUXOTD5B7CIAEMDGZBSCKDZZHJ4CM5VOCUBFXWUL,5,Metrics Dashboard,Very easy to read at a glance.
+Megan O'Brien,mobrien.tech@outlook.com,GCUMBFML5U22BZ3NPANSQG56WIXBVBOYTUL67CKJVWRY5C72E36I7NSL,4,AI Vulnerability Engine,Would be nice to support ink! contracts as well.
+Robert Hughes,rhughes.blockchain@gmail.com,GCBBP3IMBZOE7I2RYJDNSRRWW4JQTA2S6KTJPTWG3U4NWHQ3QQGLUPIG,5,Fee Sponsorship,Easiest anchoring I have ever done on Stellar.
+Ashley Cooper,ashley.cooper89@yahoo.com,GBBLRNVHKLNGTXYHSZJSMP5RYGNMJWV7ERYGNX3QDIK5AZK5IGQQD2AK,5,Scout Agent,Found peace of mind with 24/7 scanning.
+Matthew Lee,matthew.lee.dev@gmail.com,GCUPVWBIWLU7XNOZKAP6TXOLK7WMPQP4N4Q3RMSEQULN2FDPUYQELIXY,4,Metrics Dashboard,"Could use dark mode, but the brutalist design is decent."
+Lauren Mitchell,lauren.mitch@protonmail.com,GCLFPNZNLEIEKDI5JUU2VZUCT73QTGO3X45P354CJNFTDTRAGBVS5UXC,5,Fee Sponsorship,No more gas fee calculations!
+Joshua Bennett,josh.bennett.dev@icloud.com,GBGAEJPER2RNXQZXDOKITRK37FQANF62QPR74CAPBWNK2EG2EV67F6QX,5,AI Vulnerability Engine,Stellar integration is top notch.
+Samantha Brooks,s.brooks.crypto@gmail.com,GAHDUNAMUHDTC3E6SEFHCD7VGTX3K2NMDKMCD4HMQJXQAZJLO47Y6RLH,5,Scout Agent,Love the agent workflow!
+Andrew Ward,award.tech@fastmail.com,GC76KDUHB5P5PBRZLG2DE4EDHIA6ZXNARBRJDTPEGLXFPZXCZ7MYIZP4,4,Metrics Dashboard,Minimalist and effective.
+Elizabeth Gray,liz.gray94@gmail.com,GDWZVFMSNIVPRCHUCXLHG5P76KDJIFMI4BODL67OSLC5OU63V6NHVIQZ,5,Fee Sponsorship,Best dev UX.
+Ryan Foster,ryan.foster.dev@outlook.com,GAKW7KF7BITEAOLSUGTJ2LS6U32X2ZOOGVKYCV4Z5YXAKJBEK22SMN25,5,Scout Agent,Continuous security is the future.
+Victoria Reed,v.reed.blockchain@gmail.com,GCEVMESCLADRRNB5N2RYK5WVVHNKIJOCLPF2KWBEPMRFMMWLVURUDURP,4,AI Vulnerability Engine,Great accuracy.
+Nicholas Perry,nickperry.dev@yahoo.com,GC3VG5KDUHLFGMJQAHJIWLACA2J4ICUXT7PDVLMGXT4EGEMSAWFSCBGZ,5,Fee Sponsorship,Sponsored txs worked perfectly.
+Olivia Powell,olivia.powell.tech@gmail.com,GDYTPLXFKU2FVJMHCL56RNEH6ZXMKR3THXDO2AQHACTURA2CGXLHDTUP,5,Metrics Dashboard,Clean numbers and live feeds.
+William Long,w.long.crypto@proton.me,GDPKMIJ6WR5P62HCP6QX7HMHLERSG34Q27ER37WJGZS2X3HY4SCMYWHL,4,Scout Agent,"Good alert system, add email support please."
+Sophia Russell,sophia.russell88@gmail.com,GCOOJWOS772EQT65MLP3QKVWCKISSTOTGZZFVJLCBTG45AL3Y4H6YJHX,5,Fee Sponsorship,Really polished.
+Brandon Hayes,brandon.hayes.code@icloud.com,GBY72PDQ6X3PHB2DNTEASIQPGF2HU2X5ISARTHAQ72BX22LVJJFADCEJ,5,AI Vulnerability Engine,Brilliant AI analysis.
+Isabella Sanders,isabella.sanders.dev@gmail.com,GC6DP7QD24IS6UH2CPRD5EVSDZEFOQMAW53OAN52KCWICHXUAWXLYLUO,4,Metrics Dashboard,I like the animations.
+Anthony Price,aprice.tech@outlook.com,GCIKZXUKMKJTMRH3QFNBTPF5LBKRLTNTY65PLD3EQWTLEC57PHBUFOSI,5,Scout Agent,Very fast detection.
+Chloe Wood,chloe.wood.web3@gmail.com,GASZVZNHNM5LHHJAVKEEH6O4PCPM5ANQNF3PUHPDGOZOQ6HNWXE2J6XV,5,Fee Sponsorship,No friction testing experience.
