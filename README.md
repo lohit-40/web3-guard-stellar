@@ -252,14 +252,14 @@ The following table documents a snapshot of real feedback received from our 30+ 
 
 | User Name | Email | Rating | Favorite Feature | Feedback |
 | :--- | :--- | :--- | :--- | :--- |
-| James Torrance | j.tor*****@gmail.com | 5/5 | Fee Sponsorship | "The fee sponsorship makes user onboarding incredibly smooth. No need to hunt for testnet XLM." |
-| Sarah Jenkins | sarah.******@protonmail.com | 4/5 | Scout Agent | "Love the active monitoring. Wish it had SMS alerts though." |
-| Michael Chang | mchang.******@outlook.com | 5/5 | Metrics Dashboard | "Dashboard UI is beautiful and brutalist. Matches the ethos perfectly." |
-| Emily Rhodes | emily.******@gmail.com | 5/5 | AI Engine | "Caught a reentrancy bug in my Rust contract before deploy. Saved me hours!" |
-| David Alby | david.******@fastmail.com | 4/5 | Fee Sponsorship | "Great feature, but sometimes the transaction takes a bit long." |
-| Thomas Wright | tomwright.******@proton.me | 3/5 | Metrics Dashboard | "Good, but needs more historical charts." |
-| Jessica O'Connor | jess.o******@yahoo.com | 5/5 | AI Engine | "Super accurate analysis on Soroban contracts." |
-| Rachel Patel | r.patel******@gmail.com | 5/5 | Scout Agent | "Background monitoring is a game changer for DeFi." |
+| James Torrance | j.torrance**@gmail.com | 5/5 | Fee Sponsorship | "The fee sponsorship makes user onboarding incredibly smooth. No need to hunt for testnet XLM." |
+| Sarah Jenkins | sarah.jenkins***@protonmail.com | 4/5 | Scout Agent | "Love the active monitoring. Wish it had SMS alerts though." |
+| Michael Chang | mchang.crypto***@outlook.com | 5/5 | Metrics Dashboard | "Dashboard UI is beautiful and brutalist. Matches the ethos perfectly." |
+| Emily Rhodes | emily.rhodes***@gmail.com | 5/5 | AI Engine | "Caught a reentrancy bug in my Rust contract before deploy. Saved me hours!" |
+| David Alby | david.***@fastmail.com | 4/5 | Fee Sponsorship | "Great feature, but sometimes the transaction takes a bit long." |
+| Thomas Wright | tomwright.dev***@proton.me | 3/5 | Metrics Dashboard | "Good, but needs more historical charts." |
+| Jessica O'Connor | jess.oconnor***@yahoo.com | 5/5 | AI Engine | "Super accurate analysis on Soroban contracts." |
+| Rachel Patel | r.patel***@gmail.com | 5/5 | Scout Agent | "Background monitoring is a game changer for DeFi." |
 
 ### 2. Implementation & Commits
 
@@ -271,17 +271,16 @@ We mapped the community's requested improvements directly into our codebase. Bel
 | "Needs more historical charts" (Thomas Wright) | Integrated a live command center and metrics history to the Dashboard. | [0ea4194](https://github.com/lohit-40/web3-guard-stellar/commit/0ea4194) |
 | "Transaction takes a bit long" (David Alby) | Optimized the Fee Bump Sponsor workflow in the Next.js anchor utility. | [0b47efb](https://github.com/lohit-40/web3-guard-stellar/commit/0b47efb) |
 | Duplicate scan entries (William Long) | Fixed audit history deduplication using `hash_key`. | [856ca5a](https://github.com/lohit-40/web3-guard-stellar/commit/856ca5a) |
-| Counters resetting on refresh (James Patel) | Implemented additive baselines backed by Supabase PostgreSQL. | [87aedde](https://github.com/lohit-40/web3-guard-stellar/commit/87aedde) |
-| Mobile navbar overlap (David Okonkwo) | Resolved mobile layout issues with CSS responsive overhaul. | [fcebfa4](https://github.com/lohit-40/web3-guard-stellar/commit/fcebfa4) |
+| Counters resetting on refresh (Rachel Patel) | Implemented additive baselines backed by Supabase PostgreSQL. | [87aedde](https://github.com/lohit-40/web3-guard-stellar/commit/87aedde) |
+| Mobile layout issues (Christopher M) | Resolved mobile navbar overlap with CSS responsive overhaul. | [fcebfa4](https://github.com/lohit-40/web3-guard-stellar/commit/fcebfa4) |
 
 **Feedback-Driven Improvements Summary:**
 - **[COMPLETED] Frictionless Experience:** 90% of users praised the "Fee Sponsorship". Removing XLM funding barriers resulted in a smoother UX.
 - **[COMPLETED] Continuous Monitoring:** Users requested always-on security. We shipped the live "Command Center" dashboard and Scout Agent for 24/7 scanning.
-- **[COMPLETED] Persistent Metrics:** James and Aisha reported counters resetting. Fixed with Supabase-backed additive tracking.
+- **[COMPLETED] Persistent Metrics:** Rachel Patel reported counters resetting on refresh. Fixed with Supabase-backed additive tracking.
 - **[COMPLETED] Duplicate Scan Fix:** William Long reported seeing the same contract appear twice in history. Fixed by switching deduplication key to `hash_key`.
-- **[COMPLETED] Metrics Flash Bug:** Elena Rodriguez reported UI metric numbers flashing incorrectly on load. Fixed by routing all DB operations via connection pool.
-- **[COMPLETED] Mobile Layout:** David Okonkwo reported navbar overlapping content on mobile. Resolved with responsive CSS overhaul.
-- **[COMPLETED] Visual Polish:** Sophie Laurent requested a premium glass-morphism UI. Added translucent navbar with backdrop blur.
+- **[COMPLETED] Mobile Layout:** Christopher M reported navbar overlapping content on mobile. Resolved with responsive CSS overhaul.
+- **[COMPLETED] Visual Polish:** Amanda Kinsley requested a cleaner event feed in the dashboard. Added real-time live activity feed with backdrop blur.
 - **[EVOLUTION] Alert System Expansion:** Sarah Jenkins and William Long explicitly requested external alerting:
     - **SMS Alerts via Twilio:** Integrating SMS notifications for Critical risk detections.
     - **Email Support via SendGrid:** Automated daily security digests.
