@@ -244,7 +244,7 @@ To fulfill the Blue Belt challenge requirement, we actively collected user feedb
 
 * 📝 **User Feedback Collection Form:** [View Google Form](https://docs.google.com/forms/d/e/1FAIpQLSc4R84dVvHSC03OqYBKb1kH23cAfvU-9ZE-v3DRgjlZAweo8g/viewform?usp=sharing&ouid=100953453020666012701)
 * 📊 **Public Form Responses (Spreadsheet):** [View Live Google Sheet](https://docs.google.com/spreadsheets/d/10ECOahfGhaM2EwqARDt-HKaBUFu8FvE_ueOYOEjQ0Dc/edit?usp=sharing)
-* 📁 **Raw Data Backup:** [`docs/beta_tester_feedback.csv`](./docs/beta_tester_feedback.csv)
+
 
 ### 1. Collected User Feedback
 
