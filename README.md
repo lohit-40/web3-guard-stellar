@@ -261,7 +261,6 @@ The following table documents a snapshot of real feedback received from our 30+ 
 | Soumya Swagatika | soumyaswagatika24@gmail.com | On-Chain Proof |
 | Bibhudatta Dash | dashb2007@gmail.com | Multi-Chain Support |
 
-
 ### 2. Implementation & Commits
 
 We mapped the community's requested improvements directly into our codebase. Below are key development commits addressing user pain points:
