@@ -250,16 +250,16 @@ To fulfill the Blue Belt challenge requirement, we actively collected user feedb
 
 The following table documents a snapshot of real feedback received from our 30+ beta testers:
 
-| User Name | Email | Rating | Favorite Feature | Feedback |
-| :--- | :--- | :--- | :--- | :--- |
-| Riya Malik | riya.malik***@gmail.com | 5/5 | Multi-Chain Support | "The multi-chain support is really comprehensive. Very impressed with the overall build." |
-| Sourav Jena | souravjena***@gmail.com | 5/5 | Multi-Chain Support | "Excellent tool for Web3 security. The Stellar integration is seamless." |
-| Simran Mahakhud | simranmahakhud***@gmail.com | 4/5 | AI Scan | "The AI scan is accurate and fast. Very useful for catching smart contract bugs." |
-| Prem Prasad Sahoo | premprasad***@gmail.com | 5/5 | Sharable Audit Link | "Love the sharable link feature. Makes it easy to share results with my team." |
-| Banani Satapathy | 230714100***@cutm.ac.in | 3/5 | AI Scan | "Good tool overall. The AI scan could be more detailed on low severity issues." |
-| Sitan Singh | enjoyingl***@gmail.com | 4/5 | Multi-Chain Support | "Multi-chain support is the standout feature. Would love faster scan times." |
-| Soumya Swagatika | soumyaswagatika***@gmail.com | 4/5 | On-Chain Proof | "On-chain proof anchoring is a great feature for trust and transparency." |
-| Bibhudatta Dash | dashb***@gmail.com | 4/5 | Multi-Chain Support | "Solid product. The multi-chain support works well across different environments." |
+| User Name | Email  | Favorite Feature | Feedback |
+| :--- | :--- | :--- |  :--- |
+| Riya Malik | riya.malik.6465@gamil.com | Multi-Chain Support | "The multi-chain support is really comprehensive. Very impressed with the overall build." |
+| Sourav Jena | souravjena890@gmail.com | Multi-Chain Support | "Excellent tool for Web3 security. The Stellar integration is seamless." |
+| Simran Mahakhud | simranmahakhud2@gmail.com| AI Scan | "The AI scan is accurate and fast. Very useful for catching smart contract bugs." |
+| Prem Prasad Sahoo | premprasadsahoo20@gmail.com| Sharable Audit Link | "Love the sharable link feature. Makes it easy to share results with my team." |
+| Banani Satapathy | 230714100058@centurionuniv.edu.in | AI Scan | "Good tool overall. The AI scan could be more detailed on low severity issues." |
+| Sitan Singh | Enjoyingl02@gmail.com | Multi-Chain Support | "Multi-chain support is the standout feature. Would love faster scan times." |
+| Soumya Swagatika | soumyaswagatika24@gmail.com | On-Chain Proof | "On-chain proof anchoring is a great feature for trust and transparency." |
+| Bibhudatta Dash | dashb2007@gmail.com | Multi-Chain Support | "Solid product. The multi-chain support works well across different environments." |
 
 ### 2. Implementation & Commits
 
