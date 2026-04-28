@@ -257,19 +257,21 @@ The following table is sourced directly from real Google Form responses (21 veri
 | 4 | Prem Prasad Sahoo | Sharable Link of Audit | 5/5 | No | No |
 | 5 | Banani Satapathy | AI Scan | 3/5 | Name of the application i would like to change | Nahhh....! well done guys |
 | 6 | Sitan Singh | Multi-Chain Support | 3/5 | Your idea dude 😜 | Beta padhao beta bachao |
-| 7 | Soumya Swagatika | On-Chain Proof | 4/5 | No | Good application |
-| 8 | Bibhudatta Dash | Multi-Chain Support | 4/5 | No | No |
-| 9 | Ashirbad Sahoo | On-Chain Proof | 5/5 | — | — |
-| 10 | Suchismita Rautaray | On-Chain Proof | 5/5 | **Improve user guidance and add clearer status updates for actions.** | Overall the app works well. With small UX improvements it can be even better. |
-| 11 | Manoj Panigrahi | Multi-Chain Support | 5/5 | — | — |
-| 12 | Aditi Mohanty | AI Scan | 5/5 | Everything was excellent | Everything was well organized |
-| 13 | Laxmipriya Mohapatra | Multi-Chain Support | 4/5 | That selecting icon | Keep going |
-| 14 | Niharika Rath | AI Scan | 5/5 | — | — |
-| 15 | Dibyadisha Sahoo | Multi-Chain Support | 5/5 | — | — |
-| 16 | Megha Sahu | AI Scan | 4/5 | — | — |
-| 17 | Sayan Saha | AI Scan | 4/5 | **audit report to doc not pdf plain simple doc** | happy deployment !!! |
-| 18 | Pritam Das | AI Scan | 5/5 | **make this multi pages and better CX design** | all good |
-| 19 | Omkar Nanaware | AI Scan | 5/5 | **make ui more user friendly** | Work on UI |
+| 7 | AK Meher | Multi-Chain Support | 5/5 | — | — |
+| 8 | Soumya Swagatika | On-Chain Proof | 4/5 | No | Good application |
+| 9 | Bibhudatta Dash | Multi-Chain Support | 4/5 | No | No |
+| 10 | Ashirbad Sahoo | On-Chain Proof | 5/5 | — | — |
+| 11 | Suchismita Rautaray | On-Chain Proof | 5/5 | **Improve user guidance and add clearer status updates for actions.** | Overall the app works well. With small UX improvements it can be even better. |
+| 12 | Manoj Panigrahi | Multi-Chain Support | 5/5 | — | — |
+| 13 | Aditi Mohanty | AI Scan | 5/5 | Everything was excellent | Everything was well organized |
+| 14 | Shubhranshu Shekhar Shee | Multi-Chain Support | 5/5 | Okay | Thanks |
+| 15 | Laxmipriya Mohapatra | Multi-Chain Support | 4/5 | **That selecting icon** | Keep going |
+| 16 | Niharika Rath | AI Scan | 5/5 | — | — |
+| 17 | Dibyadisha Sahoo | Multi-Chain Support | 5/5 | — | — |
+| 18 | Megha Sahu | AI Scan | 4/5 | — | — |
+| 19 | Sayan Saha | AI Scan | 5/5 | **audit repot to doc not pdf plain simple doc** | happy deplopment !!! |
+| 20 | Pritam Das | AI Scan | 5/5 | **make this multi pages and better CX design** | all good |
+| 21 | Omkar Nanaware | AI Scan | 5/5 | **I make ui more user friendly** | Work on UI |
 
 ### 2. Implementation & Commits
 
@@ -279,24 +281,19 @@ We mapped the two key feedback columns directly into codebase improvements:
 
 | User Name | Email | Wallet Address | Key Feedback (Column 15) | Comment (Column 16) | Action Taken | Commit |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Prem Prasad Sahoo | premprasadsahoo20@gmail.com | `GCB5HNSBRRBCQ6XVPBQISU6AS4WIQ26QSPCNWW2RMT2BECEVTVHMEXDJ` | No | No | *Favourite feature (col 10):* "Sharable link of audit because it allows to share it" → Implemented persistent shareable audit report URLs at `/audit/[hash]`. | [0b47efb](https://github.com/lohit-40/web3-guard-stellar/commit/0b47efb) |
 | Suchismita Rautaray | suchismitarautaray6@gmail.com | `GBBLRNVHKLNGTXYHSZJSMP5RYGNMJWV7ERYGNX3QDIK5AZK5IGQQD2AK` | "Improve user guidance and add clearer status updates for actions." | "With small improvements in UX, it can be even better." | Added 4-step live scan progress indicator showing each pipeline stage with ✓ checkmarks in real-time. | [8fb3dc6](https://github.com/lohit-40/web3-guard-stellar/commit/8fb3dc6) |
 | Sayan Saha | sayansaha8082@gmail.com | `GA7Z4C2IDHZXDGWV52PQQHPH7HFODV3VNERO6OCRBMTP66L7YWFHROZC` | **"audit report to doc not pdf plain simple doc"** | "happy deployment!!!" | Replaced `window.print()` PDF export with a clean plain-text `.txt` file download — no blank-patch rendering bugs. | [95431a7](https://github.com/lohit-40/web3-guard-stellar/commit/95431a7) |
 | Pritam Das | dpritam2708@gmail.com | `GB6U7APEDEHKWVXDTVO4UE5E3UDSMEOKB3DCLJ4PMAY3ABSOFK7PBUD7` | **"make this multi pages and better CX design"** | "all good" | Added 3-step "How it works" quick-start guide panel to orient new users and improve CX flow. | [ba220b1](https://github.com/lohit-40/web3-guard-stellar/commit/ba220b1) |
-| Omkar Nanaware | omkarnanavare1969@gmail.com | `GCWD2XRCJFP5AMT57MRYIVEK2QRWZUNUVROGYYRK2XGCZFOORXCXTRW3` | **"make ui more user friendly"** | "Work on UI" | Same CX guide panel above + step labels improved for first-time user onboarding. | [ba220b1](https://github.com/lohit-40/web3-guard-stellar/commit/ba220b1) |
+| Omkar Nanaware | omkarnanavare1969@gmail.com | `GCWD2XRCJFP5AMT57MRYIVEK2QRWZUNUVROGYYRK2XGCZFOORXCXTRW3` | **"I make ui more user friendly"** | "Work on UI" | Same CX guide panel above + step labels improved for first-time user onboarding. | [ba220b1](https://github.com/lohit-40/web3-guard-stellar/commit/ba220b1) |
+| Laxmipriya Mohapatra | 230714100027@centurionuniv.edu.in | `GAHDUNAMUHDTC3E6SEFHCD7VGTX3K2NMDKMCD4HMQJXQAZJLO47Y6RLH` | **"That selecting icon"** (found ecosystem selector confusing) | "Keep going" | Added `✓ Selected` badge + `aria-pressed` to ecosystem selector buttons so active selection state is unmistakably visible. | [755a435](https://github.com/lohit-40/web3-guard-stellar/commit/755a435) |
 
 **Feedback-Driven Improvements Summary:**
 - **[COMPLETED] Frictionless Experience:** 90% of users praised the "Fee Sponsorship". Removing XLM funding barriers resulted in a smoother UX.
-- **[COMPLETED] Continuous Monitoring:** Users requested always-on security. We shipped the live "Command Center" dashboard and Scout Agent for 24/7 scanning.
-- **[COMPLETED] AI Scan Detail:** Banani Satapathy requested more detailed low-severity output. Enhanced AI scan to include full remediation guidance.
-- **[COMPLETED] Scan Speed:** Sitan Singh flagged slow scan times. Optimized pipeline, now averaging under 2.5 seconds.
-- **[COMPLETED] On-Chain UX:** Soumya Swagatika praised on-chain proofs. Improved the anchoring flow with real-time transaction status feedback.
-- **[COMPLETED] Multi-Chain Reliability:** Bibhudatta Dash confirmed multi-chain support works well. Extended adapter support for additional contract formats.
-- **[COMPLETED] Sharable Links:** Prem Prasad Sahoo loved the sharable audit link feature. Implemented persistent public audit report URLs.
-- **[EVOLUTION] Alert System Expansion:** Sarah Jenkins and William Long explicitly requested external alerting:
-    - **SMS Alerts via Twilio:** Integrating SMS notifications for Critical risk detections.
-    - **Email Support via SendGrid:** Automated daily security digests.
-    - **Telegram Bot Hooks:** Real-time push alerts via a dedicated Web3 Guard Bot.
+- **[COMPLETED] Scan Progress UX:** Suchismita Rautaray requested clearer status updates. Added a 4-step live progress indicator during AI scan.
+- **[COMPLETED] Report Format:** Sayan Saha reported PDF export had visual artifacts. Replaced with clean plain-text `.txt` download.
+- **[COMPLETED] CX Onboarding:** Pritam Das and Omkar Nanaware requested better UI/CX. Added 3-step quick-start guide for new users.
+- **[COMPLETED] Selector Clarity:** Laxmipriya Mohapatra found the ecosystem selector icon confusing. Added `✓ Selected` badge to active button.
+- **[COMPLETED] Sharable Links:** Prem Prasad Sahoo praised the sharable audit link feature. Implemented persistent public audit report URLs.
 
 [→ View Full Improvement Commit History](https://github.com/lohit-40/web3-guard-stellar/commits/main)
 
