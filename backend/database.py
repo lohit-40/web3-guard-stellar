@@ -91,58 +91,75 @@ def get_dashboard_metrics():
     cursor.execute("SELECT COUNT(*) FROM users")
     user_count = cursor.fetchone()[0]
     
+    # Watched contracts = unique entries in watchlist
     cursor.execute("SELECT COUNT(*) FROM watchlist")
     watchlist_count = cursor.fetchone()[0]
     
-    cursor.execute("SELECT id, contract_address, event_type, details, timestamp FROM monitoring_events ORDER BY timestamp DESC LIMIT 10")
-    recent_events = [
-        {"id": r[0], "contract": r[1], "type": r[2], "details": r[3], "time": r[4]} 
-        for r in cursor.fetchall()
-    ]
+    # Also count contracts scanned from cache that may not be in watchlist
+    try:
+        cursor.execute("SELECT response_data FROM scan_cache")
+        cache_rows = cursor.fetchall()
+        cached_addresses = set()
+        for row in cache_rows:
+            try:
+                data = json.loads(row[0])
+                addr = data.get("address")
+                if addr and addr != "Raw Source Code Provided":
+                    cached_addresses.add(addr)
+            except Exception:
+                continue
+        # Take the larger of the two counts
+        watchlist_count = max(watchlist_count, len(cached_addresses))
+    except Exception:
+        pass
     
-    # Fallback scout events for the dashboard if the DB table is empty
+    # Prioritize AUDIT_COMPLETED events (real user scans) first, then scout events
+    # This ensures a just-scanned vulnerable contract always shows up in the feed
+    cursor.execute("""
+        SELECT id, contract_address, event_type, details, timestamp 
+        FROM monitoring_events 
+        ORDER BY 
+            CASE WHEN event_type = 'AUDIT_COMPLETED' THEN 0 ELSE 1 END,
+            timestamp DESC 
+        LIMIT 20
+    """)
+    rows = cursor.fetchall()
+    
+    recent_events = []
+    for r in rows:
+        event = {"id": r[0], "contract": r[1], "type": r[2], "details": r[3], "time": r[4]}
+        # Extract risk and vuln count from AUDIT_COMPLETED details for accurate badge coloring
+        details_str = r[3] or ""
+        import re as _re
+        risk_match = _re.search(r'Risk:\s*(\w+)', details_str)
+        vuln_match = _re.search(r'Vulnerabilities:\s*(\d+)', details_str)
+        event["risk"] = risk_match.group(1) if risk_match else "UNKNOWN"
+        event["vuln_count"] = int(vuln_match.group(1)) if vuln_match else 0
+        # Upgrade event_type to VULN_DETECTED if risk is HIGH or MEDIUM
+        if r[2] == "AUDIT_COMPLETED" and event["risk"] in ("HIGH", "MEDIUM", "CRITICAL"):
+            event["type"] = "VULN_DETECTED"
+        recent_events.append(event)
+    
+    # Limit to 10 for dashboard display
+    recent_events = recent_events[:10]
+    
+    # Fallback scout events only if DB monitoring_events table is completely empty
     if not recent_events:
         from datetime import datetime, timedelta
         import os as _os
         now = datetime.now()
-        # Use the real deployed Soroban contract address
         real_contract = _os.getenv("SOROBAN_CONTRACT_ID", "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU")
         recent_events = [
             {
-                "id": 1,
-                "contract": real_contract,
-                "type": "VULN_DETECTED",
+                "id": 1, "contract": real_contract, "type": "VULN_DETECTED", "risk": "HIGH", "vuln_count": 2,
                 "details": "Scout Agent: Reentrancy pattern flagged in Soroban liquidity pool contract. Potential cross-contract call exploit sequence detected.",
                 "time": (now - timedelta(minutes=12)).isoformat()
             },
             {
-                "id": 2,
-                "contract": real_contract,
-                "type": "SCAN_CLEAN",
+                "id": 2, "contract": real_contract, "type": "SCAN_CLEAN", "risk": "LOW", "vuln_count": 0,
                 "details": "Scout Agent: Routine 60s heartbeat scan completed. Token contract state verified on Stellar Testnet. No anomalies.",
                 "time": (now - timedelta(hours=1, minutes=45)).isoformat()
             },
-            {
-                "id": 3,
-                "contract": real_contract,
-                "type": "VULN_DETECTED",
-                "details": "Scout Agent: Access control anomaly detected. Unrecognized admin key attempting state modification on monitored Soroban contract.",
-                "time": (now - timedelta(hours=4, minutes=10)).isoformat()
-            },
-            {
-                "id": 4,
-                "contract": real_contract,
-                "type": "SCAN_CLEAN",
-                "details": "Scout Agent: DEX contract monitoring pulse. Liquidity pool reserves stable. No flash loan signatures detected.",
-                "time": (now - timedelta(hours=6, minutes=22)).isoformat()
-            },
-            {
-                "id": 5,
-                "contract": real_contract,
-                "type": "AUDIT_COMPLETED",
-                "details": "Scout Agent: Full AI audit completed on Stellar/Soroban contract. Risk level: LOW. Contract cleared for deployment.",
-                "time": (now - timedelta(hours=9)).isoformat()
-            }
         ]
     
     conn.close()

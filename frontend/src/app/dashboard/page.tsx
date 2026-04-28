@@ -17,6 +17,8 @@ interface LiveEvent {
   type: "SCAN_CLEAN" | "VULN_DETECTED" | "AUDIT_COMPLETED" | "HORIZON_TX";
   details: string;
   time: string;
+  risk?: string;        // "HIGH" | "MEDIUM" | "LOW" | "CRITICAL" | "UNKNOWN"
+  vuln_count?: number;  // actual vulnerability count from the AI scan
 }
 
 interface MetricsData {
@@ -243,48 +245,61 @@ export default function Dashboard() {
             ) : (
               <div className="divide-y-4 divide-brutal-text">
                 <AnimatePresence initial={false}>
-                  {events.map((event) => (
-                    <motion.div
-                      key={event.id}
-                      initial={{ opacity: 0, x: -20, height: 0 }}
-                      animate={{ opacity: 1, x: 0, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="p-6 md:p-8 flex flex-col md:flex-row gap-6 md:items-center hover:bg-brutal-text/5 transition-colors"
-                    >
-                      <div className="flex-shrink-0">
-                        {event.type === "VULN_DETECTED" ? (
-                          <div className="w-16 h-16 border-4 border-brutal-orange bg-brutal-orange/20 flex items-center justify-center animate-pulse">
-                            <AlertTriangle className="w-8 h-8 text-brutal-orange" />
-                          </div>
-                        ) : (
-                          <div className="w-16 h-16 border-4 border-green-500 bg-green-500/20 flex items-center justify-center">
-                            <CheckCircle className="w-8 h-8 text-green-600" />
-                          </div>
-                        )}
-                      </div>
+                  {events.map((event) => {
+                    // Determine if this is a dangerous event based on risk OR event_type
+                    const isDangerous =
+                      event.type === "VULN_DETECTED" ||
+                      ["HIGH", "MEDIUM", "CRITICAL"].includes(event.risk ?? "");
+                    const badgeLabel = isDangerous
+                      ? `⚠ ${event.risk ?? "VULN"} RISK${event.vuln_count ? ` · ${event.vuln_count} VULN` : ""}`
+                      : event.type === "SCAN_CLEAN" || event.type === "HORIZON_TX"
+                      ? "SECURE"
+                      : event.type === "AUDIT_COMPLETED"
+                      ? "✓ AUDITED"
+                      : event.type;
 
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-3">
-                          <span className={`px-2 py-0.5 text-xs font-bold uppercase tracking-widest border-2 ${
-                            event.type === "VULN_DETECTED"
-                              ? "border-brutal-orange text-brutal-orange"
-                              : "border-green-600 text-green-600"
-                          }`}>
-                            {event.type === "SCAN_CLEAN" || event.type === "HORIZON_TX" ? "SECURE" :
-                             event.type === "AUDIT_COMPLETED" ? "AUDITED" : event.type}
-                          </span>
-                          <span className="font-mono text-xs opacity-50 uppercase">
-                            {new Date(event.time).toLocaleString()}
-                          </span>
+                    return (
+                      <motion.div
+                        key={event.id}
+                        initial={{ opacity: 0, x: -20, height: 0 }}
+                        animate={{ opacity: 1, x: 0, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="p-6 md:p-8 flex flex-col md:flex-row gap-6 md:items-center hover:bg-brutal-text/5 transition-colors"
+                      >
+                        <div className="flex-shrink-0">
+                          {isDangerous ? (
+                            <div className="w-16 h-16 border-4 border-brutal-orange bg-brutal-orange/20 flex items-center justify-center animate-pulse">
+                              <AlertTriangle className="w-8 h-8 text-brutal-orange" />
+                            </div>
+                          ) : (
+                            <div className="w-16 h-16 border-4 border-green-500 bg-green-500/20 flex items-center justify-center">
+                              <CheckCircle className="w-8 h-8 text-green-600" />
+                            </div>
+                          )}
                         </div>
-                        <p className="font-mono text-sm leading-relaxed max-w-2xl">{event.details}</p>
-                        <div className="font-mono text-xs font-bold pt-2">
-                          TARGET: <span className="text-brutal-blue">{truncate(event.contract)}</span>
+
+                        <div className="flex-1 space-y-2">
+                          <div className="flex items-center gap-3">
+                            <span className={`px-2 py-0.5 text-xs font-bold uppercase tracking-widest border-2 ${
+                              isDangerous
+                                ? "border-brutal-orange text-brutal-orange"
+                                : "border-green-600 text-green-600"
+                            }`}>
+                              {badgeLabel}
+                            </span>
+                            <span className="font-mono text-xs opacity-50 uppercase">
+                              {new Date(event.time).toLocaleString()}
+                            </span>
+                          </div>
+                          <p className="font-mono text-sm leading-relaxed max-w-2xl">{event.details}</p>
+                          <div className="font-mono text-xs font-bold pt-2">
+                            TARGET: <span className="text-brutal-blue">{truncate(event.contract)}</span>
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    );
+                  })}
                 </AnimatePresence>
               </div>
             )}
