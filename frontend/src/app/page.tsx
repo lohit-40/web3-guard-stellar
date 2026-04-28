@@ -466,10 +466,56 @@ export default function App() {
     }
   };
 
+  // [User Feedback - Sayan Saha]: "audit report to doc not pdf plain simple doc"
+  // Changed from window.print() to a clean plain-text .txt report download
   const handleDownloadPDF = () => {
-    setTimeout(() => {
-      window.print();
-    }, 100);
+    if (!result) return;
+    const lines: string[] = [];
+    lines.push("=".repeat(60));
+    lines.push("       WEB3 GUARD — SMART CONTRACT AUDIT REPORT");
+    lines.push("=".repeat(60));
+    lines.push("");
+    lines.push(`Contract / Target : ${result.address}`);
+    lines.push(`Audit Chain       : ${result.audit_chain || "N/A"}`);
+    lines.push(`Status            : ${result.vulnerabilities.length === 0 ? "SECURE ✓" : "VULNERABILITIES FOUND ✗"}`);
+    lines.push(`Total Alerts      : ${result.vulnerabilities.length}`);
+    if (result.audit_tx_hash) {
+      lines.push(`On-Chain Proof    : ${result.audit_tx_hash}`);
+    }
+    lines.push(`Report Generated  : ${new Date().toUTCString()}`);
+    lines.push("");
+    lines.push("-".repeat(60));
+    lines.push("VULNERABILITY DETAILS");
+    lines.push("-".repeat(60));
+    if (result.vulnerabilities.length === 0) {
+      lines.push("");
+      lines.push("  No vulnerabilities detected.");
+      lines.push("  This contract passed all heuristic and AI security checks.");
+    } else {
+      result.vulnerabilities.forEach((v, i) => {
+        lines.push("");
+        lines.push(`[${i + 1}] ${v.type}`);
+        lines.push(`    Severity    : ${v.severity.toUpperCase()}`);
+        if (v.line_number) lines.push(`    Line        : ${v.line_number}`);
+        lines.push(`    Description : ${v.description}`);
+        if (v.remediation) {
+          lines.push(`    Remediation : ${v.remediation}`);
+        }
+      });
+    }
+    lines.push("");
+    lines.push("=".repeat(60));
+    lines.push("  Powered by Web3 Guard — web3-guard-stellar-gilt.vercel.app");
+    lines.push("=".repeat(60));
+
+    const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `web3guard_audit_${(result.address || "report").slice(0, 20).replace(/[^a-z0-9]/gi, "_")}_${Date.now()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Audit report downloaded as plain text!");
   };
 
   const handleMintBadge = async () => {
