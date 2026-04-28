@@ -237,7 +237,13 @@ export default function App() {
   const [sourceCode, setSourceCode] = useState("");
   const [chainId, setChainId] = useState("1");
   const [loading, setLoading] = useState(false);
-  const scanSteps = ["Fetching Blockchain Data...", "Decompiling Contract...", "Running AI Heuristics...", "Finalizing Report..."];
+  // [User Feedback - Suchismita Rautaray]: "add clearer status updates for actions"
+  const scanSteps = [
+    { label: "Fetching Data",       detail: "Pulling contract bytecode from chain..." },
+    { label: "Decompiling",         detail: "Parsing contract structure & functions..." },
+    { label: "AI Analysis",         detail: "Running Gemini heuristics for vulnerabilities..." },
+    { label: "Finalizing Report",   detail: "Building your audit report & anchoring proof..." },
+  ];
   const [scanStep, setScanStep] = useState(0);
   const [result, setResult] = useState<ScanResponse | null>(null);
   const [isFocused, setIsFocused] = useState(false);
@@ -466,10 +472,56 @@ export default function App() {
     }
   };
 
+  // [User Feedback - Sayan Saha]: "audit report to doc not pdf plain simple doc"
+  // Changed from window.print() to a clean plain-text .txt report download
   const handleDownloadPDF = () => {
-    setTimeout(() => {
-      window.print();
-    }, 100);
+    if (!result) return;
+    const lines: string[] = [];
+    lines.push("=".repeat(60));
+    lines.push("       WEB3 GUARD — SMART CONTRACT AUDIT REPORT");
+    lines.push("=".repeat(60));
+    lines.push("");
+    lines.push(`Contract / Target : ${result.address}`);
+    lines.push(`Audit Chain       : ${result.audit_chain || "N/A"}`);
+    lines.push(`Status            : ${result.vulnerabilities.length === 0 ? "SECURE ✓" : "VULNERABILITIES FOUND ✗"}`);
+    lines.push(`Total Alerts      : ${result.vulnerabilities.length}`);
+    if (result.audit_tx_hash) {
+      lines.push(`On-Chain Proof    : ${result.audit_tx_hash}`);
+    }
+    lines.push(`Report Generated  : ${new Date().toUTCString()}`);
+    lines.push("");
+    lines.push("-".repeat(60));
+    lines.push("VULNERABILITY DETAILS");
+    lines.push("-".repeat(60));
+    if (result.vulnerabilities.length === 0) {
+      lines.push("");
+      lines.push("  No vulnerabilities detected.");
+      lines.push("  This contract passed all heuristic and AI security checks.");
+    } else {
+      result.vulnerabilities.forEach((v, i) => {
+        lines.push("");
+        lines.push(`[${i + 1}] ${v.type}`);
+        lines.push(`    Severity    : ${v.severity.toUpperCase()}`);
+        if (v.line_number) lines.push(`    Line        : ${v.line_number}`);
+        lines.push(`    Description : ${v.description}`);
+        if (v.remediation) {
+          lines.push(`    Remediation : ${v.remediation}`);
+        }
+      });
+    }
+    lines.push("");
+    lines.push("=".repeat(60));
+    lines.push("  Powered by Web3 Guard — web3-guard-stellar-gilt.vercel.app");
+    lines.push("=".repeat(60));
+
+    const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `web3guard_audit_${(result.address || "report").slice(0, 20).replace(/[^a-z0-9]/gi, "_")}_${Date.now()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Audit report downloaded as plain text!");
   };
 
   const handleMintBadge = async () => {
@@ -562,33 +614,66 @@ export default function App() {
             transition={{ duration: 1, delay: 0.2 }}
             className="w-full max-w-3xl"
           >
+            {/* [User Feedback - Omkar Nanaware + Pritam Das]: "make ui more user friendly" / "better CX design" */}
+            {/* Quick-start guide shown to orient new users */}
+            <div className="mb-10 border border-brutal-text/10 bg-brutal-text/[0.03] p-5">
+              <p className="text-[10px] uppercase tracking-widest text-brutal-text/40 font-bold mb-4">How it works — 3 simple steps</p>
+              <div className="grid grid-cols-3 gap-4">
+                {[
+                  { step: "01", title: "Pick Chain", desc: "Choose Solidity (EVM) or Rust (Solana/Stellar)" },
+                  { step: "02", title: "Paste Contract", desc: "Enter an address or paste raw source code" },
+                  { step: "03", title: "Get Report", desc: "AI scans for bugs and anchors proof on-chain" },
+                ].map(({ step, title, desc }) => (
+                  <div key={step} className="flex flex-col gap-1">
+                    <span className="text-brutal-orange font-bold font-mono text-lg leading-none">{step}</span>
+                    <span className="text-brutal-text text-xs font-bold uppercase tracking-widest">{title}</span>
+                    <span className="text-brutal-text/40 text-[10px] leading-snug">{desc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Ecosystem Selection */}
             <div className="flex flex-col gap-4 mb-10 w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
               <span className="text-xs tracking-widest text-brutal-text/60 uppercase font-bold">1. Select Target Ecosystem:</span>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* [User Feedback - Laxmipriya Mohapatra]: "That selecting icon" was confusing */}
+                {/* Added ✓ SELECTED badge + aria-pressed to make selection state unmistakably clear */}
                 <button
                   ref={solButtonRef}
                   onClick={() => { setEcosystem('Solidity'); setChainId('1'); setInputMode(null); }}
-                  className={`gsap-ecosystem-btn py-4 md:py-8 px-4 md:px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
+                  aria-pressed={ecosystem === 'Solidity'}
+                  className={`gsap-ecosystem-btn relative py-4 md:py-8 px-4 md:px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
                     ecosystem === 'Solidity' 
                     ? 'border-brutal-orange bg-brutal-orange/5 scale-105 z-10' 
                     : 'border-brutal-text/20 hover:border-brutal-text/50 opacity-60'
                   }`}
                   style={{ opacity: 0 }}
                 >
+                  {ecosystem === 'Solidity' && (
+                    <span className="absolute top-2 right-2 flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-brutal-orange border border-brutal-orange/50 px-1.5 py-0.5">
+                      ✓ Selected
+                    </span>
+                  )}
                   <span className="text-xl md:text-3xl font-bold tracking-tighter uppercase lowercase">[ Solidity ]</span>
                   <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] font-mono text-center">EVM / Ethereum / Polygon</p>
                 </button>
                 <button
                   ref={rustButtonRef}
                   onClick={() => { setEcosystem('Rust'); setChainId(''); setInputMode('code'); }}
-                  className={`gsap-ecosystem-btn py-4 md:py-8 px-4 md:px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
+                  aria-pressed={ecosystem === 'Rust'}
+                  className={`gsap-ecosystem-btn relative py-4 md:py-8 px-4 md:px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
                     ecosystem === 'Rust' 
                     ? 'border-brutal-orange bg-brutal-orange/5 scale-105 z-10' 
                     : 'border-brutal-text/20 hover:border-brutal-text/50 opacity-60'
                   }`}
                   style={{ opacity: 0 }}
                 >
+                  {ecosystem === 'Rust' && (
+                    <span className="absolute top-2 right-2 flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-brutal-orange border border-brutal-orange/50 px-1.5 py-0.5">
+                      ✓ Selected
+                    </span>
+                  )}
                   <span className="text-xl md:text-3xl font-bold tracking-tighter uppercase lowercase">[ RUST ]</span>
                   <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] font-mono text-center">Solana / Stellar / NEAR</p>
                 </button>
@@ -787,7 +872,7 @@ export default function App() {
                               transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
                               className="w-4 h-4 border-2 border-brutal-bg border-t-transparent rounded-full flex-shrink-0"
                             />
-                            <span>{scanSteps[scanStep]}</span>
+                            <span>{scanSteps[scanStep]?.label}...</span>
                           </div>
                         ) : (
                           "Commence Audit"
@@ -795,6 +880,30 @@ export default function App() {
                       </button>
                     </div>
                   </div>
+                  {/* [User Feedback - Suchismita Rautaray]: Step-by-step scan progress indicator */}
+                  {loading && (
+                    <div className="mt-6 border border-brutal-text/10 bg-brutal-text/5 p-4 space-y-2">
+                      {scanSteps.map((step, idx) => {
+                        const isDone = idx < scanStep;
+                        const isActive = idx === scanStep;
+                        return (
+                          <div key={idx} className={`flex items-start gap-3 text-xs font-mono transition-all duration-300 ${
+                            isDone ? "text-green-400 opacity-70" : isActive ? "text-brutal-orange" : "text-brutal-text/30"
+                          }`}>
+                            <span className="shrink-0 mt-0.5">
+                              {isDone ? "✓" : isActive ? (
+                                <motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ repeat: Infinity, duration: 1 }}>●</motion.span>
+                              ) : "○"}
+                            </span>
+                            <div>
+                              <span className="font-bold uppercase tracking-widest">{step.label}</span>
+                              {isActive && <p className="text-brutal-text/50 text-[10px] mt-0.5">{step.detail}</p>}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </motion.form>
               )}
             </AnimatePresence>
