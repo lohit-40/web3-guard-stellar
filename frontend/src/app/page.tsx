@@ -614,6 +614,25 @@ export default function App() {
             transition={{ duration: 1, delay: 0.2 }}
             className="w-full max-w-3xl"
           >
+            {/* [User Feedback - Omkar Nanaware + Pritam Das]: "make ui more user friendly" / "better CX design" */}
+            {/* Quick-start guide shown to orient new users */}
+            <div className="mb-10 border border-brutal-text/10 bg-brutal-text/[0.03] p-5">
+              <p className="text-[10px] uppercase tracking-widest text-brutal-text/40 font-bold mb-4">How it works — 3 simple steps</p>
+              <div className="grid grid-cols-3 gap-4">
+                {[
+                  { step: "01", title: "Pick Chain", desc: "Choose Solidity (EVM) or Rust (Solana/Stellar)" },
+                  { step: "02", title: "Paste Contract", desc: "Enter an address or paste raw source code" },
+                  { step: "03", title: "Get Report", desc: "AI scans for bugs and anchors proof on-chain" },
+                ].map(({ step, title, desc }) => (
+                  <div key={step} className="flex flex-col gap-1">
+                    <span className="text-brutal-orange font-bold font-mono text-lg leading-none">{step}</span>
+                    <span className="text-brutal-text text-xs font-bold uppercase tracking-widest">{title}</span>
+                    <span className="text-brutal-text/40 text-[10px] leading-snug">{desc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Ecosystem Selection */}
             <div className="flex flex-col gap-4 mb-10 w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
               <span className="text-xs tracking-widest text-brutal-text/60 uppercase font-bold">1. Select Target Ecosystem:</span>
