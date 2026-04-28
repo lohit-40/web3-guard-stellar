@@ -245,34 +245,45 @@ To fulfill the Blue Belt challenge requirement, we actively collected user feedb
 * 📝 **User Feedback Collection Form:** [View Google Form](https://docs.google.com/forms/d/e/1FAIpQLSc4R84dVvHSC03OqYBKb1kH23cAfvU-9ZE-v3DRgjlZAweo8g/viewform?usp=sharing&ouid=100953453020666012701)
 * 📊 **Public Form Responses (Spreadsheet):** [View Live Google Sheet](https://docs.google.com/spreadsheets/d/10ECOahfGhaM2EwqARDt-HKaBUFu8FvE_ueOYOEjQ0Dc/edit?usp=sharing)
 
-
 ### 1. Collected User Feedback
 
-The following table documents a snapshot of real feedback received from our 30+ beta testers:
+The following table is sourced directly from real Google Form responses (21 verified submissions):
 
-| User Name | Email | Favorite Feature |
-| :--- | :--- | :--- |
-| Riya Malik | riya.malik.6465@gamil.com | Multi-Chain Support |
-| Sourav Jena | souravjena890@gmail.com | Multi-Chain Support |
-| Simran Mahakhud | simranmahakhud2@gmail.com | AI Scan |
-| Prem Prasad Sahoo | premprasadsahoo20@gmail.com | Sharable Audit Link |
-| Banani Satapathy | 230714100058@centurionuniv.edu.in | AI Scan |
-| Sitan Singh | Enjoyingl02@gmail.com | Multi-Chain Support |
-| Soumya Swagatika | soumyaswagatika24@gmail.com | On-Chain Proof |
-| Bibhudatta Dash | dashb2007@gmail.com | Multi-Chain Support |
+| # | User Name | Favorite Feature | Rating | "If you could improve one thing..." | "Any other comments?" |
+| :--- | :--- | :--- | :---: | :--- | :--- |
+| 1 | Riya Malik | Multi-Chain Support | 5/5 | — | — |
+| 2 | Sourav Jena | Multi-Chain Support | 5/5 | — | — |
+| 3 | Simran Mahakhud | AI Scan | 5/5 | Not required | Good application |
+| 4 | Prem Prasad Sahoo | Sharable Link of Audit | 5/5 | No | No |
+| 5 | Banani Satapathy | AI Scan | 3/5 | Name of the application i would like to change | Nahhh....! well done guys |
+| 6 | Sitan Singh | Multi-Chain Support | 3/5 | Your idea dude 😜 | Beta padhao beta bachao |
+| 7 | Soumya Swagatika | On-Chain Proof | 4/5 | No | Good application |
+| 8 | Bibhudatta Dash | Multi-Chain Support | 4/5 | No | No |
+| 9 | Ashirbad Sahoo | On-Chain Proof | 5/5 | — | — |
+| 10 | Suchismita Rautaray | On-Chain Proof | 5/5 | **Improve user guidance and add clearer status updates for actions.** | Overall the app works well. With small UX improvements it can be even better. |
+| 11 | Manoj Panigrahi | Multi-Chain Support | 5/5 | — | — |
+| 12 | Aditi Mohanty | AI Scan | 5/5 | Everything was excellent | Everything was well organized |
+| 13 | Laxmipriya Mohapatra | Multi-Chain Support | 4/5 | That selecting icon | Keep going |
+| 14 | Niharika Rath | AI Scan | 5/5 | — | — |
+| 15 | Dibyadisha Sahoo | Multi-Chain Support | 5/5 | — | — |
+| 16 | Megha Sahu | AI Scan | 4/5 | — | — |
+| 17 | Sayan Saha | AI Scan | 4/5 | **audit report to doc not pdf plain simple doc** | happy deployment !!! |
+| 18 | Pritam Das | AI Scan | 5/5 | **make this multi pages and better CX design** | all good |
+| 19 | Omkar Nanaware | AI Scan | 5/5 | **make ui more user friendly** | Work on UI |
 
 ### 2. Implementation & Commits
 
-We mapped the community's requested improvements directly into our codebase. Below are key development commits addressing user pain points:
+We mapped the two key feedback columns directly into codebase improvements:
 
-| User Name | Email | Wallet Address | Feedback Received | Action Taken | Related Commit |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| Prem Prasad Sahoo | premprasadsahoo20@gmail.com | GCB5HNSBRRBCQ6XVPBQISU6AS4WIQ26QSPCNWW2RMT2BECEVTVHMEXDJ | "Sharable link of audit because it allows to share it" | Implemented persistent shareable audit report URLs with public view access. | [0b47efb](https://github.com/lohit-40/web3-guard-stellar/commit/0b47efb) |
-| Suchismita Rautaray | suchismitarautaray6@gmail.com | GBBLRNVHKLNGTXYHSZJSMP5RYGNMJWV7ERYGNX3QDIK5AZK5IGQQD2AK | "A more user-friendly interface... adding real-time notifications or status updates could improve the experience." | Improved on-chain proof anchoring UX with real-time transaction status updates. | [856ca5a](https://github.com/lohit-40/web3-guard-stellar/commit/856ca5a) |
-| Suchismita Rautaray | suchismitarautaray6@gmail.com | GBBLRNVHKLNGTXYHSZJSMP5RYGNMJWV7ERYGNX3QDIK5AZK5IGQQD2AK | "Nothing major—just slight delays in processing at times, but overall the experience was good." | Optimized the AI vulnerability engine pipeline to reduce average scan latency from 4s to under 2.5s. | [0ea4194](https://github.com/lohit-40/web3-guard-stellar/commit/0ea4194) |
-| Bibhudatta Dash | dashb2007@gmail.com | GCBBP3IMBZOE7I2RYJDNSRRWW4JQTA2S6KTJPTWG3U4NWHQ3QQGLUPIG | "Multi chain support, sharable link" | Extended multi-chain adapter to support additional EVM-compatible contract formats. | [87aedde](https://github.com/lohit-40/web3-guard-stellar/commit/87aedde) |
-| Sayan saha | sayansaha8082@gmail.com | GA7Z4C2IDHZXDGWV52PQQHPH7HFODV3VNERO6OCRBMTP66L7YWFHROZC | "...api limits exceeded its oky for that..." | Integrated Google Gemini API improvements for higher accuracy Rust/Solidity vulnerability detection. | [fcebfa4](https://github.com/lohit-40/web3-guard-stellar/commit/fcebfa4) |
-| Banani Satapathy | 230714100058@centurionuniv.edu.in | GBIPK25SYV5DJB4UDUSZOLHUCNMGJEF5FNFDSSJH5GWGQ7UCPRYA7JP3 | "Ai scan was amazing" [Rated feature only 3/5] | Enhanced AI scan output to include detailed low-severity issue descriptions and remediation tips. | [d1a52a0](https://github.com/lohit-40/web3-guard-stellar/commit/d1a52a0) |
+> **Columns used:** *"If you could change or improve one thing about the application"* and *"Do you have any other comments, suggestions, or feedback for the developer?"*
+
+| User Name | Email | Wallet Address | Key Feedback (Column 15) | Comment (Column 16) | Action Taken | Commit |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Prem Prasad Sahoo | premprasadsahoo20@gmail.com | `GCB5HNSBRRBCQ6XVPBQISU6AS4WIQ26QSPCNWW2RMT2BECEVTVHMEXDJ` | No | No | *Favourite feature (col 10):* "Sharable link of audit because it allows to share it" → Implemented persistent shareable audit report URLs at `/audit/[hash]`. | [0b47efb](https://github.com/lohit-40/web3-guard-stellar/commit/0b47efb) |
+| Suchismita Rautaray | suchismitarautaray6@gmail.com | `GBBLRNVHKLNGTXYHSZJSMP5RYGNMJWV7ERYGNX3QDIK5AZK5IGQQD2AK` | "Improve user guidance and add clearer status updates for actions." | "With small improvements in UX, it can be even better." | Added 4-step live scan progress indicator showing each pipeline stage with ✓ checkmarks in real-time. | [8fb3dc6](https://github.com/lohit-40/web3-guard-stellar/commit/8fb3dc6) |
+| Sayan Saha | sayansaha8082@gmail.com | `GA7Z4C2IDHZXDGWV52PQQHPH7HFODV3VNERO6OCRBMTP66L7YWFHROZC` | **"audit report to doc not pdf plain simple doc"** | "happy deployment!!!" | Replaced `window.print()` PDF export with a clean plain-text `.txt` file download — no blank-patch rendering bugs. | [95431a7](https://github.com/lohit-40/web3-guard-stellar/commit/95431a7) |
+| Pritam Das | dpritam2708@gmail.com | `GB6U7APEDEHKWVXDTVO4UE5E3UDSMEOKB3DCLJ4PMAY3ABSOFK7PBUD7` | **"make this multi pages and better CX design"** | "all good" | Added 3-step "How it works" quick-start guide panel to orient new users and improve CX flow. | [ba220b1](https://github.com/lohit-40/web3-guard-stellar/commit/ba220b1) |
+| Omkar Nanaware | omkarnanavare1969@gmail.com | `GCWD2XRCJFP5AMT57MRYIVEK2QRWZUNUVROGYYRK2XGCZFOORXCXTRW3` | **"make ui more user friendly"** | "Work on UI" | Same CX guide panel above + step labels improved for first-time user onboarding. | [ba220b1](https://github.com/lohit-40/web3-guard-stellar/commit/ba220b1) |
 
 **Feedback-Driven Improvements Summary:**
 - **[COMPLETED] Frictionless Experience:** 90% of users praised the "Fee Sponsorship". Removing XLM funding barriers resulted in a smoother UX.

@@ -637,29 +637,43 @@ export default function App() {
             <div className="flex flex-col gap-4 mb-10 w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
               <span className="text-xs tracking-widest text-brutal-text/60 uppercase font-bold">1. Select Target Ecosystem:</span>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* [User Feedback - Laxmipriya Mohapatra]: "That selecting icon" was confusing */}
+                {/* Added ✓ SELECTED badge + aria-pressed to make selection state unmistakably clear */}
                 <button
                   ref={solButtonRef}
                   onClick={() => { setEcosystem('Solidity'); setChainId('1'); setInputMode(null); }}
-                  className={`gsap-ecosystem-btn py-4 md:py-8 px-4 md:px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
+                  aria-pressed={ecosystem === 'Solidity'}
+                  className={`gsap-ecosystem-btn relative py-4 md:py-8 px-4 md:px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
                     ecosystem === 'Solidity' 
                     ? 'border-brutal-orange bg-brutal-orange/5 scale-105 z-10' 
                     : 'border-brutal-text/20 hover:border-brutal-text/50 opacity-60'
                   }`}
                   style={{ opacity: 0 }}
                 >
+                  {ecosystem === 'Solidity' && (
+                    <span className="absolute top-2 right-2 flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-brutal-orange border border-brutal-orange/50 px-1.5 py-0.5">
+                      ✓ Selected
+                    </span>
+                  )}
                   <span className="text-xl md:text-3xl font-bold tracking-tighter uppercase lowercase">[ Solidity ]</span>
                   <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] font-mono text-center">EVM / Ethereum / Polygon</p>
                 </button>
                 <button
                   ref={rustButtonRef}
                   onClick={() => { setEcosystem('Rust'); setChainId(''); setInputMode('code'); }}
-                  className={`gsap-ecosystem-btn py-4 md:py-8 px-4 md:px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
+                  aria-pressed={ecosystem === 'Rust'}
+                  className={`gsap-ecosystem-btn relative py-4 md:py-8 px-4 md:px-6 border-4 flex flex-col items-center justify-center gap-4 transition-all duration-300 ${
                     ecosystem === 'Rust' 
                     ? 'border-brutal-orange bg-brutal-orange/5 scale-105 z-10' 
                     : 'border-brutal-text/20 hover:border-brutal-text/50 opacity-60'
                   }`}
                   style={{ opacity: 0 }}
                 >
+                  {ecosystem === 'Rust' && (
+                    <span className="absolute top-2 right-2 flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-brutal-orange border border-brutal-orange/50 px-1.5 py-0.5">
+                      ✓ Selected
+                    </span>
+                  )}
                   <span className="text-xl md:text-3xl font-bold tracking-tighter uppercase lowercase">[ RUST ]</span>
                   <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] font-mono text-center">Solana / Stellar / NEAR</p>
                 </button>
