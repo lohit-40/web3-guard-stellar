@@ -237,7 +237,13 @@ export default function App() {
   const [sourceCode, setSourceCode] = useState("");
   const [chainId, setChainId] = useState("1");
   const [loading, setLoading] = useState(false);
-  const scanSteps = ["Fetching Blockchain Data...", "Decompiling Contract...", "Running AI Heuristics...", "Finalizing Report..."];
+  // [User Feedback - Suchismita Rautaray]: "add clearer status updates for actions"
+  const scanSteps = [
+    { label: "Fetching Data",       detail: "Pulling contract bytecode from chain..." },
+    { label: "Decompiling",         detail: "Parsing contract structure & functions..." },
+    { label: "AI Analysis",         detail: "Running Gemini heuristics for vulnerabilities..." },
+    { label: "Finalizing Report",   detail: "Building your audit report & anchoring proof..." },
+  ];
   const [scanStep, setScanStep] = useState(0);
   const [result, setResult] = useState<ScanResponse | null>(null);
   const [isFocused, setIsFocused] = useState(false);
@@ -833,7 +839,7 @@ export default function App() {
                               transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
                               className="w-4 h-4 border-2 border-brutal-bg border-t-transparent rounded-full flex-shrink-0"
                             />
-                            <span>{scanSteps[scanStep]}</span>
+                            <span>{scanSteps[scanStep]?.label}...</span>
                           </div>
                         ) : (
                           "Commence Audit"
@@ -841,6 +847,30 @@ export default function App() {
                       </button>
                     </div>
                   </div>
+                  {/* [User Feedback - Suchismita Rautaray]: Step-by-step scan progress indicator */}
+                  {loading && (
+                    <div className="mt-6 border border-brutal-text/10 bg-brutal-text/5 p-4 space-y-2">
+                      {scanSteps.map((step, idx) => {
+                        const isDone = idx < scanStep;
+                        const isActive = idx === scanStep;
+                        return (
+                          <div key={idx} className={`flex items-start gap-3 text-xs font-mono transition-all duration-300 ${
+                            isDone ? "text-green-400 opacity-70" : isActive ? "text-brutal-orange" : "text-brutal-text/30"
+                          }`}>
+                            <span className="shrink-0 mt-0.5">
+                              {isDone ? "✓" : isActive ? (
+                                <motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ repeat: Infinity, duration: 1 }}>●</motion.span>
+                              ) : "○"}
+                            </span>
+                            <div>
+                              <span className="font-bold uppercase tracking-widest">{step.label}</span>
+                              {isActive && <p className="text-brutal-text/50 text-[10px] mt-0.5">{step.detail}</p>}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </motion.form>
               )}
             </AnimatePresence>
