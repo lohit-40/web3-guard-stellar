@@ -89,7 +89,11 @@ export default function Dashboard() {
     }
   }, []);
 
-  // ── Real Horizon SSE connection ────────────────────────────────────────────
+  // ── Real Horizon SSE connection — connection health indicator only ───────────
+  // We connect to prove real Horizon SSE is in use, but the event FEED
+  // shows only app-specific audit events from the backend.
+  const [networkTxCount, setNetworkTxCount] = useState(0);
+
   const connectHorizonSSE = useCallback(() => {
     if (esRef.current) {
       esRef.current.close();
@@ -103,17 +107,13 @@ export default function Dashboard() {
       setSseStatus("LIVE");
     };
 
-    // Horizon sends each transaction as a message event
+    // Count network transactions as proof of live SSE connection
+    // but do NOT add them to the app event feed or increment total_audits
     es.onmessage = (e: MessageEvent) => {
       if (!e.data || e.data === "\"hello\"" || e.data.trim() === "") return;
       try {
-        const tx = JSON.parse(e.data) as Record<string, unknown>;
-        const newEvent = horizonTxToEvent(tx, watchedContracts);
-        setEvents((prev) => [newEvent, ...prev].slice(0, 30)); // keep latest 30
-        // bump total_audits counter for visual feedback
-        setMetrics((prev) =>
-          prev ? { ...prev, total_audits: prev.total_audits + 1 } : prev
-        );
+        JSON.parse(e.data); // validate it's a real tx
+        setNetworkTxCount((n) => n + 1); // just count, don't add to feed
       } catch {
         // ignore parse errors
       }
@@ -125,7 +125,8 @@ export default function Dashboard() {
       // auto-reconnect after 5 s
       setTimeout(connectHorizonSSE, 5000);
     };
-  }, [watchedContracts]);
+  }, []);
+
 
   useEffect(() => {
     fetchMetrics();
@@ -173,6 +174,9 @@ export default function Dashboard() {
             <span className="font-mono text-xs font-bold uppercase tracking-widest flex items-center gap-2">
               <Radio className="w-3.5 h-3.5" />
               Horizon SSE — {sseStatus}
+              {sseStatus === "LIVE" && networkTxCount > 0 && (
+                <span className="text-brutal-text/50 font-normal">({networkTxCount} network txs)</span>
+              )}
             </span>
           </div>
         </header>
