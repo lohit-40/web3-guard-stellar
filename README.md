@@ -272,6 +272,7 @@ The following table is sourced directly from real Google Form responses (21 veri
 | 19 | Sayan Saha | AI Scan | 5/5 | **audit repot to doc not pdf plain simple doc** | happy deplopment !!! |
 | 20 | Pritam Das | AI Scan | 5/5 | **make this multi pages and better CX design** | all good |
 | 21 | Omkar Nanaware | AI Scan | 5/5 | **I make ui more user friendly** | Work on UI |
+| 22 | Lopa Mishra | AI Scan | 4/5 | **Horizon SSE for scout agent active ...** | Do implement . it will scores |
 
 ### 2. Implementation & Commits
 
@@ -286,6 +287,7 @@ We mapped the two key feedback columns directly into codebase improvements:
 | Pritam Das | dpritam2708@gmail.com | `GB6U7APEDEHKWVXDTVO4UE5E3UDSMEOKB3DCLJ4PMAY3ABSOFK7PBUD7` | **"make this multi pages and better CX design"** | "all good" | Added 3-step "How it works" quick-start guide panel to orient new users and improve CX flow. | [ba220b1](https://github.com/lohit-40/web3-guard-stellar/commit/ba220b1) |
 | Omkar Nanaware | omkarnanavare1969@gmail.com | `GCWD2XRCJFP5AMT57MRYIVEK2QRWZUNUVROGYYRK2XGCZFOORXCXTRW3` | **"I make ui more user friendly"** | "Work on UI" | Same CX guide panel above + step labels improved for first-time user onboarding. | [ba220b1](https://github.com/lohit-40/web3-guard-stellar/commit/ba220b1) |
 | Laxmipriya Mohapatra | 230714100027@centurionuniv.edu.in | `GAHDUNAMUHDTC3E6SEFHCD7VGTX3K2NMDKMCD4HMQJXQAZJLO47Y6RLH` | **"That selecting icon"** (found ecosystem selector confusing) | "Keep going" | Added `✓ Selected` badge + `aria-pressed` to ecosystem selector buttons so active selection state is unmistakably visible. | [755a435](https://github.com/lohit-40/web3-guard-stellar/commit/755a435) |
+| Lopa Mishra | lopamishra639@gmail.com | `GASZVZNHNM5LHHJAVKEEH6O4PCPM5ANQNF3PUHPDGOZOQ6HNWXE2J6XV` | **"Horizon SSE for scout agent active ..."** | "Do implement . it will scores" | Replaced 30s polling with a real `EventSource` connecting to `horizon-testnet.stellar.org/transactions?cursor=now` — live Stellar tx stream in the Command Center dashboard. | [pending push](https://github.com/lohit-40/web3-guard-stellar/commits/main) |
 
 **Feedback-Driven Improvements Summary:**
 - **[COMPLETED] Frictionless Experience:** 90% of users praised the "Fee Sponsorship". Removing XLM funding barriers resulted in a smoother UX.
@@ -294,6 +296,7 @@ We mapped the two key feedback columns directly into codebase improvements:
 - **[COMPLETED] CX Onboarding:** Pritam Das and Omkar Nanaware requested better UI/CX. Added 3-step quick-start guide for new users.
 - **[COMPLETED] Selector Clarity:** Laxmipriya Mohapatra found the ecosystem selector icon confusing. Added `✓ Selected` badge to active button.
 - **[COMPLETED] Sharable Links:** Prem Prasad Sahoo praised the sharable audit link feature. Implemented persistent public audit report URLs.
+- **[COMPLETED] Horizon SSE:** Lopa Mishra requested "Horizon SSE for scout agent active". Replaced 30s polling with real Stellar Horizon Server-Sent Events for live transaction streaming in Command Center.
 
 [→ View Full Improvement Commit History](https://github.com/lohit-40/web3-guard-stellar/commits/main)
 
