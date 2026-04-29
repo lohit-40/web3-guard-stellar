@@ -287,7 +287,7 @@ We mapped the two key feedback columns directly into codebase improvements:
 | Pritam Das | dpritam2708@gmail.com | `GB6U7APEDEHKWVXDTVO4UE5E3UDSMEOKB3DCLJ4PMAY3ABSOFK7PBUD7` | **"make this multi pages and better CX design"** | "all good" | Added 3-step "How it works" quick-start guide panel to orient new users and improve CX flow. | [ba220b1](https://github.com/lohit-40/web3-guard-stellar/commit/ba220b1) |
 | Omkar Nanaware | omkarnanavare1969@gmail.com | `GCWD2XRCJFP5AMT57MRYIVEK2QRWZUNUVROGYYRK2XGCZFOORXCXTRW3` | **"I make ui more user friendly"** | "Work on UI" | Same CX guide panel above + step labels improved for first-time user onboarding. | [ba220b1](https://github.com/lohit-40/web3-guard-stellar/commit/ba220b1) |
 | Laxmipriya Mohapatra | 230714100027@centurionuniv.edu.in | `GAHDUNAMUHDTC3E6SEFHCD7VGTX3K2NMDKMCD4HMQJXQAZJLO47Y6RLH` | **"That selecting icon"** (found ecosystem selector confusing) | "Keep going" | Added `✓ Selected` badge + `aria-pressed` to ecosystem selector buttons so active selection state is unmistakably visible. | [755a435](https://github.com/lohit-40/web3-guard-stellar/commit/755a435) |
-| Lopa Mishra | lopamishra639@gmail.com | `GASZVZNHNM5LHHJAVKEEH6O4PCPM5ANQNF3PUHPDGOZOQ6HNWXE2J6XV` | **"Horizon SSE for scout agent active ..."** | "Do implement . it will scores" | Replaced 30s polling with a real `EventSource` connecting to `horizon-testnet.stellar.org/transactions?cursor=now` — live Stellar tx stream in the Command Center dashboard. | [pending push](https://github.com/lohit-40/web3-guard-stellar/commits/main) |
+| Lopa Mishra | lopamishra639@gmail.com | `GASZVZNHNM5LHHJAVKEEH6O4PCPM5ANQNF3PUHPDGOZOQ6HNWXE2J6XV` | **"Horizon SSE for scout agent active ..."** | "Do implement . it will scores" | Replaced 30s polling with a real `EventSource` connecting to `horizon-testnet.stellar.org/transactions?cursor=now` — live Stellar tx stream in the Command Center dashboard. | [af2ad23](https://github.com/lohit-40/web3-guard-stellar/commit/af2ad23) |
 
 **Feedback-Driven Improvements Summary:**
 - **[COMPLETED] Frictionless Experience:** 90% of users praised the "Fee Sponsorship". Removing XLM funding barriers resulted in a smoother UX.
@@ -360,9 +360,10 @@ Web3 Guard features a dedicated `/dashboard` that tracks real-time verified acti
 Web3 Guard indexes real-time on-chain security anomaly detections using a PostgreSQL-backed persistent tracker (`monitoring_events` table). The `scout_monitor_loop` continuously sweeps tracked contracts across Soroban/Stellar, capturing state changes and pushing formatted JSON output to our `GET /metrics/live` endpoint — acting as a live, active indexer for smart contract security alerts.
 
 **Key Tables:**
-- `audit_history` — stores every audit with hash, risk level, wallet, contract address
+- `scan_cache` — stores every audit with hash, risk level, wallet, contract address
 - `monitoring_events` — stores live Scout Agent sweep events
-- `active_users` — tracks unique wallet interactions for user count
+- `users` — tracks unique wallet interactions and audit counts per user
+- `watchlist` — stores contracts being actively monitored by the Scout Agent
 
 ### 4. Advanced On-Chain Feature: Fee Sponsorship (Gasless UX)
 To provide a frictionless, gasless UX, the frontend on-chain anchoring flow builds an inner transaction and wraps it in a **Fee Bump** via `TransactionBuilder.buildFeeBumpTransaction()`. This allows Web3 Guard to mathematically separate the signature from the gas payment, sponsoring the testnet transaction fees natively via the Stellar SDK. Users never need to manually fund a testnet wallet with XLM.
@@ -390,23 +391,23 @@ const feeBumpTx = TransactionBuilder.buildFeeBumpTransaction(
 Web3 Guard (stellar_submission_v2)
 ├── 📂 assets/                # Screenshot proofs for each belt level
 ├── 📂 backend/               # Python FastAPI Core & AI Engine
-│   ├── main.py               # Core API routes
-│   ├── scanner.py            # AI vulnerability heuristics
-│   ├── monitor.py            # Scout Agent (APScheduler)
-│   ├── models.py             # Database models
+│   ├── main.py               # All API routes + AI scanner + Scout Agent loop
+│   ├── database.py           # PostgreSQL helpers (scan_cache, users, watchlist, monitoring_events)
+│   ├── ci_router.py          # CI/CD webhook endpoints
 │   └── requirements.txt      # Python dependencies
 ├── 📂 docs/                  # Project documentation & beta tester data
-│   └── beta_tester_feedback.xlsx
+│   └── real_feedback.csv     # Raw beta tester feedback (22 real users)
 ├── 📂 frontend/              # Next.js Dashboard & UI
-│   ├── app/                  # App Router pages
-│   ├── components/           # Reusable UI components
-│   └── lib/stellar.ts        # Stellar SDK integration
+│   ├── src/app/              # App Router pages (/, /dashboard, /explorer, /audit/[hash], /about)
+│   ├── src/components/       # Reusable UI components (Chatbot, HistorySidebar, ScrambleText)
+│   ├── src/contexts/         # WalletContext (Freighter + EVM wallet connection)
+│   └── src/utils/sounds.ts   # Audio feedback utility
 ├── 📂 soroban_contracts/     # Rust Smart Contracts (Soroban)
 │   └── proof_of_audit/
 │       ├── src/lib.rs         # Contract logic
 │       └── Cargo.toml
 ├── 📂 .github/workflows/     # CI/CD GitHub Actions
-│   └── stellar-ci.yml
+│   └── stellar-ci.yml        # Test-gated deploy pipeline (all 3 jobs must pass)
 ├── README.md                 # This file — full hackathon proof
 └── SECURITY.md               # Security Policy & Bug Bounty
 ```
@@ -433,8 +434,8 @@ Web3 Guard (stellar_submission_v2)
 | **On-Chain Audit Records** | 50+ Anchored Proofs | ⚓ Immutable |
 | **Avg. Scan Latency** | < 2.5 Seconds | 🏎️ High Perf |
 | **Critical Vulns Caught** | 12 (Testnet Phase) | 🛡️ Secured |
-| **User Feedback Items Resolved** | 3 / 3 | ✅ 100% |
-| **CI/CD Pipeline** | Automated on all pushes | ✅ Active |
+| **User Feedback Items Resolved** | 6 / 6 | ✅ 100% |
+| **CI/CD Pipeline** | Test-gated deploy — all 3 jobs must pass | ✅ Active |
 
 ---
 
