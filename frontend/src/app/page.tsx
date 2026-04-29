@@ -313,22 +313,17 @@ export default function App() {
     
     setLoading(true);
     setResult(null);
+    // Step 0 — "Fetching Data": scan has started, request is being prepared
     setScanStep(0);
     playSound('scan');
-    
-    const interval = setInterval(() => {
-      setScanStep(prev => {
-        if (prev < 3) playSound('scan');
-        return prev < 3 ? prev + 1 : prev;
-      });
-    }, 2500);
 
     const payload = inputMode === 'address' 
       ? { contract_address: address, chain_id: chainId, ecosystem, wallet_address: userAddress } 
       : { source_code: sourceCode, chain_id: chainId, ecosystem, wallet_address: userAddress };
 
     try {
-      // ── Step 1: Run AI Analysis (backend) ──────────────────────────────────
+      // Step 1 — "Decompiling": HTTP request is now in-flight to the backend
+      setScanStep(1);
       const res = await fetch(`${API_URL}/scan`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -347,12 +342,18 @@ export default function App() {
         throw new Error(errorMessage);
       }
 
+      // Step 2 — "AI Analysis": response received, vulnerabilities parsed from AI
+      setScanStep(2);
+      playSound('scan');
       const data: ScanResponse = await res.json();
 
-      // ── Step 2: For Stellar, submit Soroban proof via BACKEND (gasless) ────
+      // Step 3 — "Finalizing Report": anchoring proof on-chain
+      setScanStep(3);
+      playSound('scan');
+
+      // ── For Stellar, submit Soroban proof via BACKEND (gasless) ────────────
       // Backend signs with STELLAR_SECRET_KEY → no Freighter needed → real tx hash
       if (chainId === 'stellar') {
-        setScanStep(3);
         toast.loading("⛓️ Anchoring audit proof on Stellar...", { id: "soroban-sign" });
         try {
           const auditHash = (data.hash_key || `audit_${Date.now()}`).slice(0, 32);
@@ -432,7 +433,6 @@ export default function App() {
       playSound('error');
       toast.error(err.message || "An unexpected error occurred.");
     } finally {
-      clearInterval(interval);
       setLoading(false);
     }
   };
