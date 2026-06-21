@@ -33,12 +33,11 @@ export default function Navbar() {
         
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-12 h-12 border-2 border-brutal-text bg-brutal-text flex items-center justify-center group-hover:bg-brutal-orange group-hover:border-brutal-orange transition-colors">
-            <Cpu className="w-6 h-6 text-brutal-bg" />
-          </div>
-          <span className="font-bold tracking-[0.2em] text-lg uppercase text-brutal-text hidden md:block group-hover:text-brutal-orange transition-colors">
-            web3 | guard
-          </span>
+          <img 
+            src="/logo.png" 
+            alt="Web3 Guard Logo" 
+            className="h-10 md:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105" 
+          />
         </Link>
 
         {/* Links */}
