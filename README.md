@@ -24,12 +24,14 @@ Web3 Guard is a production-ready, decentralized security platform. It utilizes a
 
 ## ✨ Outstanding Technical Features
 
+* 🤖 **Production GitHub App Auto-Fix Bot:** A fully authenticated GitHub App integration that intercepts Pull Requests via Webhooks (HMAC cryptographically secured), scans code asynchronously, and pushes automated AI-generated security fixes directly to developer repositories.
+* 🧠 **Contextual Agent Memory (False Positive Reduction):** A RAG-style feedback loop where users can dismiss false positive alerts, which dynamically updates the Gemini AI prompt context to prevent the engine from flagging identical safe patterns in future scans.
+* 📡 **True Real-Time On-Chain Monitoring:** Direct integration with Stellar Horizon Server-Sent Events (SSE) to instantly stream and analyze live blockchain transactions for anomalies the exact millisecond they are confirmed on-chain.
 * 🧠 **AI-Powered Vulnerability Engine:** Automatically parses and analyzes large Rust/Solidity codebases to hunt zero-days using Google Gemini API.
 * ⚓ **Native Soroban Registry:** Cryptographically anchors the resulting hash into a Soroban smart contract (`proof_of_audit`).
 * 👛 **Freighter Wallet v6 Integration:** A brilliant implementation of `@stellar/stellar-sdk` to execute UI-driven, client-side signature workflows natively through the Freighter wallet.
 * 💸 **Cross-Contract Protocol Fees:** Employs advanced Inter-Contract Calls to move native XLM, charging a spam-preventing storage fee for every audit explicitly via `token::Client`.
 * ⚡ **Real-Time UI Architecture:** A beautifully designed frontend that interfaces directly with Stellar's Horizon API to fetch immediate wallet balances and multi-chain states.
-* 📊 **Live Monitoring Dashboard:** Autonomous APScheduler-based Scout Agent continuously sweeps Soroban contracts, feeding a real-time security event dashboard.
 * 📱 **Fully Responsive:** Mobile-first design with graceful layout transitions for all screen sizes.
 
 ---
@@ -420,7 +422,7 @@ Web3 Guard (stellar_submission_v2)
 *   **Multi-Chain Security:** Expand AI heuristics to support Ethereum, Avalanche, and Polkadot.
 *   **Mobile Guard App:** Launching a mobile companion app with push notifications for security anomalies.
 *   **Decentralized Security DAO:** Community-governed oracle where security researchers contribute heuristic models.
-*   **Automated Remediation:** AI-driven PR suggestions to automatically fix detected vulnerabilities.
+*   **Automated Remediation:** ✅ *(Achieved)* AI-driven Auto-Fix Pull Requests directly injected into developer repositories via our native GitHub App.
 *   **Alert System:** Twilio SMS, SendGrid Email, and Telegram Bot integrations for real-time alerting.
 
 ---
