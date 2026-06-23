@@ -30,27 +30,64 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 async def scout_monitor_loop():
-    # Background task to monitor contracts
+    import httpx_sse
+    import httpx
+    import json
+    import time
+    from database import get_watchlist_contracts, add_monitoring_event
+    from google import genai
+    
+    last_api_call = 0
+    
     while True:
         try:
-            from database import get_watchlist_contracts, add_monitoring_event
-            contracts = get_watchlist_contracts()
-            
-            # Simulated Agent Activity for Dashboard
-            if contracts:
-                import random
-                import time
-                c_addr = random.choice(contracts)
-                
-                # We pretend to scan and randomly find an "issue" 5% of time to make dashboard alive
-                if random.random() < 0.05:
-                    add_monitoring_event(c_addr, "VULN_DETECTED", "Scout Agent detected a state anomaly during CPI call.")
-                else:
-                    add_monitoring_event(c_addr, "SCAN_CLEAN", "Scout Agent verified program state. No anomalies.")
+            async with httpx.AsyncClient() as client:
+                async with httpx_sse.aconnect_sse(client, "GET", "https://horizon-testnet.stellar.org/transactions?cursor=now") as event_source:
+                    async for event in event_source.aiter_sse():
+                        if not event.data or event.data == '"hello"':
+                            continue
+                            
+                        try:
+                            tx_data = json.loads(event.data)
+                            contracts = get_watchlist_contracts()
+                            if not contracts:
+                                continue
+                                
+                            touched_contracts = []
+                            tx_str = event.data
+                            for c in contracts:
+                                if c in tx_str:
+                                    touched_contracts.append(c)
+                                    
+                            if touched_contracts:
+                                current_time = time.time()
+                                if current_time - last_api_call < 5:
+                                    continue # Skip if rate limited
+                                last_api_call = current_time
+                                
+                                raw_keys = os.getenv("GEMINI_API_KEY", "")
+                                keys = [k.strip() for k in raw_keys.split(",") if k.strip() and k.strip() != "PASTE_YOUR_GEMINI_KEY_HERE"]
+                                if not keys:
+                                    continue
+                                    
+                                gclient = genai.Client(api_key=keys[0])
+                                prompt = f"Analyze this Stellar transaction touching our smart contract: {json.dumps(tx_data)[:2000]}.\nIs there an anomalous state change or security risk (like massive drain or reentrancy)? Reply with exactly 'ANOMALY: <reason>' or 'SAFE'."
+                                
+                                response = gclient.models.generate_content(
+                                    model='gemini-2.0-flash',
+                                    contents=prompt
+                                )
+                                result = response.text.strip()
+                                
+                                for tc in touched_contracts:
+                                    if result.startswith("ANOMALY:"):
+                                        add_monitoring_event(tc, "VULN_DETECTED", f"Scout Agent: {result[8:].strip()}")
+                                    elif result == "SAFE":
+                                        add_monitoring_event(tc, "SCAN_CLEAN", "Scout Agent: Live transaction verified clean.")
+                        except Exception as e:
+                            pass
         except Exception as e:
-            print(f"Scout Error: {e}")
-            
-        await asyncio.sleep(60) # Run every minute
+            await asyncio.sleep(10)
 
 @app.on_event("startup")
 async def startup_event():
@@ -171,14 +208,27 @@ def _scan_with_groq(prompt: str, Vuln) -> list:
     text = resp.json()["choices"][0]["message"]["content"].strip()
     return _parse_vulns(text, Vuln)
 
-def scan_for_vulnerabilities(source_code: str, ecosystem: str = "Solidity") -> list[Vulnerability]:
+def scan_for_vulnerabilities(source_code: str, ecosystem: str = "Solidity", contract_address: str = None) -> list[Vulnerability]:
     load_dotenv(dotenv_path=Path(__file__).parent / ".env", override=True)
     raw_keys = os.getenv("GEMINI_API_KEY", "")
     current_keys = [k.strip() for k in raw_keys.split(",") if k.strip() and k.strip() != "PASTE_YOUR_GEMINI_KEY_HERE"]
 
+    memory_context = ""
+    if contract_address:
+        from database import get_false_positives
+        try:
+            fps = get_false_positives(contract_address)
+            if fps:
+                memory_context = "CRITICAL INSTRUCTION - FALSE POSITIVES TO IGNORE:\n"
+                for fp in fps:
+                    memory_context += f"- Do NOT flag '{fp['type']}'. The team dismissed it because: '{fp['reason']}'.\n"
+        except Exception:
+            pass
+
     prompt = f"""You are an elite Web3 smart contract security auditor specializing in {ecosystem}.
 Analyze the following {ecosystem} source code for all security vulnerabilities.
 
+{memory_context}
 Return ONLY a raw JSON array of objects. Do NOT include markdown blocks like ```json. Just output the array.
 If the code is perfectly secure, return an empty array [].
 
@@ -301,7 +351,7 @@ def scan_contract(request: Request, payload: ScanRequest):
         return ScanResponse(**cached)
         
     # 3. Run Analysis & AI Remediation
-    vulns = scan_for_vulnerabilities(source_code, payload.ecosystem)
+    vulns = scan_for_vulnerabilities(source_code, payload.ecosystem, address)
     
     # 4. Calculate Audit Hash
     vulns_dicts = [v.dict() for v in vulns]
@@ -463,6 +513,21 @@ def get_report(request: Request, hash_key: str):
     if not cached:
         raise HTTPException(status_code=404, detail="Report not found")
     return ScanResponse(**cached)
+
+class DismissVulnRequest(BaseModel):
+    contract_address: str
+    vuln_type: str
+    reason: str
+
+@app.post("/dismiss_vulnerability")
+@limiter.limit("10/minute")
+def dismiss_vulnerability(request: Request, payload: DismissVulnRequest):
+    try:
+        from database import add_false_positive
+        add_false_positive(payload.contract_address, payload.vuln_type, payload.reason)
+        return {"message": f"Added '{payload.vuln_type}' to contextual memory for {payload.contract_address}."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 class UpdateTxRequest(BaseModel):
     hash_key: str

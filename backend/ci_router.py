@@ -9,6 +9,8 @@ ci_router = APIRouter()
 class PRScanRequest(BaseModel):
     files: dict[str, str] # filename -> content
     ecosystem: str = "Rust" # Rust or Solidity
+    github_repo: str = None # Owner/Repo format
+    base_branch: str = "main"
 
 # Load the base API config
 def get_gemini_client():
@@ -51,6 +53,49 @@ Do NOT wrap your response in a generic JSON block unless necessary, return pure 
                 temperature=0.1
             )
         )
-        return {"report": response.text.strip()}
+        report = response.text.strip()
+        
+        # Almanax Auto-Fix Feature
+        if payload.github_repo and "All Clear!" not in report and "\u2705" not in report:
+            github_token = os.getenv("GITHUB_TOKEN")
+            if github_token:
+                try:
+                    from github import Github
+                    import uuid
+                    g = Github(github_token)
+                    repo = g.get_repo(payload.github_repo)
+                    
+                    new_branch_name = f"web3guard-autofix-{uuid.uuid4().hex[:8]}"
+                    sb = repo.get_branch(payload.base_branch)
+                    repo.create_git_ref(ref=f"refs/heads/{new_branch_name}", sha=sb.commit.sha)
+                    
+                    for filename, code in payload.files.items():
+                        secure_prompt = f"Rewrite this {payload.ecosystem} code to be 100% mathematically secure against the vulnerabilities identified. Return ONLY raw code, no markdown blocks.\n\n{code}"
+                        sec_resp = client.models.generate_content(
+                            model='gemini-2.0-flash',
+                            contents=secure_prompt
+                        )
+                        secure_code = sec_resp.text.strip()
+                        if secure_code.startswith("```"):
+                            secure_code = "\\n".join(secure_code.split("\\n")[1:-1])
+                        
+                        try:
+                            contents = repo.get_contents(filename, ref=payload.base_branch)
+                            repo.update_file(contents.path, f"Web3Guard Auto-Fix: Secured {filename}", secure_code, contents.sha, branch=new_branch_name)
+                        except Exception:
+                            # Fallback if file doesn't exist on main branch yet
+                            repo.create_file(filename, f"Web3Guard Auto-Fix: Created secure {filename}", secure_code, branch=new_branch_name)
+                            
+                    pr = repo.create_pull(
+                        title="\U0001f6e1\ufe0f Web3Guard Auto-Fix PR",
+                        body=f"Web3 Guard AI detected vulnerabilities. This Auto-Fix PR patches them.\\n\\n### Security Report\\n{report}",
+                        head=new_branch_name,
+                        base=payload.base_branch
+                    )
+                    report += f"\\n\\n\U0001f6e0\ufe0f **Auto-Fix PR Created:** [View Pull Request]({pr.html_url})"
+                except Exception as e:
+                    report += f"\\n\\n\u26a0\ufe0f Failed to create Auto-Fix PR: {str(e)}"
+                    
+        return {"report": report}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

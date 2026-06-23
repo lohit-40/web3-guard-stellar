@@ -11,3 +11,5 @@ solana
 solders
 stellar-sdk
 psycopg2-binary
+PyGithub
+httpx-sse

@@ -43,6 +43,30 @@ def init_db():
             risk_level TEXT
         )
     ''')
+
+    # false_positives (Contextual Agent Memory)
+    if DB_URL:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS false_positives (
+                id SERIAL PRIMARY KEY,
+                contract_address TEXT,
+                vuln_type TEXT,
+                reason TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+    else:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS false_positives (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                contract_address TEXT,
+                vuln_type TEXT,
+                reason TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+    
+    # monitoring_events
     
     # monitoring_events
     if DB_URL:
@@ -276,5 +300,32 @@ def get_total_user_scans() -> int:
     if row and row[0]:
         return row[0]
     return 0
+
+def add_false_positive(contract_address: str, vuln_type: str, reason: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    if DB_URL:
+        cursor.execute('''
+            INSERT INTO false_positives (contract_address, vuln_type, reason)
+            VALUES (%s, %s, %s)
+        ''', (contract_address, vuln_type, reason))
+    else:
+        cursor.execute('''
+            INSERT INTO false_positives (contract_address, vuln_type, reason)
+            VALUES (?, ?, ?)
+        ''', (contract_address, vuln_type, reason))
+    conn.commit()
+    conn.close()
+
+def get_false_positives(contract_address: str) -> list[dict]:
+    conn = get_connection()
+    cursor = conn.cursor()
+    if DB_URL:
+        cursor.execute("SELECT vuln_type, reason FROM false_positives WHERE contract_address=%s", (contract_address,))
+    else:
+        cursor.execute("SELECT vuln_type, reason FROM false_positives WHERE contract_address=?", (contract_address,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [{"type": r[0], "reason": r[1]} for r in rows]
 
 init_db()

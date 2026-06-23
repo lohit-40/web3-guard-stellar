@@ -32,12 +32,18 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex flex-wrap gap-4 items-center justify-center md:justify-between pointer-events-auto">
         
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <img 
-            src="/logo.png" 
-            alt="Web3 Guard Logo" 
-            className="h-10 md:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105" 
-          />
+        <Link href="/" className="flex items-center gap-2 group pl-2">
+          <div className="relative flex items-center justify-center w-10 h-10 translate-y-1">
+            <img 
+              src="/shield.png" 
+              alt="Web3 Guard Shield" 
+              className="absolute w-[400%] max-w-none object-contain transition-transform duration-300 group-hover:scale-110" 
+            />
+          </div>
+          <span className="font-extrabold text-[26px] tracking-wider hidden md:block transition-transform duration-300 group-hover:scale-105">
+            <span className="text-brutal-text">WEB3</span>
+            <span className="text-brutal-orange">Guard</span>
+          </span>
         </Link>
 
         {/* Links */}
