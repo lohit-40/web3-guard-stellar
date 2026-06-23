@@ -13,3 +13,5 @@ stellar-sdk
 psycopg2-binary
 PyGithub
 httpx-sse
+PyJWT
+cryptography

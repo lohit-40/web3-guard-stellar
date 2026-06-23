@@ -89,6 +89,24 @@ def init_db():
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+
+    # github_installations
+    if DB_URL:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS github_installations (
+                installation_id BIGINT PRIMARY KEY,
+                account_name TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+    else:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS github_installations (
+                installation_id INTEGER PRIMARY KEY,
+                account_name TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
     conn.commit()
     conn.close()
 
@@ -327,5 +345,31 @@ def get_false_positives(contract_address: str) -> list[dict]:
     rows = cursor.fetchall()
     conn.close()
     return [{"type": r[0], "reason": r[1]} for r in rows]
+
+def add_installation(installation_id: int, account_name: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    if DB_URL:
+        cursor.execute('''
+            INSERT INTO github_installations (installation_id, account_name)
+            VALUES (%s, %s) ON CONFLICT (installation_id) DO NOTHING
+        ''', (installation_id, account_name))
+    else:
+        cursor.execute('''
+            INSERT OR IGNORE INTO github_installations (installation_id, account_name)
+            VALUES (?, ?)
+        ''', (installation_id, account_name))
+    conn.commit()
+    conn.close()
+
+def remove_installation(installation_id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+    if DB_URL:
+        cursor.execute("DELETE FROM github_installations WHERE installation_id=%s", (installation_id,))
+    else:
+        cursor.execute("DELETE FROM github_installations WHERE installation_id=?", (installation_id,))
+    conn.commit()
+    conn.close()
 
 init_db()

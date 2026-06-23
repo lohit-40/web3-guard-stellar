@@ -1,8 +1,14 @@
-from fastapi import APIRouter, Header, HTTPException, Depends
+from fastapi import APIRouter, Header, HTTPException, Request, BackgroundTasks
 from pydantic import BaseModel
 from google import genai
 import os
 import json
+import hmac
+import hashlib
+import time
+import jwt
+import requests
+from database import add_installation, remove_installation
 
 ci_router = APIRouter()
 
@@ -12,7 +18,6 @@ class PRScanRequest(BaseModel):
     github_repo: str = None # Owner/Repo format
     base_branch: str = "main"
 
-# Load the base API config
 def get_gemini_client():
     raw_keys = os.getenv("GEMINI_API_KEY", "")
     keys = [k.strip() for k in raw_keys.split(",") if k.strip()]
@@ -20,20 +25,43 @@ def get_gemini_client():
         raise HTTPException(status_code=500, detail="Gemini API Key missing")
     return genai.Client(api_key=keys[0])
 
-@ci_router.post("/scan_pr")
-async def scan_pull_request(payload: PRScanRequest, x_api_key: str = Header(None)):
-    if x_api_key != "WEB3GUARD_HACKATHON_DEMO" and x_api_key != os.getenv("CI_API_KEY"):
-        raise HTTPException(status_code=401, detail="Invalid or Missing API Key. Use WEB3GUARD_HACKATHON_DEMO for testing.")
+def get_installation_access_token(installation_id: int) -> str:
+    """Generates a JWT and requests an installation access token from GitHub."""
+    app_id = os.getenv("GITHUB_APP_ID")
+    private_key = os.getenv("GITHUB_APP_PRIVATE_KEY")
+    if not app_id or not private_key:
+        raise ValueError("GitHub App ID or Private Key missing")
+        
+    private_key = private_key.replace('\\n', '\n')
     
-    if not payload.files:
-        return {"report": "No valid smart contract files found in this PR."}
+    now = int(time.time())
+    payload = {
+        "iat": now - 60,
+        "exp": now + (10 * 60),
+        "iss": app_id
+    }
+    encoded_jwt = jwt.encode(payload, private_key, algorithm="RS256")
+    
+    headers = {
+        "Authorization": f"Bearer {encoded_jwt}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    url = f"https://api.github.com/app/installations/{installation_id}/access_tokens"
+    response = requests.post(url, headers=headers)
+    response.raise_for_status()
+    return response.json()["token"]
 
-    # Format the payload for the prompt
-    code_context = ""
-    for filename, code in payload.files.items():
-        code_context += f"## File: {filename}\n```\n{code}\n```\n\n"
+async def process_pr_scan(payload: PRScanRequest, installation_id: int = None):
+    """Background task to run the AI scan and create an Auto-Fix PR."""
+    try:
+        if not payload.files:
+            return
 
-    system_instruction = f"""
+        code_context = ""
+        for filename, code in payload.files.items():
+            code_context += f"## File: {filename}\n```\n{code}\n```\n\n"
+
+        system_instruction = f"""
 You are the Web3 Guard CI/CD GitHub Bot. 
 You are analyzing a Pull Request containing {payload.ecosystem} smart contracts.
 Identify any security vulnerabilities (Reentrancy, Integer Overflows, Unsafe CPIs, Account Substitution, etc).
@@ -41,10 +69,8 @@ Return your response precisely formatted as a Markdown GitHub PR Comment.
 Use emojis, bold syntax, and clear severity headers (Critical, High, Medium, Low).
 If no vulnerabilities exist, return an enthusiastic congratulatory message stating 'Web3 Guard: All Clear! \u2705'.
 Do NOT wrap your response in a generic JSON block unless necessary, return pure markdown text.
-    """
-
-    client = get_gemini_client()
-    try:
+"""
+        client = get_gemini_client()
         response = client.models.generate_content(
             model='gemini-2.0-flash',
             contents=code_context,
@@ -55,9 +81,17 @@ Do NOT wrap your response in a generic JSON block unless necessary, return pure 
         )
         report = response.text.strip()
         
-        # Almanax Auto-Fix Feature
+        # Almanax Auto-Fix Feature via GitHub App Token
         if payload.github_repo and "All Clear!" not in report and "\u2705" not in report:
-            github_token = os.getenv("GITHUB_TOKEN")
+            github_token = None
+            if installation_id:
+                try:
+                    github_token = get_installation_access_token(installation_id)
+                except Exception as e:
+                    print(f"Failed to get installation token: {e}")
+            else:
+                github_token = os.getenv("GITHUB_TOKEN") # Fallback to personal token for testing
+                
             if github_token:
                 try:
                     from github import Github
@@ -83,7 +117,6 @@ Do NOT wrap your response in a generic JSON block unless necessary, return pure 
                             contents = repo.get_contents(filename, ref=payload.base_branch)
                             repo.update_file(contents.path, f"Web3Guard Auto-Fix: Secured {filename}", secure_code, contents.sha, branch=new_branch_name)
                         except Exception:
-                            # Fallback if file doesn't exist on main branch yet
                             repo.create_file(filename, f"Web3Guard Auto-Fix: Created secure {filename}", secure_code, branch=new_branch_name)
                             
                     pr = repo.create_pull(
@@ -92,10 +125,86 @@ Do NOT wrap your response in a generic JSON block unless necessary, return pure 
                         head=new_branch_name,
                         base=payload.base_branch
                     )
-                    report += f"\\n\\n\U0001f6e0\ufe0f **Auto-Fix PR Created:** [View Pull Request]({pr.html_url})"
+                    print(f"Auto-Fix PR Created: {pr.html_url}")
                 except Exception as e:
-                    report += f"\\n\\n\u26a0\ufe0f Failed to create Auto-Fix PR: {str(e)}"
+                    print(f"Failed to create Auto-Fix PR: {str(e)}")
                     
-        return {"report": report}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Error in background PR scan: {e}")
+
+async def fetch_and_process_pr(inst_id: int, repo_full_name: str, base_branch: str, pr_number: int):
+    try:
+        token = get_installation_access_token(inst_id)
+        from github import Github
+        g = Github(token)
+        repo = g.get_repo(repo_full_name)
+        pr = repo.get_pull(pr_number)
+        
+        files_dict = {}
+        for file in pr.get_files():
+            if file.filename.endswith(".sol") or file.filename.endswith(".rs"):
+                contents = repo.get_contents(file.filename, ref=pr.head.sha)
+                files_dict[file.filename] = contents.decoded_content.decode()
+                
+        if files_dict:
+            payload = PRScanRequest(
+                files=files_dict,
+                ecosystem="Solidity" if any(f.endswith('.sol') for f in files_dict) else "Rust",
+                github_repo=repo_full_name,
+                base_branch=base_branch
+            )
+            await process_pr_scan(payload, installation_id=inst_id)
+    except Exception as e:
+        print(f"Failed to fetch PR files: {e}")
+
+@ci_router.post("/scan_pr")
+async def scan_pull_request(payload: PRScanRequest, background_tasks: BackgroundTasks, x_api_key: str = Header(None)):
+    """Legacy manual trigger endpoint"""
+    if x_api_key != "WEB3GUARD_HACKATHON_DEMO" and x_api_key != os.getenv("CI_API_KEY"):
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+    background_tasks.add_task(process_pr_scan, payload)
+    return {"status": "processing_started"}
+
+@ci_router.post("/webhook")
+async def handle_github_webhook(request: Request, background_tasks: BackgroundTasks):
+    """Production GitHub App Webhook Endpoint"""
+    signature = request.headers.get("x-hub-signature-256")
+    event = request.headers.get("x-github-event")
+    
+    if not signature:
+        raise HTTPException(status_code=401, detail="Missing signature")
+        
+    secret = os.getenv("GITHUB_WEBHOOK_SECRET", "").encode()
+    body = await request.body()
+    
+    # Verify HMAC signature
+    hash_obj = hmac.new(secret, body, hashlib.sha256)
+    expected_sig = "sha256=" + hash_obj.hexdigest()
+    if not hmac.compare_digest(expected_sig, signature):
+        raise HTTPException(status_code=401, detail="Invalid signature")
+        
+    data = json.loads(body)
+    
+    if event == "installation":
+        action = data.get("action")
+        inst_id = data["installation"]["id"]
+        account = data["installation"]["account"]["login"]
+        if action == "created":
+            add_installation(inst_id, account)
+        elif action == "deleted":
+            remove_installation(inst_id)
+            
+    elif event == "pull_request":
+        action = data.get("action")
+        if action in ["opened", "synchronize"]:
+            inst_id = data.get("installation", {}).get("id")
+            if not inst_id:
+                return {"status": "ignored - no installation id"}
+            repo_full_name = data["repository"]["full_name"]
+            base_branch = data["pull_request"]["base"]["ref"]
+            pr_number = data["pull_request"]["number"]
+            
+            # Use background tasks to fetch files and process them immediately freeing the webhook response
+            background_tasks.add_task(fetch_and_process_pr, inst_id, repo_full_name, base_branch, pr_number)
+            
+    return {"status": "accepted"}
