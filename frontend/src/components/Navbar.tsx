@@ -28,11 +28,11 @@ export default function Navbar() {
     : "";
 
   return (
-    <nav className="relative w-full z-40 px-6 py-4 md:px-12 pointer-events-none">
-      <div className="max-w-7xl mx-auto flex flex-wrap gap-4 items-center justify-center md:justify-between pointer-events-auto">
+    <nav className="relative w-full z-40 px-6 pt-8 pb-4 md:px-24 md:pt-12 md:pb-6 pointer-events-none">
+      <div className="max-w-7xl mx-auto flex flex-wrap md:flex-nowrap gap-4 items-center justify-between pointer-events-auto">
         
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group pl-2">
+        <Link href="/" className="flex items-center gap-2 group">
           <div className="relative flex items-center justify-center w-10 h-10 translate-y-1">
             <img 
               src="/shield.png" 
@@ -47,10 +47,10 @@ export default function Navbar() {
         </Link>
 
         {/* Links */}
-        <div className="flex w-full md:w-auto order-last md:order-none items-center justify-center gap-2 border-2 border-brutal-text bg-brutal-bg p-1 rounded-none shadow-[4px_4px_0px_0px_rgba(28,28,28,1)] overflow-x-auto no-scrollbar">
+        <div className="flex w-full md:w-auto order-last md:order-none items-center justify-center gap-1 border-2 border-brutal-text bg-brutal-bg p-1 rounded-none shadow-[4px_4px_0px_0px_rgba(28,28,28,1)] overflow-x-auto no-scrollbar shrink-0">
           <Link 
             href="/"
-            className={`px-3 py-1.5 sm:px-6 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold transition-all ${
+            className={`px-2.5 py-1.5 md:px-3 lg:px-5 md:py-2 text-[10px] sm:text-xs uppercase tracking-[0.15em] font-bold transition-all ${
               pathname === "/" ? "bg-brutal-text text-brutal-bg" : "text-brutal-text/60 hover:text-brutal-text hover:bg-brutal-text/5"
             }`}
           >
@@ -58,7 +58,7 @@ export default function Navbar() {
           </Link>
           <Link 
             href="/explorer"
-            className={`px-3 py-1.5 sm:px-6 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold transition-all ${
+            className={`px-2.5 py-1.5 md:px-3 lg:px-5 md:py-2 text-[10px] sm:text-xs uppercase tracking-[0.15em] font-bold transition-all ${
               pathname === "/explorer" ? "bg-brutal-text text-brutal-bg" : "text-brutal-text/60 hover:text-brutal-text hover:bg-brutal-text/5"
             }`}
           >
@@ -66,7 +66,7 @@ export default function Navbar() {
           </Link>
           <Link 
             href="/about"
-            className={`px-3 py-1.5 sm:px-6 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold transition-all ${
+            className={`px-2.5 py-1.5 md:px-3 lg:px-5 md:py-2 text-[10px] sm:text-xs uppercase tracking-[0.15em] font-bold transition-all ${
               pathname === "/about" ? "bg-brutal-text text-brutal-bg" : "text-brutal-text/60 hover:text-brutal-text hover:bg-brutal-text/5"
             }`}
           >
@@ -74,11 +74,27 @@ export default function Navbar() {
           </Link>
           <Link 
             href="/dashboard"
-            className={`px-3 py-1.5 sm:px-6 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold transition-all ${
+            className={`px-2.5 py-1.5 md:px-3 lg:px-5 md:py-2 text-[10px] sm:text-xs uppercase tracking-[0.15em] font-bold transition-all ${
               pathname === "/dashboard" ? "bg-brutal-text text-brutal-bg" : "text-brutal-text/60 hover:text-brutal-text hover:bg-brutal-text/5"
             }`}
           >
             monitor
+          </Link>
+          <Link 
+            href="/dashboard/github"
+            className={`px-2.5 py-1.5 md:px-3 lg:px-5 md:py-2 text-[10px] sm:text-xs uppercase tracking-[0.15em] font-bold transition-all flex items-center gap-1 ${
+              pathname === "/dashboard/github" ? "bg-brutal-text text-brutal-bg" : "text-brutal-text/60 hover:text-brutal-text hover:bg-brutal-text/5"
+            }`}
+          >
+            github
+          </Link>
+          <Link 
+            href="/dashboard/threat-model"
+            className={`px-2.5 py-1.5 md:px-3 lg:px-5 md:py-2 text-[10px] sm:text-xs uppercase tracking-[0.15em] font-bold transition-all flex items-center gap-1 ${
+              pathname === "/dashboard/threat-model" ? "bg-brutal-text text-brutal-bg" : "text-brutal-text/60 hover:text-brutal-text hover:bg-brutal-text/5"
+            }`}
+          >
+            threat-model
           </Link>
         </div>
 

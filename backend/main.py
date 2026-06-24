@@ -109,6 +109,30 @@ async def startup_event():
 
 app.include_router(ci_router, prefix="/api/ci")
 
+from database import get_github_installations, add_custom_rule, get_custom_rules
+
+@app.get("/api/github/status")
+@limiter.limit("10/minute")
+def get_github_status(request: Request):
+    return {"installations": get_github_installations()}
+
+class CustomRuleRequest(BaseModel):
+    repo_owner: str
+    rule_text: str
+    severity: str
+
+@app.post("/api/github/custom_rules")
+@limiter.limit("10/minute")
+def add_github_custom_rule(request: Request, payload: CustomRuleRequest):
+    add_custom_rule(payload.repo_owner, payload.rule_text, payload.severity)
+    return {"message": "Rule added successfully", "rules": get_custom_rules(payload.repo_owner)}
+
+@app.get("/api/github/custom_rules/{repo_owner}")
+@limiter.limit("10/minute")
+def get_github_custom_rules_endpoint(request: Request, repo_owner: str):
+    return {"rules": get_custom_rules(repo_owner)}
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=os.getenv("CORS_ORIGINS", "*").split(","),
@@ -772,6 +796,81 @@ def get_user_deployments(request: Request, address: str, chain_id: str = "1"):
                     if len(deployments) >= 3:
                         break
     return {"deployments": deployments}
+
+class ThreatModelRequest(BaseModel):
+    source_code: str
+    ecosystem: Optional[str] = "Solidity"
+
+class Threat(BaseModel):
+    category: str
+    threat_name: str
+    description: str
+    mitigation: str
+    risk_level: str
+
+class ThreatModelResponse(BaseModel):
+    mermaid_diagram: str
+    threats: list[Threat]
+
+@app.post("/api/threat_model", response_model=ThreatModelResponse)
+@limiter.limit("5/minute")
+def generate_threat_model(request: Request, payload: ThreatModelRequest):
+    load_dotenv(dotenv_path=Path(__file__).parent / ".env", override=True)
+    raw_keys = os.getenv("GEMINI_API_KEY", "")
+    current_keys = [k.strip() for k in raw_keys.split(",") if k.strip() and k.strip() != "PASTE_YOUR_GEMINI_KEY_HERE"]
+    
+    if not current_keys:
+        raise HTTPException(status_code=400, detail="GEMINI_API_KEY is missing")
+
+    system_instruction = """
+You are an elite Web3 Security Architect and Threat Modeler.
+Analyze the provided smart contract code and generate a comprehensive STRIDE threat model.
+Return ONLY a valid JSON object exactly matching this structure (NO markdown wrappers, NO ```json):
+
+{
+  "mermaid_diagram": "graph TD\\n  User-->|Calls|Contract\\n...",
+  "threats": [
+    {
+      "category": "Spoofing",
+      "threat_name": "Phishing or Identity Spoofing",
+      "description": "Explanation of the threat...",
+      "mitigation": "How to fix it...",
+      "risk_level": "High"
+    }
+  ]
+}
+
+For the mermaid_diagram:
+1. Generate a valid Mermaid.js graph showing the actors, trust boundaries, and the contract's internal state.
+2. Use `graph TD` or `flowchart TD`.
+3. Do NOT use markdown code blocks inside the string. It must be a raw mermaid string properly escaped for JSON.
+
+For the threats, use the STRIDE methodology:
+- Spoofing (identity)
+- Tampering (data)
+- Repudiation (logging)
+- Information Disclosure (privacy)
+- Denial of Service (availability)
+- Elevation of Privilege (authorization)
+"""
+
+    prompt = f"Analyze this {payload.ecosystem} code and generate a STRIDE threat model JSON:\n\n{payload.source_code}"
+    
+    client = genai.Client(api_key=current_keys[0])
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=prompt,
+            config=genai.types.GenerateContentConfig(
+                system_instruction=system_instruction,
+                temperature=0.2,
+                response_mime_type="application/json"
+            )
+        )
+        data = json.loads(response.text)
+        return ThreatModelResponse(**data)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate threat model: {str(e)}")
 
 class SecureContractRequest(BaseModel):
     contract_address: Optional[str] = None

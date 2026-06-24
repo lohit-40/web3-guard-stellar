@@ -154,7 +154,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div ref={containerRef} className="min-h-screen pt-32 pb-24 px-6 md:px-12 pointer-events-auto" style={{ backgroundColor: '#F2F0EB' }}>
+    <div ref={containerRef} className="min-h-screen pt-32 pb-24 px-6 md:px-24 pointer-events-auto" style={{ backgroundColor: '#F2F0EB' }}>
       <div className="max-w-7xl mx-auto space-y-12">
 
         {/* Header */}

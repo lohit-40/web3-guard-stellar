@@ -107,6 +107,28 @@ def init_db():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+    # custom_rules
+    if DB_URL:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS custom_rules (
+                id SERIAL PRIMARY KEY,
+                repo_owner TEXT,
+                rule_text TEXT,
+                severity TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+    else:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS custom_rules (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                repo_owner TEXT,
+                rule_text TEXT,
+                severity TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
     conn.commit()
     conn.close()
 
@@ -371,5 +393,40 @@ def remove_installation(installation_id: int):
         cursor.execute("DELETE FROM github_installations WHERE installation_id=?", (installation_id,))
     conn.commit()
     conn.close()
+
+def get_github_installations():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT installation_id, account_name FROM github_installations")
+    rows = cursor.fetchall()
+    conn.close()
+    return [{"installation_id": r[0], "account_name": r[1]} for r in rows]
+
+def add_custom_rule(repo_owner: str, rule_text: str, severity: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    if DB_URL:
+        cursor.execute('''
+            INSERT INTO custom_rules (repo_owner, rule_text, severity)
+            VALUES (%s, %s, %s)
+        ''', (repo_owner, rule_text, severity))
+    else:
+        cursor.execute('''
+            INSERT INTO custom_rules (repo_owner, rule_text, severity)
+            VALUES (?, ?, ?)
+        ''', (repo_owner, rule_text, severity))
+    conn.commit()
+    conn.close()
+
+def get_custom_rules(repo_owner: str) -> list[dict]:
+    conn = get_connection()
+    cursor = conn.cursor()
+    if DB_URL:
+        cursor.execute("SELECT rule_text, severity FROM custom_rules WHERE repo_owner=%s", (repo_owner,))
+    else:
+        cursor.execute("SELECT rule_text, severity FROM custom_rules WHERE repo_owner=?", (repo_owner,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [{"rule_text": r[0], "severity": r[1]} for r in rows]
 
 init_db()

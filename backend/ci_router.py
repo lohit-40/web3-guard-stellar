@@ -61,6 +61,16 @@ async def process_pr_scan(payload: PRScanRequest, installation_id: int = None):
         for filename, code in payload.files.items():
             code_context += f"## File: {filename}\n```\n{code}\n```\n\n"
 
+        custom_rules_text = ""
+        if payload.github_repo:
+            from database import get_custom_rules
+            repo_owner = payload.github_repo.split('/')[0]
+            rules = get_custom_rules(repo_owner)
+            if rules:
+                custom_rules_text = "\nCRITICAL CUSTOM RULES TO ENFORCE FOR THIS REPOSITORY:\n"
+                for r in rules:
+                    custom_rules_text += f"- [{r['severity']}] {r['rule_text']}\n"
+
         system_instruction = f"""
 You are the Web3 Guard CI/CD GitHub Bot. 
 You are analyzing a Pull Request containing {payload.ecosystem} smart contracts.
@@ -69,6 +79,7 @@ Return your response precisely formatted as a Markdown GitHub PR Comment.
 Use emojis, bold syntax, and clear severity headers (Critical, High, Medium, Low).
 If no vulnerabilities exist, return an enthusiastic congratulatory message stating 'Web3 Guard: All Clear! \u2705'.
 Do NOT wrap your response in a generic JSON block unless necessary, return pure markdown text.
+{custom_rules_text}
 """
         client = get_gemini_client()
         response = client.models.generate_content(
