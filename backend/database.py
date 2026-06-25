@@ -368,6 +368,14 @@ def get_false_positives(contract_address: str) -> list[dict]:
     conn.close()
     return [{"type": r[0], "reason": r[1]} for r in rows]
 
+def get_all_false_positives() -> list[dict]:
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT contract_address, vuln_type, reason, timestamp FROM false_positives ORDER BY timestamp DESC")
+    rows = cursor.fetchall()
+    conn.close()
+    return [{"contract_address": r[0], "type": r[1], "reason": r[2], "timestamp": r[3]} for r in rows]
+
 def add_installation(installation_id: int, account_name: str):
     conn = get_connection()
     cursor = conn.cursor()

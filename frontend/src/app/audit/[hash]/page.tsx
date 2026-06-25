@@ -36,6 +36,33 @@ export default function SharedAuditPage() {
   const [result, setResult] = useState<ScanResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [dismissingVuln, setDismissingVuln] = useState<Vulnerability | null>(null);
+  const [dismissReason, setDismissReason] = useState("");
+  const [isDismissing, setIsDismissing] = useState(false);
+
+  const handleDismiss = async () => {
+    if (!dismissingVuln || !dismissReason.trim()) return;
+    setIsDismissing(true);
+    try {
+      const res = await fetch(`${API_URL}/dismiss_vulnerability`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contract_address: result?.address,
+          vuln_type: dismissingVuln.type,
+          reason: dismissReason
+        })
+      });
+      if (!res.ok) throw new Error("Failed to dismiss vulnerability");
+      toast.success("Vulnerability dismissed as false positive. Agent memory updated.");
+      setDismissingVuln(null);
+      setDismissReason("");
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setIsDismissing(false);
+    }
+  };
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -237,6 +264,17 @@ export default function SharedAuditPage() {
                   <p className="text-neutral-300 text-sm leading-relaxed">{v.remediation}</p>
                 </div>
               )}
+
+              {result.address && result.address !== "Raw Source Code Provided" && (
+                <div className="mt-4 flex justify-end">
+                  <button
+                    onClick={() => setDismissingVuln(v)}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-neutral-700 bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white transition-all text-[10px] tracking-widest uppercase font-bold"
+                  >
+                    Dismiss as False Positive
+                  </button>
+                </div>
+              )}
             </div>
           ))}
           
@@ -249,6 +287,43 @@ export default function SharedAuditPage() {
           )}
         </div>
       </main>
+
+      {/* Dismissal Modal */}
+      {dismissingVuln && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 relative shadow-2xl">
+            <h3 className="text-xl font-medium text-white mb-2 tracking-tight">Dismiss Vulnerability</h3>
+            <p className="text-sm text-neutral-400 mb-6">
+              You are dismissing <span className="text-white font-bold">{dismissingVuln.type}</span>. Provide a reason so the AI Agent learns for future scans.
+            </p>
+            
+            <textarea
+              value={dismissReason}
+              onChange={(e) => setDismissReason(e.target.value)}
+              placeholder="E.g., This is intentional by design because..."
+              className="w-full bg-black/50 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-indigo-500 mb-6 min-h-[120px] resize-none"
+            />
+            
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => { setDismissingVuln(null); setDismissReason(""); }}
+                className="px-6 py-2.5 rounded-full border border-white/10 text-neutral-400 hover:text-white transition-all text-sm font-semibold tracking-wide"
+                disabled={isDismissing}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDismiss}
+                disabled={!dismissReason.trim() || isDismissing}
+                className="px-6 py-2.5 rounded-full bg-indigo-500 hover:bg-indigo-600 text-white transition-all text-sm font-semibold tracking-wide disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isDismissing ? <div className="w-4 h-4 rounded-full border-t-2 border-r-2 border-white animate-spin" /> : null}
+                Confirm Dismissal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

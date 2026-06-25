@@ -21,6 +21,13 @@ interface LiveEvent {
   vuln_count?: number;  // actual vulnerability count from the AI scan
 }
 
+interface FalsePositive {
+  contract_address: string;
+  type: string;
+  reason: string;
+  timestamp: string;
+}
+
 interface MetricsData {
   active_users: number;
   watched_contracts: number;
@@ -57,6 +64,7 @@ function horizonTxToEvent(tx: Record<string, unknown>, watchedContracts: string[
 export default function Dashboard() {
   const [metrics, setMetrics] = useState<MetricsData | null>(null);
   const [events, setEvents] = useState<LiveEvent[]>([]);
+  const [falsePositives, setFalsePositives] = useState<FalsePositive[]>([]);
   const [sseStatus, setSseStatus] = useState<SSEStatus>("CONNECTING");
   const [watchedContracts, setWatchedContracts] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -88,6 +96,18 @@ export default function Dashboard() {
       }
     } catch (e) {
       console.error("Failed to fetch metrics", e);
+    }
+  }, []);
+
+  const fetchFalsePositives = useCallback(async () => {
+    try {
+      const res = await fetch("/api/false_positives");
+      const data = await res.json();
+      if (data.false_positives) {
+        setFalsePositives(data.false_positives);
+      }
+    } catch (e) {
+      console.error("Failed to fetch false positives", e);
     }
   }, []);
 
@@ -132,10 +152,14 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchMetrics();
+    fetchFalsePositives();
     // Refresh static metrics every 60 s
-    const interval = setInterval(fetchMetrics, 60000);
+    const interval = setInterval(() => {
+      fetchMetrics();
+      fetchFalsePositives();
+    }, 60000);
     return () => clearInterval(interval);
-  }, [fetchMetrics]);
+  }, [fetchMetrics, fetchFalsePositives]);
 
   // Start SSE after first metrics fetch so we have the watched addresses
   useEffect(() => {
@@ -300,6 +324,57 @@ export default function Dashboard() {
                       </motion.div>
                     );
                   })}
+                </AnimatePresence>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Triage / False Positives Section */}
+        <div className="gsap-dash-feed opacity-0 border-4 border-brutal-text bg-white shadow-[12px_12px_0px_0px_rgba(28,28,28,1)] overflow-hidden">
+          <div className="bg-brutal-text p-4 border-b-4 border-brutal-text text-brutal-bg flex items-center justify-between">
+            <h2 className="font-bold uppercase tracking-[0.2em] flex items-center gap-3">
+              <ShieldAlert className="w-5 h-5" /> Agent Memory / Dismissed Alerts
+            </h2>
+            <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 border border-brutal-bg text-brutal-bg">
+              {falsePositives.length} RULES LEARNED
+            </span>
+          </div>
+
+          <div className="p-0">
+            {falsePositives.length === 0 ? (
+              <div className="p-8 text-center font-mono opacity-50 uppercase">
+                No false positives dismissed yet. Agent memory is empty.
+              </div>
+            ) : (
+              <div className="divide-y-4 divide-brutal-text">
+                <AnimatePresence initial={false}>
+                  {falsePositives.map((fp, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -20, height: 0 }}
+                      animate={{ opacity: 1, x: 0, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="p-6 flex flex-col md:flex-row gap-6 hover:bg-brutal-text/5 transition-colors"
+                    >
+                      <div className="flex-1 space-y-2">
+                        <div className="flex items-center gap-3">
+                          <span className="px-2 py-0.5 text-xs font-bold uppercase tracking-widest border-2 border-brutal-text text-brutal-text">
+                            DISMISSED: {fp.type}
+                          </span>
+                          <span className="font-mono text-xs opacity-50 uppercase">
+                            {new Date(fp.timestamp).toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="font-mono text-sm leading-relaxed max-w-2xl mt-2 italic text-brutal-text/80">
+                          &quot;{fp.reason}&quot;
+                        </p>
+                        <div className="font-mono text-xs font-bold pt-2">
+                          TARGET: <span className="text-brutal-blue">{truncate(fp.contract_address)}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
                 </AnimatePresence>
               </div>
             )}

@@ -553,6 +553,15 @@ def dismiss_vulnerability(request: Request, payload: DismissVulnRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/false_positives")
+@limiter.limit("20/minute")
+def get_all_false_positives_endpoint(request: Request):
+    try:
+        from database import get_all_false_positives
+        return {"false_positives": get_all_false_positives()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 class UpdateTxRequest(BaseModel):
     hash_key: str
     audit_tx_hash: str
