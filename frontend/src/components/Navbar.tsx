@@ -96,6 +96,14 @@ export default function Navbar() {
           >
             threat-model
           </Link>
+          <a 
+            href="https://x.com/Web3zGuard"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`px-2.5 py-1.5 md:px-3 lg:px-5 md:py-2 text-[10px] sm:text-xs uppercase tracking-[0.15em] font-bold transition-all text-brutal-text/60 hover:text-brutal-text hover:bg-brutal-text/5`}
+          >
+            𝕏
+          </a>
         </div>
 
         {/* Wallet Connect — Multi-Chain */}
