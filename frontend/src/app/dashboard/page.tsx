@@ -69,6 +69,7 @@ export default function Dashboard() {
   const [watchedContracts, setWatchedContracts] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const esRef = useRef<EventSource | null>(null);
+  const backendEsRef = useRef<EventSource | null>(null);
 
   useGSAP(() => {
     gsap.fromTo(".gsap-dash-title", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 1, ease: "power4.out" });
@@ -161,11 +162,37 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, [fetchMetrics, fetchFalsePositives]);
 
+  const connectBackendSSE = useCallback(() => {
+    if (backendEsRef.current) {
+      backendEsRef.current.close();
+    }
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const es = new EventSource(`${API_URL}/api/stream_events`);
+    backendEsRef.current = es;
+
+    es.onmessage = (e: MessageEvent) => {
+      if (!e.data) return;
+      try {
+        const newEvent = JSON.parse(e.data);
+        setEvents((prev) => [newEvent, ...prev]);
+      } catch (err) {
+        console.error("Error parsing backend SSE:", err);
+      }
+    };
+
+    es.onerror = () => {
+      es.close();
+      setTimeout(connectBackendSSE, 5000);
+    };
+  }, []);
+
   // Start SSE after first metrics fetch so we have the watched addresses
   useEffect(() => {
     connectHorizonSSE();
+    connectBackendSSE();
     return () => {
       esRef.current?.close();
+      backendEsRef.current?.close();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

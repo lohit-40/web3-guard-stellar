@@ -29,6 +29,23 @@ app = FastAPI()
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+class SSEBroadcaster:
+    def __init__(self):
+        self.queues = []
+
+    def add_queue(self, q):
+        self.queues.append(q)
+
+    def remove_queue(self, q):
+        if q in self.queues:
+            self.queues.remove(q)
+
+    def broadcast(self, data: dict):
+        for q in self.queues:
+            q.put_nowait(data)
+
+broadcaster = SSEBroadcaster()
+
 async def scout_monitor_loop():
     import httpx_sse
     import httpx
@@ -82,8 +99,22 @@ async def scout_monitor_loop():
                                 for tc in touched_contracts:
                                     if result.startswith("ANOMALY:"):
                                         add_monitoring_event(tc, "VULN_DETECTED", f"Scout Agent: {result[8:].strip()}")
+                                        broadcaster.broadcast({
+                                            "type": "VULN_DETECTED",
+                                            "contract": tc,
+                                            "details": f"Scout Agent: {result[8:].strip()}",
+                                            "id": str(time.time()),
+                                            "time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+                                        })
                                     elif result == "SAFE":
                                         add_monitoring_event(tc, "SCAN_CLEAN", "Scout Agent: Live transaction verified clean.")
+                                        broadcaster.broadcast({
+                                            "type": "SCAN_CLEAN",
+                                            "contract": tc,
+                                            "details": "Scout Agent: Live transaction verified clean.",
+                                            "id": str(time.time()),
+                                            "time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+                                        })
                         except Exception as e:
                             pass
         except Exception as e:
@@ -105,7 +136,23 @@ async def startup_event():
     
     asyncio.create_task(scout_monitor_loop())
 
+from fastapi.responses import StreamingResponse
 
+@app.get("/api/stream_events")
+async def stream_events(request: Request):
+    q = asyncio.Queue()
+    broadcaster.add_queue(q)
+    
+    async def event_generator():
+        try:
+            while True:
+                # Wait for an event to be added to the queue
+                data = await q.get()
+                yield f"data: {json.dumps(data)}\n\n"
+        except asyncio.CancelledError:
+            broadcaster.remove_queue(q)
+            
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 app.include_router(ci_router, prefix="/api/ci")
 
