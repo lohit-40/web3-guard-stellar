@@ -25,7 +25,6 @@ source_account = soroban_server.load_account(stellar_keypair.public_key)
 
 args = [
     scval.to_address(stellar_keypair.public_key), # caller
-    scval.to_address("CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"), # fee_token (Native XLM)
     scval.to_string("b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"), # audit_hash
     scval.to_string("SysContract1..."), # program_id
     scval.to_string("HIGH"),            # risk_level

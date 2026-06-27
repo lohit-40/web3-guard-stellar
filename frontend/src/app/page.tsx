@@ -67,8 +67,6 @@ async function submitSorobanProof({
         "store_proof",
         // caller: Address
         new Address(callerPublicKey).toScVal(),
-        // fee_token: Address (native XLM contract)
-        new Address(NATIVE_TOKEN_ID).toScVal(),
         // audit_hash: String
         nativeToScVal(auditHash, { type: "string" }),
         // program_id: String

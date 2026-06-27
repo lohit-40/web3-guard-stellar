@@ -1,6 +1,15 @@
 #![no_std]
 use soroban_sdk::{contract, contractimpl, contracttype, symbol_short, Env, String, Address, token};
 
+// ─── Constants ─────────────────────────────────────────────────────────────────
+
+// ~30 days in ledgers (assuming 5 seconds per ledger)
+const LEDGER_THRESHOLD_INSTANCE: u32 = 100_000;
+const LEDGER_TTL_INSTANCE: u32 = 500_000;
+
+const LEDGER_THRESHOLD_PERSISTENT: u32 = 100_000;
+const LEDGER_TTL_PERSISTENT: u32 = 500_000;
+
 // ─── Data Types ────────────────────────────────────────────────────────────────
 
 #[contracttype]
@@ -19,8 +28,10 @@ pub struct AuditRecord {
 // Storage key types
 #[contracttype]
 pub enum DataKey {
-    Proof(String), // audit_hash → AuditRecord
-    ProofCount,    // global counter
+    Admin,         // Instance
+    FeeToken,      // Instance
+    ProofCount,    // Instance
+    Proof(String), // Persistent: audit_hash → AuditRecord
 }
 
 // ─── Contract ──────────────────────────────────────────────────────────────────
@@ -30,13 +41,47 @@ pub struct ProofOfAuditContract;
 
 #[contractimpl]
 impl ProofOfAuditContract {
+    /// Initialize the contract with an admin and the official native token address for fees.
+    /// Can only be called once.
+    pub fn initialize(env: Env, admin: Address, fee_token: Address) {
+        if env.storage().instance().has(&DataKey::Admin) {
+            panic!("Already initialized");
+        }
+        env.storage().instance().set(&DataKey::Admin, &admin);
+        env.storage().instance().set(&DataKey::FeeToken, &fee_token);
+        
+        // Initialize proof count
+        env.storage().instance().set(&DataKey::ProofCount, &0u64);
+        
+        // Extend instance TTL
+        env.storage().instance().extend_ttl(LEDGER_THRESHOLD_INSTANCE, LEDGER_TTL_INSTANCE);
+    }
+
+    /// Withdraw collected fees to a specified address.
+    /// Only the admin can call this.
+    pub fn withdraw_fees(env: Env, to: Address) {
+        let admin: Address = env.storage().instance().get(&DataKey::Admin).expect("Not initialized");
+        admin.require_auth();
+
+        let fee_token: Address = env.storage().instance().get(&DataKey::FeeToken).expect("Not initialized");
+        let token_client = token::Client::new(&env, &fee_token);
+        
+        let contract_address = env.current_contract_address();
+        let balance = token_client.balance(&contract_address);
+        
+        if balance > 0 {
+            token_client.transfer(&contract_address, &to, &balance);
+        }
+
+        env.storage().instance().extend_ttl(LEDGER_THRESHOLD_INSTANCE, LEDGER_TTL_INSTANCE);
+    }
+
     /// Store a new audit proof on the Stellar ledger.
     /// Requires the user's signature (`caller.require_auth()`) and transfers 1 XLM as an audit fee
-    /// via inter-contract calls to the Native Token.
+    /// via inter-contract calls to the Native Token (which was set during initialization).
     pub fn store_proof(
         env: Env,
         caller: Address,
-        fee_token: Address,
         audit_hash: String,
         program_id: String,
         risk_level: String,
@@ -44,17 +89,14 @@ impl ProofOfAuditContract {
     ) -> u64 {
         caller.require_auth();
 
-        // Advanced mechanics: Inter-contract call to transfer token fee (1 XLM)
+        // Load trusted fee token address and charge fee (1 XLM = 10,000,000 stroops)
+        let fee_token: Address = env.storage().instance().get(&DataKey::FeeToken).expect("Not initialized");
         let token_client = token::Client::new(&env, &fee_token);
-        token_client.transfer(&caller, &env.current_contract_address(), &10_000_000); // 1 XLM = 10,000,000 stroops
+        token_client.transfer(&caller, &env.current_contract_address(), &10_000_000); 
 
         // Increment global proof counter
-        let proof_id: u64 = env
-            .storage()
-            .instance()
-            .get(&DataKey::ProofCount)
-            .unwrap_or(0u64)
-            + 1;
+        let mut proof_id: u64 = env.storage().instance().get(&DataKey::ProofCount).expect("Not initialized");
+        proof_id += 1;
 
         let record = AuditRecord {
             audit_hash: audit_hash.clone(),
@@ -67,15 +109,15 @@ impl ProofOfAuditContract {
             caller: caller.clone(),
         };
 
-        // Persist: audit_hash → record
-        env.storage()
-            .instance()
-            .set(&DataKey::Proof(audit_hash), &record);
+        // Persist: audit_hash → record in Persistent storage (prevents instance bloating)
+        let proof_key = DataKey::Proof(audit_hash.clone());
+        env.storage().persistent().set(&proof_key, &record);
+        // Extend TTL for this specific persistent entry
+        env.storage().persistent().extend_ttl(&proof_key, LEDGER_THRESHOLD_PERSISTENT, LEDGER_TTL_PERSISTENT);
 
-        // Persist updated counter
-        env.storage()
-            .instance()
-            .set(&DataKey::ProofCount, &proof_id);
+        // Persist updated counter in Instance storage
+        env.storage().instance().set(&DataKey::ProofCount, &proof_id);
+        env.storage().instance().extend_ttl(LEDGER_THRESHOLD_INSTANCE, LEDGER_TTL_INSTANCE);
 
         // Emit event for indexers / explorers to pick up
         env.events()
@@ -87,20 +129,31 @@ impl ProofOfAuditContract {
     /// Retrieve a stored audit proof by its hash.
     /// Returns None if not found (never audited).
     pub fn get_proof(env: Env, audit_hash: String) -> Option<AuditRecord> {
-        env.storage().instance().get(&DataKey::Proof(audit_hash))
+        let proof_key = DataKey::Proof(audit_hash);
+        if let Some(record) = env.storage().persistent().get::<_, AuditRecord>(&proof_key) {
+            // Bump TTL on read to keep active records alive
+            env.storage().persistent().extend_ttl(&proof_key, LEDGER_THRESHOLD_PERSISTENT, LEDGER_TTL_PERSISTENT);
+            Some(record)
+        } else {
+            None
+        }
     }
 
     /// Return the total number of proofs stored in this contract.
     pub fn total_proofs(env: Env) -> u64 {
-        env.storage()
-            .instance()
-            .get(&DataKey::ProofCount)
-            .unwrap_or(0u64)
+        env.storage().instance().extend_ttl(LEDGER_THRESHOLD_INSTANCE, LEDGER_TTL_INSTANCE);
+        env.storage().instance().get(&DataKey::ProofCount).unwrap_or(0u64)
     }
 
     /// Check if a given audit hash has been stored (verification helper).
     pub fn verify_proof(env: Env, audit_hash: String) -> bool {
-        env.storage().instance().has(&DataKey::Proof(audit_hash))
+        let proof_key = DataKey::Proof(audit_hash);
+        if env.storage().persistent().has(&proof_key) {
+            env.storage().persistent().extend_ttl(&proof_key, LEDGER_THRESHOLD_PERSISTENT, LEDGER_TTL_PERSISTENT);
+            true
+        } else {
+            false
+        }
     }
 }
 
@@ -117,6 +170,7 @@ mod tests {
         let env = Env::default();
         let auth_admin = Address::generate(&env);
         let caller = Address::generate(&env);
+        let admin = Address::generate(&env);
         
         env.mock_all_auths();
 
@@ -129,19 +183,22 @@ mod tests {
         let contract_id = env.register_contract(None, crate::ProofOfAuditContract);
         let client = ProofOfAuditContractClient::new(&env, &contract_id);
 
+        // Initialize contract
+        client.initialize(&admin, &token_id);
+
         let hash = String::from_str(&env, "abc123deadbeef");
         let program = String::from_str(&env, "GABCDEF123456");
         let risk = String::from_str(&env, "HIGH");
 
-        // Store a proof
-        let proof_id = client.store_proof(&caller, &token_id, &hash, &program, &risk, &3u32);
+        // Store a proof (fee_token is no longer passed!)
+        let proof_id = client.store_proof(&caller, &hash, &program, &risk, &3u32);
         assert_eq!(proof_id, 1);
 
         // Retrieve it
         let record = client.get_proof(&hash).unwrap();
         assert_eq!(record.vuln_count, 3);
         assert_eq!(record.proof_id, 1);
-        assert_eq!(record.caller, caller);
+        assert_eq!(record.caller, caller.clone());
 
         // Verify balance was deducted (1 XLM = 10,000,000)
         assert_eq!(token_client.balance(&caller), 1_000_000_000 - 10_000_000);
@@ -149,13 +206,23 @@ mod tests {
 
         assert!(client.verify_proof(&hash));
         assert_eq!(client.total_proofs(), 1);
+
+        // Admin withdraws fees
+        client.withdraw_fees(&admin);
+        assert_eq!(token_client.balance(&client.address), 0);
+        assert_eq!(token_client.balance(&admin), 10_000_000);
     }
 
     #[test]
     fn test_missing_proof_returns_none() {
         let env = Env::default();
+        let admin = Address::generate(&env);
+        let auth_admin = Address::generate(&env);
+        let token_id = env.register_stellar_asset_contract_v2(auth_admin.clone()).address();
+        
         let contract_id = env.register_contract(None, crate::ProofOfAuditContract);
         let client = ProofOfAuditContractClient::new(&env, &contract_id);
+        client.initialize(&admin, &token_id);
 
         let missing = String::from_str(&env, "nonexistent_hash");
         assert!(client.get_proof(&missing).is_none());
@@ -168,17 +235,20 @@ mod tests {
         let env = Env::default();
         let auth_admin = Address::generate(&env);
         let caller = Address::generate(&env);
+        let admin = Address::generate(&env);
         
         let token_id = env.register_stellar_asset_contract_v2(auth_admin.clone()).address();
 
         let contract_id = env.register_contract(None, crate::ProofOfAuditContract);
         let client = ProofOfAuditContractClient::new(&env, &contract_id);
+        
+        // We do NOT call env.mock_all_auths() -> this should panic
+        client.initialize(&admin, &token_id);
 
         let hash = String::from_str(&env, "fail_hash");
         let program = String::from_str(&env, "GABC");
         let risk = String::from_str(&env, "LOW");
 
-        // We do NOT call env.mock_all_auths()
-        client.store_proof(&caller, &token_id, &hash, &program, &risk, &0u32);
+        client.store_proof(&caller, &hash, &program, &risk, &0u32);
     }
 }

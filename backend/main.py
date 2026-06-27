@@ -672,7 +672,6 @@ def submit_soroban_proof_backend(request: Request, payload: SubmitProofRequest):
 
         args = [
             caller_scval,
-            scval.to_address(NATIVE_XLM),
             scval.to_string(payload.audit_hash[:32]),
             scval.to_string((payload.program_id or "source_code_audit")[:64]),
             scval.to_string(payload.risk_level[:10]),
