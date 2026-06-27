@@ -5,20 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Cpu, Wallet, Zap } from "lucide-react";
 import { useWallet } from "@/contexts/WalletContext";
+import WalletModal from "./WalletModal";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { chain, address, isConnected, xlmBalance, connectEVM, connectSolana, connectStellar, disconnect } = useWallet();
-
-  const handleConnect = () => {
-    if (chain === "solana") {
-      connectSolana();
-    } else if (chain === "stellar") {
-      connectStellar();
-    } else {
-      connectEVM();
-    }
-  };
+  const { chain, address, isConnected, xlmBalance, disconnect } = useWallet();
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
 
   const chainLabel = chain === "solana" ? "SOL DEVNET" : chain === "stellar" ? "STELLAR" : "SEPOLIA";
   const chainColor = chain === "solana" ? "#9945FF" : chain === "stellar" ? "#08B5E5" : "#10B981";
@@ -140,7 +132,7 @@ export default function Navbar() {
             </button>
           ) : (
             <button 
-              onClick={handleConnect}
+              onClick={() => setIsWalletModalOpen(true)}
               className="flex items-center gap-3 px-6 py-3 border-2 border-brutal-text bg-brutal-text text-brutal-bg hover:bg-brutal-orange hover:border-brutal-orange text-xs tracking-[0.2em] font-bold transition-all shadow-[4px_4px_0px_0px_rgba(28,28,28,1)] hover:shadow-[4px_4px_0px_0px_rgba(255,69,34,1)]"
             >
               <Wallet className="w-4 h-4" />
@@ -151,6 +143,11 @@ export default function Navbar() {
         </div>
 
       </div>
+
+      <WalletModal 
+        isOpen={isWalletModalOpen} 
+        onClose={() => setIsWalletModalOpen(false)} 
+      />
     </nav>
   );
 }
