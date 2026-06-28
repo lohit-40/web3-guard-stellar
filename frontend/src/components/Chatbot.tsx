@@ -101,7 +101,7 @@ export default function Chatbot({ sourceCode, vulnerabilities, secureCode, hasCo
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.95 }}
-            className="fixed bottom-6 right-6 w-[380px] h-[600px] max-h-[85vh] flex flex-col overflow-hidden"
+            className="fixed bottom-6 right-6 w-[calc(100vw-3rem)] sm:w-[380px] h-[600px] max-h-[85vh] flex flex-col overflow-hidden"
             style={{ backgroundColor: '#F2F0EB', border: '4px solid #1C1C1C', boxShadow: '12px 12px 0px 0px rgba(255,69,34,1)', zIndex: 100000 }}
           >
             {/* Header */}
