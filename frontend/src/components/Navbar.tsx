@@ -101,27 +101,19 @@ export default function Navbar() {
         {/* Wallet Connect & Network Switcher */}
         <div className="pointer-events-auto flex items-center gap-4">
           {/* Network Switcher Toggle */}
-          <div className="hidden sm:flex items-center border-2 border-brutal-text bg-white p-0.5 shadow-[4px_4px_0px_0px_rgba(28,28,28,1)]" title="Switch Network">
-            <button
-              onClick={() => setNetwork("testnet")}
-              className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.15em] transition-colors ${
-                network === "testnet" 
-                  ? "bg-brutal-orange text-white" 
-                  : "bg-transparent text-brutal-text/60 hover:bg-brutal-bg hover:text-brutal-text"
-              }`}
-            >
-              Testnet
-            </button>
-            <button
-              onClick={() => setNetwork("mainnet")}
-              className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.15em] transition-colors ${
-                network === "mainnet" 
-                  ? "bg-green-600 text-white" 
-                  : "bg-transparent text-brutal-text/60 hover:bg-brutal-bg hover:text-brutal-text"
-              }`}
-            >
-              Mainnet
-            </button>
+          <div className="hidden sm:flex flex-col items-center gap-1" title="Switch Network">
+            <span className={`text-[9px] font-bold uppercase tracking-widest ${network === 'mainnet' ? 'text-green-600' : 'text-brutal-text/60'}`}>
+              {network === 'mainnet' ? 'Mainnet' : 'Testnet'}
+            </span>
+            <label className="switch">
+              <input 
+                className="toggle" 
+                type="checkbox" 
+                checked={network === "mainnet"}
+                onChange={(e) => setNetwork(e.target.checked ? "mainnet" : "testnet")}
+              />
+              <span className="slider"></span>
+            </label>
           </div>
           
           <div className="flex">
