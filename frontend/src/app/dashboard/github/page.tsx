@@ -80,7 +80,7 @@ export default function GithubDashboard() {
             </p>
           </div>
           <a 
-            href="https://github.com/apps/web3-guard-almanax/installations/new" 
+            href="https://github.com/apps/web3-guard-bot/installations/new" 
             target="_blank" 
             rel="noreferrer" 
             className="flex items-center gap-3 px-6 py-3 border-2 border-brutal-text bg-brutal-text text-brutal-bg hover:bg-brutal-orange hover:border-brutal-orange hover:text-white text-xs tracking-[0.2em] font-bold uppercase transition-all shadow-[4px_4px_0px_0px_rgba(28,28,28,1)] hover:shadow-[4px_4px_0px_0px_rgba(255,69,34,1)] whitespace-nowrap"
