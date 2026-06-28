@@ -636,6 +636,7 @@ class SubmitProofRequest(BaseModel):
     risk_level: str        # HIGH / MEDIUM / LOW
     vuln_count: int        # Number of vulnerabilities
     hash_key: Optional[str] = None  # For updating the DB record
+    network: Optional[str] = "testnet"
 
 @app.post("/submit_soroban_proof")
 @limiter.limit("5/minute")
@@ -657,8 +658,16 @@ def submit_soroban_proof_backend(request: Request, payload: SubmitProofRequest):
         if not stellar_secret:
             raise HTTPException(status_code=500, detail="STELLAR_SECRET_KEY not configured on Railway")
 
-        SOROBAN_RPC  = "https://soroban-testnet.stellar.org"
-        CONTRACT_ID  = os.getenv("SOROBAN_CONTRACT_ID", "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU")
+        is_mainnet = payload.network == "mainnet"
+        SOROBAN_RPC  = "https://soroban.stellar.org" if is_mainnet else "https://soroban-testnet.stellar.org"
+        CONTRACT_ID  = os.getenv("SOROBAN_CONTRACT_ID_MAINNET", "") if is_mainnet else os.getenv("SOROBAN_CONTRACT_ID", "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU")
+        
+        # Fallback to testnet safely if the user tries to use mainnet without a deployed contract
+        if is_mainnet and not CONTRACT_ID:
+            SOROBAN_RPC = "https://soroban-testnet.stellar.org"
+            CONTRACT_ID = os.getenv("SOROBAN_CONTRACT_ID", "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU")
+            is_mainnet = False
+
         NATIVE_XLM   = "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
 
         keypair = SK.from_secret(stellar_secret)
@@ -682,7 +691,7 @@ def submit_soroban_proof_backend(request: Request, payload: SubmitProofRequest):
         tx = (
             STB(
                 source_account=source,
-                network_passphrase=Network.TESTNET_NETWORK_PASSPHRASE,
+                network_passphrase=Network.PUBLIC_NETWORK_PASSPHRASE if is_mainnet else Network.TESTNET_NETWORK_PASSPHRASE,
                 base_fee=5000,
             )
             .append_invoke_contract_function_op(
@@ -703,7 +712,7 @@ def submit_soroban_proof_backend(request: Request, payload: SubmitProofRequest):
             raise HTTPException(status_code=400, detail=f"Soroban error: {response.error_result_xdr}")
 
         tx_hash = response.hash
-        explorer_url = f"https://stellar.expert/explorer/testnet/tx/{tx_hash}"
+        explorer_url = f"https://stellar.expert/explorer/{'public' if is_mainnet else 'testnet'}/tx/{tx_hash}"
 
         # Update DB if hash_key provided
         if payload.hash_key:

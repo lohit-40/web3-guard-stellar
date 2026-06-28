@@ -9,6 +9,7 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(useGSAP);
 }
 import { ShieldCheck, Award, Activity, ExternalLink, Search, Cpu, Hash, Clock, User, AlertTriangle, Code, Copy } from "lucide-react";
+import { useWallet } from "@/contexts/WalletContext";
 
 const API_URL = "/api";
 
@@ -56,6 +57,7 @@ export default function ExplorerPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedBadge, setCopiedBadge] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const { network } = useWallet();
 
   const containerRef = useRef<HTMLElement>(null);
   useGSAP(() => {
@@ -304,7 +306,7 @@ export default function ExplorerPage() {
                   const isBadUrl = !audit.explorer_url || audit.explorer_url.includes("pending_user_signature") || audit.explorer_url.includes("undefined");
                   const explorerLink = isBadUrl
                     ? (audit.audit_chain === "stellar"
-                        ? `https://stellar.expert/explorer/testnet/contract/${SOROBAN_CONTRACT}?filter=history`
+                        ? `https://stellar.expert/explorer/${network === 'mainnet' ? 'public' : 'testnet'}/contract/${SOROBAN_CONTRACT}?filter=history`
                         : `https://sepolia.etherscan.io/address/${stats?.contract_audit_address}`)
                     : audit.explorer_url;
 

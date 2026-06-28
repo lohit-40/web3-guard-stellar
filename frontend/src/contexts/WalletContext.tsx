@@ -24,6 +24,11 @@ interface WalletContextType {
   connectStellar: () => Promise<void>;
   disconnect: () => void;
   switchChain: (chain: WalletChain) => Promise<void>;
+  
+  // Network (Stellar)
+  network: "testnet" | "mainnet";
+  setNetwork: (network: "testnet" | "mainnet") => void;
+  horizonUrl: string;
 
   // Solana utilities
   solanaConnection: Connection | null;
@@ -38,11 +43,12 @@ export function useWallet() {
 }
 
 const HORIZON_TESTNET = "https://horizon-testnet.stellar.org";
+const HORIZON_MAINNET = "https://horizon.stellar.org";
 
 /** Fetch the native XLM balance for a given Stellar public key */
-async function fetchXlmBalance(publicKey: string): Promise<string | null> {
+async function fetchXlmBalance(publicKey: string, horizonUrl: string): Promise<string | null> {
   try {
-    const res = await fetch(`${HORIZON_TESTNET}/accounts/${publicKey}`);
+    const res = await fetch(`${horizonUrl}/accounts/${publicKey}`);
     if (!res.ok) return null;
     const data = await res.json();
     const native = (data.balances as any[]).find((b: any) => b.asset_type === "native");
@@ -58,6 +64,22 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [solanaAddress, setSolanaAddress] = useState<string | null>(null);
   const [stellarAddress, setStellarAddress] = useState<string | null>(null);
   const [xlmBalance, setXlmBalance] = useState<string | null>(null);
+  
+  // Network State
+  const [network, setNetworkState] = useState<"testnet" | "mainnet">("testnet");
+  const horizonUrl = network === "mainnet" ? HORIZON_MAINNET : HORIZON_TESTNET;
+
+  useEffect(() => {
+    const stored = localStorage.getItem("w3g_network");
+    if (stored === "mainnet" || stored === "testnet") {
+      setNetworkState(stored);
+    }
+  }, []);
+
+  const setNetwork = useCallback((newNetwork: "testnet" | "mainnet") => {
+    setNetworkState(newNetwork);
+    localStorage.setItem("w3g_network", newNetwork);
+  }, []);
 
   // Solana Devnet connection (lazy init to avoid SSR issues)
   const [solanaConnection, setSolanaConnection] = useState<Connection | null>(null);
@@ -69,14 +91,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const address = chain === "evm" ? evmAddress : chain === "solana" ? solanaAddress : stellarAddress;
   const isConnected = !!address;
 
-  // Fetch XLM balance whenever stellar address changes
+  // Fetch XLM balance whenever stellar address or network changes
   useEffect(() => {
     if (stellarAddress) {
-      fetchXlmBalance(stellarAddress).then(setXlmBalance);
+      fetchXlmBalance(stellarAddress, horizonUrl).then(setXlmBalance);
     } else {
       setXlmBalance(null);
     }
-  }, [stellarAddress]);
+  }, [stellarAddress, horizonUrl]);
 
   // ─── EVM (MetaMask) ─────────────────────────
   const connectEVM = useCallback(async () => {
@@ -196,7 +218,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
       setStellarAddress(pubkey.address);
       setChain("stellar");
-      const bal = await fetchXlmBalance(pubkey.address);
+      const bal = await fetchXlmBalance(pubkey.address, horizonUrl);
       setXlmBalance(bal);
     } catch (e: any) {
       console.error("Stellar connect error:", e);
@@ -249,6 +271,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       connectStellar,
       disconnect,
       switchChain,
+      network,
+      setNetwork,
+      horizonUrl,
       solanaConnection,
     }}>
       {children}

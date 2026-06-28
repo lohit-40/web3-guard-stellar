@@ -228,7 +228,7 @@ export default function App() {
     makeMagnetic(rustButtonRef.current);
   }, { scope: containerRef });
 
-  const { address: userAddress, isConnected, chain: walletChain, switchChain } = useWallet();
+  const { address: userAddress, isConnected, chain: walletChain, switchChain, network } = useWallet();
   const [inputMode, setInputMode] = useState<'address' | 'code' | null>(null);
   const [ecosystem, setEcosystem] = useState<'Solidity' | 'Rust'>('Solidity');
   const [address, setAddress] = useState("");
@@ -250,6 +250,7 @@ export default function App() {
   // Fund Freighter wallet with testnet XLM via Stellar Friendbot (free)
   const handleFundWallet = async () => {
     if (!userAddress) { toast.error("Connect your Freighter wallet first."); return; }
+    if (network === "mainnet") { toast.error("Friendbot is only available on Testnet."); return; }
     setIsFunding(true);
     try {
       const res = await fetch(`https://friendbot.stellar.org?addr=${encodeURIComponent(userAddress)}`);
@@ -371,6 +372,7 @@ export default function App() {
               risk_level: riskLevel,
               vuln_count: vulnCount,
               hash_key: data.hash_key,
+              network: network,
             }),
           });
 
@@ -380,11 +382,11 @@ export default function App() {
             const isRealHash = /^[a-f0-9]{64}$/i.test(txHash);
             if (isRealHash) {
               data.audit_tx_hash = txHash;
-              data.stellar_explorer_url = `https://stellar.expert/explorer/testnet/tx/${txHash}`;
+              data.stellar_explorer_url = `https://stellar.expert/explorer/${network === 'mainnet' ? 'public' : 'testnet'}/tx/${txHash}`;
               data.audit_chain = "stellar";
               data.soroban_contract_id = SOROBAN_CONTRACT_ID;
               toast.dismiss("soroban-sign");
-              toast.success("✅ Audit proof anchored on Stellar Testnet!", { duration: 5000 });
+              toast.success(`✅ Audit proof anchored on Stellar ${network === 'mainnet' ? 'Mainnet' : 'Testnet'}!`, { duration: 5000 });
             } else {
               throw new Error(`Invalid hash returned: ${txHash}`);
             }

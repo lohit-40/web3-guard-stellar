@@ -36,17 +36,13 @@ interface MetricsData {
 
 type SSEStatus = "CONNECTING" | "LIVE" | "OFFLINE";
 
-// ── Horizon SSE endpoint — real-time Stellar Testnet transactions ──────────────
-const HORIZON_SSE_URL =
-  "https://horizon-testnet.stellar.org/transactions?cursor=now&limit=10";
-
 // ── Helpers ────────────────────────────────────────────────────────────────────
 function truncate(addr: string) {
   if (!addr || addr.length < 12) return addr;
   return `${addr.slice(0, 8)}...${addr.slice(-6)}`;
 }
 
-function horizonTxToEvent(tx: Record<string, unknown>, watchedContracts: string[]): LiveEvent {
+function horizonTxToEvent(tx: Record<string, unknown>, watchedContracts: string[], network: string): LiveEvent {
   const sourceAccount = String(tx.source_account ?? "");
   const isWatched = watchedContracts.some((c) => sourceAccount.startsWith(c.slice(0, 8)));
   return {
@@ -54,7 +50,7 @@ function horizonTxToEvent(tx: Record<string, unknown>, watchedContracts: string[
     contract: sourceAccount || "STELLAR_NETWORK",
     type: isWatched ? "VULN_DETECTED" : "HORIZON_TX",
     details: isWatched
-      ? `⚠ Watched contract active — tx ${String(tx.id ?? "").slice(0, 12)} detected on Stellar Testnet.`
+      ? `⚠ Watched contract active — tx ${String(tx.id ?? "").slice(0, 12)} detected on Stellar ${network === 'mainnet' ? 'Mainnet' : 'Testnet'}.`
       : `Scout Agent verified program state. No anomalies.`,
     time: String(tx.created_at ?? new Date().toISOString()),
   };
@@ -68,6 +64,7 @@ export default function Dashboard() {
   const [sseStatus, setSseStatus] = useState<SSEStatus>("CONNECTING");
   const [watchedContracts, setWatchedContracts] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { network, horizonUrl } = useWallet();
   const esRef = useRef<EventSource | null>(null);
   const backendEsRef = useRef<EventSource | null>(null);
 
@@ -123,7 +120,7 @@ export default function Dashboard() {
     }
 
     setSseStatus("CONNECTING");
-    const es = new EventSource(HORIZON_SSE_URL);
+    const es = new EventSource(`${horizonUrl}/transactions?cursor=now&limit=10`);
     esRef.current = es;
 
     es.onopen = () => {
@@ -148,7 +145,7 @@ export default function Dashboard() {
       // auto-reconnect after 5 s
       setTimeout(connectHorizonSSE, 5000);
     };
-  }, []);
+  }, [horizonUrl]);
 
 
   useEffect(() => {

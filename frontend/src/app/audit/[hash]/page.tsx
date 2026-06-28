@@ -176,7 +176,7 @@ export default function SharedAuditPage() {
                     ? 'border-[#08B5E5]/50 bg-[#08B5E5]/10 text-[#08B5E5]'
                     : 'border-green-500/50 bg-green-500/10 text-green-400'
                 }`}>
-                  {result.audit_chain === 'stellar' ? '🔵 Stellar Testnet'
+                  {result.audit_chain === 'stellar' ? (result.stellar_explorer_url?.includes('public') ? '🔵 Stellar Mainnet' : '🔵 Stellar Testnet')
                    : result.audit_chain === 'solana' ? '🟢 Solana Devnet'
                    : '🔷 Ethereum Sepolia'}
                 </span>
