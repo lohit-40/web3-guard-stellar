@@ -33,6 +33,8 @@ Web3 Guard is a production-ready, decentralized security platform. It utilizes a
 * 💸 **Cross-Contract Protocol Fees:** Employs advanced Inter-Contract Calls to move native XLM, charging a spam-preventing storage fee for every audit explicitly via `token::Client`.
 * ⚡ **Real-Time UI Architecture:** A beautifully designed frontend that interfaces directly with Stellar's Horizon API to fetch immediate wallet balances and multi-chain states.
 * 📱 **Fully Responsive:** Mobile-first design with graceful layout transitions for all screen sizes.
+* 🔒 **Soroban Smart Contract Hardening:** Fixed 4 critical vulnerabilities in our own `proof_of_audit` contract including migrating temporary states to persistent storage, implementing secure Admin initialization, establishing TTL instance bumping, and decoupling rigid token parameters for production safety.
+* 🛡️ **Backend Signature Delegation Bypass:** Innovatively bypassed Freighter's `pending_user_signature` limitations by routing Soroban state updates through the backend FastAPI via a sponsored `STELLAR_SECRET_KEY` execution environment.
 
 ---
 
@@ -413,6 +415,40 @@ Web3 Guard (stellar_submission_v2)
 ├── README.md                 # This file — full hackathon proof
 └── SECURITY.md               # Security Policy & Bug Bounty
 ```
+
+## 🤖 Autonomous CI/CD Pipeline & GitHub App Auto-Fix
+
+Web3 Guard is not just a passive dashboard—it operates natively inside developer workflows.
+
+### 1. Production GitHub App Integration
+- **What we did:** We engineered a native GitHub App integration inside our Python backend (`ci_router.py`). It uses cryptographically signed JWT tokens and GitHub App Private Keys to authenticate and listen to repository Webhooks (HMAC secured).
+- **How it helps users:** Developers can install Web3 Guard onto their GitHub repositories in one click. Web3 Guard instantly begins monitoring all incoming Pull Requests for vulnerable Solidity or Rust code without developers ever leaving their IDE or GitHub.
+
+### 2. AI-Driven Auto-Fix Pull Requests
+- **What we did:** When a developer pushes vulnerable code, the Web3 Guard CI/CD bot intercepts the payload. The Gemini AI Engine scans it, and if it detects Critical or High vulnerabilities, the Python backend uses `PyGithub` to automatically fork a new branch (`web3guard-autofix-[uuid]`). The AI mathematically rewrites the code to be secure and autonomous opens an "Auto-Fix PR" directly against the developer's original code.
+- **How it helps users:** Developers get an immediate, autonomous patch for zero-day vulnerabilities in seconds, removing the manual labor from security patching and preventing insecure code from ever merging into `main`.
+
+### 3. Contextual Agent Memory & Threat Modeling
+- **What we did:** We integrated a dynamic RAG (Retrieval-Augmented Generation) feedback loop and a dedicated `/api/threat_model` endpoint. When a user marks a detected vulnerability as a "False Positive", the system permanently records it. The CI/CD AI Engine pulls this contextual memory dynamically into its prompt architecture for all future scans.
+- **How it helps users:** The AI actually learns. It stops flagging identical, project-specific safe patterns as vulnerabilities, heavily reducing alert fatigue and increasing developer velocity.
+
+---
+
+## 🛡️ Soroban Sentinel Features (Web3 Guard Trust Layer)
+
+We have heavily upgraded Web3 Guard with a native Trust Layer designed to protect the Soroban ecosystem and developers at large.
+
+### 1. Dynamic Reputation & Rating Engine
+- **What we did:** Created a robust backend engine that scores any Soroban smart contract from 0 to 100 based on its live security profile. It automatically deducts points for detected vulnerabilities (Critical/High = -30, Medium = -15), zeroes out the score if active exploits are detected via Horizon, and awards points for clean sweeps. The final score directly maps to an A-F Letter Grade.
+- **How it helps users:** Investors, wallets, and everyday users can instantly gauge the trustworthiness of a token or dApp without needing to understand complex technical security reports.
+
+### 2. Live Disclosures Feed (Explorer Update)
+- **What we did:** Added a new `/api/disclosures` API and integrated it into a dedicated "Disclosures" tab within the Web3 Guard Block Explorer.
+- **How it helps users:** The Web3 ecosystem relies on transparency. This feed publicly lists unpatched Soroban contracts with active Critical or High risk vulnerabilities, acting as a real-time warning system for the community before they interact with dangerous dApps.
+
+### 3. Dynamic SVG Safety Badges (README Embeds)
+- **What we did:** Built a real-time `/api/badge/embed/{address}` API that generates a color-coded SVG Web3 Guard safety badge containing the contract's live score and grade. We also added an easy "Embed GitHub Badge" copy button directly on the Explorer UI under all Stellar audits.
+- **How it helps users:** Developers can embed their live security score directly onto their project's GitHub README or website. This builds immense trust with their community and proves that their codebase is continuously monitored and secured by Web3 Guard.
 
 ---
 

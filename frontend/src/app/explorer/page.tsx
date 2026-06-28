@@ -8,7 +8,7 @@ import { useGSAP } from "@gsap/react";
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(useGSAP);
 }
-import { ShieldCheck, Award, Activity, ExternalLink, Search, Cpu, Hash, Clock, User, AlertTriangle } from "lucide-react";
+import { ShieldCheck, Award, Activity, ExternalLink, Search, Cpu, Hash, Clock, User, AlertTriangle, Code, Copy } from "lucide-react";
 
 const API_URL = "/api";
 
@@ -39,13 +39,22 @@ interface Stats {
   rpc_connected: boolean;
 }
 
+interface DisclosureRecord {
+  contract: string;
+  vuln_count: number;
+  timestamp: number;
+  vulnerabilities: any[];
+}
+
 export default function ExplorerPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [liveTotal, setLiveTotal] = useState<number | null>(null);
   const [audits, setAudits] = useState<AuditRecord[]>([]);
   const [badges, setBadges] = useState<BadgeRecord[]>([]);
-  const [activeTab, setActiveTab] = useState<"audits" | "badges">("audits");
+  const [disclosures, setDisclosures] = useState<DisclosureRecord[]>([]);
+  const [activeTab, setActiveTab] = useState<"audits" | "badges" | "disclosures">("audits");
   const [searchQuery, setSearchQuery] = useState("");
+  const [copiedBadge, setCopiedBadge] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const containerRef = useRef<HTMLElement>(null);
@@ -59,11 +68,12 @@ export default function ExplorerPage() {
     const fetchAll = async () => {
       setLoading(true);
       try {
-        const [statsRes, auditsRes, badgesRes, liveRes] = await Promise.all([
+        const [statsRes, auditsRes, badgesRes, liveRes, disclosuresRes] = await Promise.all([
           fetch(`${API_URL}/explorer/stats`),
           fetch(`${API_URL}/explorer/audits`),
           fetch(`${API_URL}/explorer/badges`),
-          fetch(`${API_URL}/metrics/live`)
+          fetch(`${API_URL}/metrics/live`),
+          fetch(`${API_URL}/disclosures`)
         ]);
         if (statsRes.ok) setStats(await statsRes.json());
         if (liveRes.ok) {
@@ -77,6 +87,10 @@ export default function ExplorerPage() {
         if (badgesRes.ok) {
           const data = await badgesRes.json();
           setBadges(data.badges || []);
+        }
+        if (disclosuresRes.ok) {
+          const data = await disclosuresRes.json();
+          setDisclosures(data.disclosures || []);
         }
       } catch (e) {
         console.error("Explorer fetch error:", e);
@@ -116,6 +130,18 @@ export default function ExplorerPage() {
     b.owner.toLowerCase().includes(searchQuery.toLowerCase()) ||
     b.contract_audited.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const filteredDisclosures = disclosures.filter(d =>
+    d.contract.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleCopyBadge = (contract: string) => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const badgeMarkdown = `[![Soroban Sentinel Shield](${origin}/api/badge/embed/${contract})](${origin}/explorer)`;
+    navigator.clipboard.writeText(badgeMarkdown);
+    setCopiedBadge(contract);
+    setTimeout(() => setCopiedBadge(null), 2000);
+  };
 
   return (
     <main ref={containerRef} className="relative min-h-screen w-full">
@@ -222,6 +248,15 @@ export default function ExplorerPage() {
               <Award className="w-4 h-4 inline mr-2" />
               nft badges
             </button>
+            <button
+              onClick={() => setActiveTab("disclosures")}
+              className={`px-8 py-3 text-xs uppercase tracking-[0.2em] font-bold transition-all border-l-2 border-brutal-text ${
+                activeTab === "disclosures" ? "bg-red-500 text-white" : "text-brutal-text/60 hover:text-red-500"
+              }`}
+            >
+              <AlertTriangle className="w-4 h-4 inline mr-2" />
+              disclosures
+            </button>
           </div>
 
           {/* Loading */}
@@ -327,9 +362,27 @@ export default function ExplorerPage() {
                           </a>
                         </div>
                       </div>
-                      {/* Click hint */}
-                      <div className="mt-3 text-[9px] uppercase tracking-widest opacity-0 group-hover:opacity-40 transition-opacity">
-                        Click to view full audit report →
+                      {/* Click hint & Badge */}
+                      <div className="mt-4 pt-3 border-t border-brutal-text/10 flex justify-between items-center text-[10px] uppercase tracking-widest opacity-60">
+                        <span>Click to view full audit report →</span>
+                        {isStellar && (
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCopyBadge(audit.audited_contract);
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 border border-brutal-text/30 hover:bg-brutal-text hover:text-brutal-bg transition-colors"
+                          >
+                            {copiedBadge === audit.audited_contract ? (
+                              <span className="text-[#10B981]">Copied!</span>
+                            ) : (
+                              <>
+                                <Code className="w-3 h-3" />
+                                Embed GitHub Badge
+                              </>
+                            )}
+                          </button>
+                        )}
                       </div>
                     </motion.div>
                   );
@@ -390,6 +443,51 @@ export default function ExplorerPage() {
                       >
                         View NFT <ExternalLink className="w-3 h-3" />
                       </a>
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </motion.div>
+          )}
+
+          {/* Disclosures Tab */}
+          {!loading && activeTab === "disclosures" && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 gap-4">
+              {filteredDisclosures.length === 0 ? (
+                <div className="border-2 border-green-500/30 p-12 text-center bg-green-500/5">
+                  <ShieldCheck className="w-12 h-12 mx-auto mb-4 text-green-500" />
+                  <p className="text-green-600 text-sm uppercase tracking-widest font-bold">No active vulnerabilities disclosed</p>
+                </div>
+              ) : (
+                filteredDisclosures.map((disc, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.08 }}
+                    className="border-2 border-red-500/50 hover:border-red-500 p-6 transition-all bg-red-500/5"
+                  >
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 border-2 border-red-500 flex items-center justify-center bg-red-500/10">
+                          <AlertTriangle className="w-6 h-6 text-red-500" />
+                        </div>
+                        <div>
+                          <p className="font-bold font-mono text-lg">{truncAddr(disc.contract)}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold uppercase tracking-wider">
+                              CRITICAL RISK
+                            </span>
+                            <span className="text-xs text-brutal-text/60 font-mono">
+                              {disc.vuln_count} vulnerabilities found
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 text-xs">
+                        <Clock className="w-4 h-4 text-brutal-text/40" />
+                        <span className="font-mono text-brutal-text/60">{formatTime(disc.timestamp)}</span>
+                      </div>
                     </div>
                   </motion.div>
                 ))

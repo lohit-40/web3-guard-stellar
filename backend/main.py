@@ -1416,3 +1416,75 @@ def explorer_badges(request: Request):
         print(f"Explorer badges error: {e}")
     
     return {"badges": badges_list}
+
+# ──────────────────────────────────────────────────────
+#  LEVEL 6: SOROBAN SENTINEL - TRUST & DISCLOSURE APIs
+# ──────────────────────────────────────────────────────
+from fastapi.responses import Response
+
+@app.get("/api/v1/trust/{address}")
+@limiter.limit("30/minute")
+def get_trust_score(request: Request, address: str):
+    from database import calculate_trust_score
+    result = calculate_trust_score(address)
+    return result
+
+@app.get("/api/disclosures")
+@limiter.limit("20/minute")
+def get_disclosures(request: Request):
+    from database import get_connection
+    import json
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT response_data FROM scan_cache")
+    rows = cursor.fetchall()
+    conn.close()
+    
+    disclosures = []
+    for row in rows:
+        try:
+            data = json.loads(row[0])
+            vulns = data.get("vulnerabilities", [])
+            high_critical = [v for v in vulns if str(v.get("severity", "")).upper() in ["HIGH", "CRITICAL"]]
+            if high_critical:
+                disclosures.append({
+                    "contract": data.get("address", "Unknown"),
+                    "vuln_count": len(high_critical),
+                    "timestamp": data.get("timestamp", 0),
+                    "vulnerabilities": high_critical
+                })
+        except Exception:
+            continue
+            
+    disclosures.sort(key=lambda x: x["timestamp"], reverse=True)
+    return {"disclosures": disclosures}
+
+@app.get("/api/badge/embed/{address}")
+@limiter.limit("60/minute")
+def get_trust_badge(request: Request, address: str):
+    from database import calculate_trust_score
+    result = calculate_trust_score(address)
+    grade = result.get("grade", "F")
+    score = result.get("score", 0)
+    
+    # Colors based on grade
+    colors = {
+        "A": "#10B981", # Green
+        "B": "#3B82F6", # Blue
+        "C": "#F59E0B", # Yellow
+        "D": "#EF4444", # Red
+        "F": "#000000"  # Black
+    }
+    color = colors.get(grade, "#000000")
+    
+    svg = f"""<svg width="250" height="40" viewBox="0 0 250 40" xmlns="http://www.w3.org/2000/svg">
+  <g shape-rendering="crispEdges">
+    <rect width="130" height="40" fill="#2d3748" rx="4" />
+    <rect x="130" width="120" height="40" fill="{color}" rx="4" />
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="monospace, sans-serif" font-size="14" font-weight="bold">
+    <text x="65" y="25">WEB3 GUARD</text>
+    <text x="190" y="25">SCORE: {score} [{grade}]</text>
+  </g>
+</svg>"""
+    return Response(content=svg, media_type="image/svg+xml")

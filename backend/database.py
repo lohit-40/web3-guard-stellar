@@ -438,3 +438,82 @@ def get_custom_rules(repo_owner: str) -> list[dict]:
     return [{"rule_text": r[0], "severity": r[1]} for r in rows]
 
 init_db()
+
+def calculate_trust_score(contract_address: str) -> dict:
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    score = 100
+    
+    # 1. Deduct points for vulnerabilities from latest scan
+    cursor.execute("SELECT response_data FROM scan_cache")
+    rows = cursor.fetchall()
+    
+    latest_scan = None
+    for row in rows:
+        try:
+            data = json.loads(row[0])
+            if data.get("address") == contract_address:
+                # If there are multiple scans, we'll take the one with the latest timestamp
+                if not latest_scan or data.get("timestamp", 0) > latest_scan.get("timestamp", 0):
+                    latest_scan = data
+        except Exception:
+            continue
+            
+    if latest_scan:
+        vulns = latest_scan.get("vulnerabilities", [])
+        for v in vulns:
+            sev = str(v.get("severity", "")).upper()
+            if sev in ["CRITICAL", "HIGH"]:
+                score -= 30
+            elif sev == "MEDIUM":
+                score -= 15
+            elif sev == "LOW":
+                score -= 5
+
+    # 2. Scout Agent monitoring history
+    if DB_URL:
+        cursor.execute("SELECT event_type, details FROM monitoring_events WHERE contract_address=%s ORDER BY timestamp DESC", (contract_address,))
+    else:
+        cursor.execute("SELECT event_type, details FROM monitoring_events WHERE contract_address=? ORDER BY timestamp DESC", (contract_address,))
+    events = cursor.fetchall()
+    
+    clean_sweeps = 0
+    exploited = False
+    
+    for event_type, details in events:
+        if event_type == "VULN_DETECTED" or "ANOMALY" in details.upper() or "CRITICAL" in details.upper() or "HIGH" in details.upper():
+            exploited = True
+            break
+        if event_type == "SCAN_CLEAN":
+            clean_sweeps += 1
+
+    if exploited:
+        score = 0
+    else:
+        score = min(100, score + (clean_sweeps * 2))
+        
+    score = max(0, score) # Ensure it doesn't go below 0
+    
+    # 3. Map to letter grade
+    if score >= 90:
+        grade = "A"
+    elif score >= 75:
+        grade = "B"
+    elif score >= 60:
+        grade = "C"
+    elif score >= 40:
+        grade = "D"
+    else:
+        grade = "F"
+        
+    conn.close()
+    
+    return {
+        "score": score,
+        "grade": grade,
+        "contract": contract_address,
+        "exploited": exploited,
+        "clean_sweeps": clean_sweeps,
+        "scan_data": latest_scan
+    }
