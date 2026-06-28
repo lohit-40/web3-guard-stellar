@@ -228,7 +228,7 @@ export default function App() {
     makeMagnetic(rustButtonRef.current);
   }, { scope: containerRef });
 
-  const { address: userAddress, isConnected, chain: walletChain, switchChain, network } = useWallet();
+  const { address: userAddress, isConnected, chain: walletChain, switchChain, network, setNetwork } = useWallet();
   const [inputMode, setInputMode] = useState<'address' | 'code' | null>(null);
   const [ecosystem, setEcosystem] = useState<'Solidity' | 'Rust'>('Solidity');
   const [address, setAddress] = useState("");
@@ -312,7 +312,20 @@ export default function App() {
 
     // Prevent anchoring on mainnet for now
     if (chainId === 'stellar' && network === 'mainnet') {
-      toast("🚧 Mainnet anchoring is in development. Please switch to Testnet to run an audit.", { icon: "🚧" });
+      toast((t) => (
+        <div className="flex flex-col gap-2 items-start">
+          <span className="font-medium">🚧 Mainnet anchoring is in development.</span>
+          <button 
+            onClick={() => {
+              setNetwork("testnet");
+              toast.dismiss(t.id);
+            }}
+            className="px-3 py-1.5 bg-brutal-orange text-brutal-bg font-bold text-[10px] uppercase tracking-wider hover:brightness-110 shadow-[2px_2px_0px_0px_rgba(28,28,28,1)] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+          >
+            Switch to Testnet
+          </button>
+        </div>
+      ), { duration: 5000 });
       return;
     }
     
