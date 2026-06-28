@@ -24,7 +24,7 @@ Web3 Guard is a production-ready, decentralized security platform. It utilizes a
 
 ## ✨ Outstanding Technical Features
 
-* 🤖 **Production GitHub App Auto-Fix Bot:** A fully authenticated GitHub App integration that intercepts Pull Requests via Webhooks (HMAC cryptographically secured), scans code asynchronously, and pushes automated AI-generated security fixes directly to developer repositories.
+* 🤖 **Almanax GitHub App Auto-Fix Bot:** A fully authenticated GitHub App integration that intercepts Pull Requests via Webhooks (HMAC cryptographically secured), scans code asynchronously, and pushes automated AI-generated security fixes directly to developer repositories.
 * 🧠 **Contextual Agent Memory (False Positive Reduction):** A RAG-style feedback loop where users can dismiss false positive alerts, which dynamically updates the Gemini AI prompt context to prevent the engine from flagging identical safe patterns in future scans.
 * 📡 **True Real-Time On-Chain Monitoring:** Direct integration with Stellar Horizon Server-Sent Events (SSE) to instantly stream and analyze live blockchain transactions for anomalies the exact millisecond they are confirmed on-chain.
 * 🧠 **AI-Powered Vulnerability Engine:** Automatically parses and analyzes large Rust/Solidity codebases to hunt zero-days using Google Gemini API.
@@ -416,16 +416,16 @@ Web3 Guard (stellar_submission_v2)
 └── SECURITY.md               # Security Policy & Bug Bounty
 ```
 
-## 🤖 Autonomous CI/CD Pipeline & GitHub App Auto-Fix
+## 🤖 Web3 Guard Almanax (Autonomous CI/CD & Auto-Fix Bot)
 
-Web3 Guard is not just a passive dashboard—it operates natively inside developer workflows.
+Web3 Guard is not just a passive dashboard—it operates natively inside developer workflows through **Almanax**, our dedicated GitHub App.
 
-### 1. Production GitHub App Integration
+### 1. Almanax Production GitHub App Integration
 - **What we did:** We engineered a native GitHub App integration inside our Python backend (`ci_router.py`). It uses cryptographically signed JWT tokens and GitHub App Private Keys to authenticate and listen to repository Webhooks (HMAC secured).
-- **How it helps users:** Developers can install Web3 Guard onto their GitHub repositories in one click. Web3 Guard instantly begins monitoring all incoming Pull Requests for vulnerable Solidity or Rust code without developers ever leaving their IDE or GitHub.
+- **How it helps users:** Developers can install Web3 Guard Almanax onto their GitHub repositories in one click. Almanax instantly begins monitoring all incoming Pull Requests for vulnerable Solidity or Rust code without developers ever leaving their IDE or GitHub.
 
-### 2. AI-Driven Auto-Fix Pull Requests
-- **What we did:** When a developer pushes vulnerable code, the Web3 Guard CI/CD bot intercepts the payload. The Gemini AI Engine scans it, and if it detects Critical or High vulnerabilities, the Python backend uses `PyGithub` to automatically fork a new branch (`web3guard-autofix-[uuid]`). The AI mathematically rewrites the code to be secure and autonomous opens an "Auto-Fix PR" directly against the developer's original code.
+### 2. Almanax AI-Driven Auto-Fix Pull Requests
+- **What we did:** When a developer pushes vulnerable code, the Almanax CI/CD bot intercepts the payload. The Gemini AI Engine scans it, and if it detects Critical or High vulnerabilities, the Python backend uses `PyGithub` to automatically fork a new branch (`web3guard-autofix-[uuid]`). The AI mathematically rewrites the code to be secure and autonomous opens an "Auto-Fix PR" directly against the developer's original code.
 - **How it helps users:** Developers get an immediate, autonomous patch for zero-day vulnerabilities in seconds, removing the manual labor from security patching and preventing insecure code from ever merging into `main`.
 
 ### 3. Contextual Agent Memory & Threat Modeling
