@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Cpu, Wallet, Zap } from "lucide-react";
 import { useWallet } from "@/contexts/WalletContext";
 import WalletModal from "./WalletModal";
+import toast from "react-hot-toast";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -110,7 +111,16 @@ export default function Navbar() {
                 className="toggle" 
                 type="checkbox" 
                 checked={network === "mainnet"}
-                onChange={(e) => setNetwork(e.target.checked ? "mainnet" : "testnet")}
+                onChange={(e) => {
+                  const newNetwork = e.target.checked ? "mainnet" : "testnet";
+                  if (newNetwork === "mainnet") {
+                    toast("🚧 Mainnet smart contracts are currently in development. You can explore the UI, but transactions are disabled.", {
+                      icon: "🚧",
+                      duration: 5000,
+                    });
+                  }
+                  setNetwork(newNetwork);
+                }}
               />
               <span className="slider"></span>
             </label>

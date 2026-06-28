@@ -31,6 +31,7 @@
 
 .slider:before {
   box-sizing: border-box;
+  left: 4px;
   position: absolute;
   content: "";
   height: 32px;
@@ -47,5 +48,5 @@
 }
 
 .toggle:checked + .slider:before {
-  transform: translateX(32px);
+  transform: translateX(24px);
 }

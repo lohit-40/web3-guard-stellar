@@ -309,6 +309,12 @@ export default function App() {
       toast.error("Please connect your Freighter wallet first to submit a Stellar audit proof.");
       return;
     }
+
+    // Prevent anchoring on mainnet for now
+    if (chainId === 'stellar' && network === 'mainnet') {
+      toast("🚧 Mainnet anchoring is in development. Please switch to Testnet to run an audit.", { icon: "🚧" });
+      return;
+    }
     
     setLoading(true);
     setResult(null);
@@ -761,16 +767,16 @@ export default function App() {
             </motion.div>
 
             {/* Stellar: Fund Wallet via Friendbot banner */}
-            {chainId === 'stellar' && isConnected && (
-              <div className="flex items-center justify-between gap-4 mb-4 px-4 py-3 border border-[#08B5E5]/30 bg-[#08B5E5]/5">
-                <div className="flex items-center gap-2 text-xs font-mono text-[#08B5E5]/80">
-                  <span>⚡</span>
+            {chainId === 'stellar' && isConnected && network === 'testnet' && (
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 px-4 py-3 border border-[#08B5E5]/30 bg-[#08B5E5]/5">
+                <div className="flex items-start sm:items-center gap-2 text-xs font-mono text-[#08B5E5]/80">
+                  <span className="mt-0.5 sm:mt-0">⚡</span>
                   <span>Stellar audit requires <strong>1 XLM</strong> fee. Get free testnet XLM instantly:</span>
                 </div>
                 <button
                   onClick={handleFundWallet}
                   disabled={isFunding}
-                  className="shrink-0 px-4 py-1.5 border border-[#08B5E5] text-[#08B5E5] text-xs font-mono font-bold uppercase tracking-widest hover:bg-[#08B5E5]/10 transition-all disabled:opacity-50"
+                  className="shrink-0 px-4 py-1.5 border border-[#08B5E5] text-[#08B5E5] text-xs font-mono font-bold uppercase tracking-widest hover:bg-[#08B5E5]/10 transition-all disabled:opacity-50 w-full sm:w-auto text-center"
                 >
                   {isFunding ? "Funding..." : "Fund via Friendbot →"}
                 </button>
