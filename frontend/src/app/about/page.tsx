@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ShieldCheck, Cpu, Code2, ArrowRight, Radio, GitBranch, Smartphone } from "lucide-react";
+import { ShieldCheck, Cpu, Code2, ArrowRight, Radio, GitBranch, Smartphone, BrainCircuit, Globe } from "lucide-react";
 
 export default function About() {
   return (
@@ -108,10 +108,10 @@ export default function About() {
                 <div className="p-4 bg-brutal-text border-2 border-brutal-text group-hover:bg-brutal-bg group-hover:border-brutal-bg transition-colors">
                   <GitBranch className="w-8 h-8 text-brutal-bg group-hover:text-brutal-text" />
                 </div>
-                <h2 className="text-3xl font-bold tracking-tighter lowercase">GitHub Webhooks</h2>
+                <h2 className="text-3xl font-bold tracking-tighter lowercase">GitHub App Integration</h2>
               </div>
               <p className="text-brutal-text/80 group-hover:text-brutal-bg/90 leading-relaxed font-medium text-lg">
-                Seamlessly integrating into modern CI/CD pipelines, our cryptographically secured backend webhook (HMAC-SHA256) intercepts Pull Requests in real-time, providing automated AI security audits directly within GitHub.
+                Install the official Web3 Guard GitHub App into your repositories. Our backend automatically intercepts Pull Requests, runs deep AI security audits, and posts detailed vulnerability reports directly as PR comments.
               </p>
             </motion.div>
 
@@ -130,6 +130,42 @@ export default function About() {
               </div>
               <p className="text-brutal-text/80 group-hover:text-brutal-bg/90 leading-relaxed font-medium text-lg">
                 Experience Web3 Guard natively anywhere. Through our fully integrated Progressive Web App (PWA) configuration, install the platform directly to your iOS or Android home screen for lightning-fast, offline-capable security scanning.
+              </p>
+            </motion.div>
+
+            {/* Feature 7 */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.6 }}
+              className="p-8 md:p-12 border-4 border-brutal-text bg-brutal-bg hover:bg-brutal-text hover:text-brutal-bg transition-colors group shadow-[12px_12px_0px_0px_rgba(28,28,28,1)]"
+            >
+              <div className="flex items-center gap-6 mb-6 text-brutal-text group-hover:text-brutal-bg">
+                <div className="p-4 bg-brutal-text border-2 border-brutal-text group-hover:bg-brutal-bg group-hover:border-brutal-bg transition-colors">
+                  <BrainCircuit className="w-8 h-8 text-brutal-bg group-hover:text-brutal-text" />
+                </div>
+                <h2 className="text-3xl font-bold tracking-tighter lowercase">AI Threat Modeling</h2>
+              </div>
+              <p className="text-brutal-text/80 group-hover:text-brutal-bg/90 leading-relaxed font-medium text-lg">
+                Automatically generate comprehensive STRIDE threat models for your smart contracts. Our AI analyzes your code architecture to identify structural risks, trust boundaries, and potential attack vectors before deployment.
+              </p>
+            </motion.div>
+
+            {/* Feature 8 */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9, duration: 0.6 }}
+              className="p-8 md:p-12 border-4 border-brutal-text bg-brutal-bg hover:bg-brutal-text hover:text-brutal-bg transition-colors group shadow-[12px_12px_0px_0px_rgba(28,28,28,1)]"
+            >
+              <div className="flex items-center gap-6 mb-6 text-brutal-text group-hover:text-brutal-bg">
+                <div className="p-4 bg-brutal-text border-2 border-brutal-text group-hover:bg-brutal-bg group-hover:border-brutal-bg transition-colors">
+                  <Globe className="w-8 h-8 text-brutal-bg group-hover:text-brutal-text" />
+                </div>
+                <h2 className="text-3xl font-bold tracking-tighter lowercase">Multi-Network Architecture</h2>
+              </div>
+              <p className="text-brutal-text/80 group-hover:text-brutal-bg/90 leading-relaxed font-medium text-lg">
+                Seamlessly toggle between Testnet and Mainnet environments. Safely explore UI features, anchor proofs to live contracts, and utilize built-in test-funding via Stellar Friendbot, all within a unified interface.
               </p>
             </motion.div>
 
