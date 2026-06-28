@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Activity, Users, ShieldAlert, Cpu, AlertTriangle, CheckCircle, Radio } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useWallet } from "@/contexts/WalletContext";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
