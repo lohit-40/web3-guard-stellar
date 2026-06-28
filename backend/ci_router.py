@@ -92,7 +92,7 @@ Do NOT wrap your response in a generic JSON block unless necessary, return pure 
         )
         report = response.text.strip()
         
-        # Almanax Auto-Fix Feature via GitHub App Token
+        # Web3 Guard Auto-Fix Feature via GitHub App Token
         if payload.github_repo and "All Clear!" not in report and "\u2705" not in report:
             github_token = None
             if installation_id:
