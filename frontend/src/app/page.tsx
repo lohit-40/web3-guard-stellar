@@ -385,7 +385,7 @@ export default function App() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              caller: userAddress || "GBEG6AVFKGDKAWQHBXRA5MWBIQKSW3GY33UVMYXFAL5TPBHQJXMYVZY",
+              caller: userAddress!,
               audit_hash: auditHash,
               program_id: programId,
               risk_level: riskLevel,
