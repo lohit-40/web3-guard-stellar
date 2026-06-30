@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/badge/AI-Gemini%20API-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="AI" />
 </p>
 
-[**🚀 Live Demo**](https://web3-guard-stellar-gilt.vercel.app/) • [**📼 Watch Video**](https://youtu.be/leUKx8XQdys) • [**📚 Read Docs**](#setup-instructions) • [**🔐 Security**](./SECURITY.md) • [**𝕏 Twitter/X**](https://x.com/Web3zGuard)
+[**🚀 Live Demo**](https://web3-guard-stellar-gilt.vercel.app/) • [**📊 Pitch Deck**](./Web3_Guard_Pitch_Deck.pptx) • [**📼 Watch Video**](https://youtu.be/leUKx8XQdys) • [**📚 Read Docs**](#setup-instructions) • [**🔐 Security**](./SECURITY.md) • [**𝕏 Twitter/X**](https://x.com/Web3zGuard)
 
 <br/>
 <p align="justify">
