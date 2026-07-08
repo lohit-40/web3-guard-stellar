@@ -4,6 +4,8 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import dynamic from "next/dynamic";
 import { WalletProvider } from "@/contexts/WalletContext";
+import { AnalyticsProvider } from "@/contexts/AnalyticsContext";
+import FeedbackModal from "@/components/FeedbackModal";
 
 const CustomCursor = dynamic(() => import("@/components/CustomCursor"), { ssr: false });
 const LiquidBackground = dynamic(() => import("@/components/LiquidBackground"), { ssr: false });
@@ -23,7 +25,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning className={`${inter.className} bg-brutal-bg text-brutal-text overflow-x-hidden selection:bg-brutal-orange selection:text-white`}>
-        <WalletProvider>
+        <AnalyticsProvider>
+          <WalletProvider>
           {/* z-0: Liquid ambient background */}
           <LiquidBackground />
 
@@ -42,7 +45,10 @@ export default function RootLayout({
           <main>
             {children}
           </main>
+          
+          <FeedbackModal />
         </WalletProvider>
+      </AnalyticsProvider>
       </body>
     </html>
   );

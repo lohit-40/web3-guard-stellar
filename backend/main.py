@@ -1497,3 +1497,63 @@ def get_trust_badge(request: Request, address: str):
   </g>
 </svg>"""
     return Response(content=svg, media_type="image/svg+xml")
+
+# ──────────────────────────────────────────────────────
+#  LEVEL 7: LIVE METRICS & FEEDBACK
+# ──────────────────────────────────────────────────────
+class AnalyticsEvent(BaseModel):
+    visitor_id: str
+    event_name: str
+    event_data: Optional[dict] = None
+
+class UserFeedback(BaseModel):
+    network: str
+    feedback: str
+    additional_data: Optional[dict] = None
+
+@app.post("/api/analytics")
+@limiter.limit("100/minute")
+def post_analytics(request: Request, event: AnalyticsEvent):
+    from database import record_analytics_event
+    try:
+        record_analytics_event(event.visitor_id, event.event_name, event.event_data)
+        return {"status": "success"}
+    except Exception as e:
+        print(f"Analytics error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to record analytics")
+
+@app.post("/api/feedback")
+@limiter.limit("10/minute")
+def post_feedback(request: Request, feedback: UserFeedback):
+    from database import record_user_feedback
+    import requests
+    
+    # Save locally
+    try:
+        feedback_text = feedback.feedback
+        if feedback.additional_data:
+            feedback_text += f"\n\nAdditional Data: {json.dumps(feedback.additional_data)}"
+        record_user_feedback(feedback.network, feedback_text)
+    except Exception as e:
+        print(f"Feedback DB error: {e}")
+
+    # Push to Google Sheets via Webhook
+    try:
+        webhook_url = os.getenv("GOOGLE_SHEET_WEBHOOK_URL")
+        
+        if webhook_url:
+            import datetime
+            payload = {
+                "timestamp": datetime.datetime.now().isoformat(),
+                "network": feedback.network,
+                "feedback": feedback.feedback,
+                "additional_data": json.dumps(feedback.additional_data) if feedback.additional_data else ""
+            }
+            
+            response = requests.post(webhook_url, json=payload, timeout=5)
+            response.raise_for_status()
+    except Exception as e:
+        print(f"Google Sheets Webhook error: {e}")
+        pass
+
+    return {"status": "success"}

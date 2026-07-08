@@ -15,6 +15,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { playSound } from "@/utils/sounds";
 import ScrambleText from "@/components/ScrambleText";
 import { useWallet } from "@/contexts/WalletContext";
+import { useAnalytics } from "@/contexts/AnalyticsContext";
 import {
   Networks,
   TransactionBuilder,
@@ -285,6 +286,8 @@ export default function App() {
     }
   }, [ecosystem, chainId]);
 
+  const { trackEvent } = useAnalytics();
+
   // Auto-Remediation State
   const [secureContract, setSecureContract] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -295,6 +298,14 @@ export default function App() {
 
   const handleScan = async (e?: React.FormEvent) => {
     e?.preventDefault();
+    trackEvent('scan_contract', { 
+      inputMode, 
+      ecosystem, 
+      chainId, 
+      network, 
+      address: inputMode === 'address' ? address : null 
+    });
+
     if (inputMode === 'address' && !address) {
       toast.error("Please provide a verified contract address.");
       return;

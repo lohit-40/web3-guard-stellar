@@ -126,6 +126,47 @@ def init_db():
                 rule_text TEXT,
                 severity TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ''')
+        
+    # analytics_events
+    if DB_URL:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS analytics_events (
+                id SERIAL PRIMARY KEY,
+                visitor_id TEXT,
+                event_name TEXT,
+                event_data TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+    else:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS analytics_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                visitor_id TEXT,
+                event_name TEXT,
+                event_data TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
+    # user_feedback
+    if DB_URL:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS user_feedback (
+                id SERIAL PRIMARY KEY,
+                network TEXT,
+                feedback TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+    else:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS user_feedback (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                network TEXT,
+                feedback TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
         
@@ -517,3 +558,40 @@ def calculate_trust_score(contract_address: str) -> dict:
         "clean_sweeps": clean_sweeps,
         "scan_data": latest_scan
     }
+
+def record_analytics_event(visitor_id: str, event_name: str, event_data: dict = None):
+    conn = get_connection()
+    cursor = conn.cursor()
+    data_str = json.dumps(event_data) if event_data else None
+    
+    if DB_URL:
+        cursor.execute('''
+            INSERT INTO analytics_events (visitor_id, event_name, event_data)
+            VALUES (%s, %s, %s)
+        ''', (visitor_id, event_name, data_str))
+    else:
+        cursor.execute('''
+            INSERT INTO analytics_events (visitor_id, event_name, event_data)
+            VALUES (?, ?, ?)
+        ''', (visitor_id, event_name, data_str))
+    
+    conn.commit()
+    conn.close()
+
+def record_user_feedback(network: str, feedback: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    if DB_URL:
+        cursor.execute('''
+            INSERT INTO user_feedback (network, feedback)
+            VALUES (%s, %s)
+        ''', (network, feedback))
+    else:
+        cursor.execute('''
+            INSERT INTO user_feedback (network, feedback)
+            VALUES (?, ?)
+        ''', (network, feedback))
+    
+    conn.commit()
+    conn.close()
