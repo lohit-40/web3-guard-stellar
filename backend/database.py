@@ -126,6 +126,7 @@ def init_db():
                 rule_text TEXT,
                 severity TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
         ''')
         
     # analytics_events
