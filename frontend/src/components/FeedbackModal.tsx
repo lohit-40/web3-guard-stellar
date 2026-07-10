@@ -35,7 +35,8 @@ export default function FeedbackModal() {
     setIsSubmitting(true);
     
     try {
-      await fetch('http://localhost:8000/api/feedback', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      await fetch(`${API_URL}/api/feedback`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

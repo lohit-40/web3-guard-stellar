@@ -28,7 +28,8 @@ export const AnalyticsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const id = overrideVisitorId || visitorId;
     if (!id) return;
 
-    fetch('http://localhost:8000/api/analytics', {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    fetch(`${API_URL}/api/analytics`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

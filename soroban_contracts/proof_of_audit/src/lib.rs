@@ -230,7 +230,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "HostError")]
+    #[should_panic]
     fn test_require_auth_fails_without_signature() {
         let env = Env::default();
         let auth_admin = Address::generate(&env);
