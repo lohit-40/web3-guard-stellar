@@ -2,6 +2,9 @@
   "name": "web3guard-cli",
   "version": "1.0.0",
   "description": "Web3 Guard CLI and MCP Server",
+  "files": [
+    "dist/"
+  ],
   "main": "dist/index.js",
   "bin": {
     "web3guard": "./dist/cli.js",

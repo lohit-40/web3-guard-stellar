@@ -2,12 +2,10 @@ import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
 
-// Note: Replace with actual deployed URL in production or read from env.
-const API_URL = process.env.WEB3GUARD_API_URL || 'https://web3guard.com/api';
-const API_URL_LOCAL = process.env.WEB3GUARD_API_URL_LOCAL || 'http://localhost:8000';
+const API_URL = process.env.WEB3GUARD_API_URL || 'https://web3-guard-stellar-production.up.railway.app'; // From railway.toml or env
 
 const client = axios.create({
-  baseURL: API_URL_LOCAL, // We'll default to local for now, can be configured via env
+  baseURL: API_URL, // Default to production, configurable via env
 });
 
 export interface ScanResult {
