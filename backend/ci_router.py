@@ -51,35 +51,9 @@ def get_installation_access_token(installation_id: int) -> str:
     response.raise_for_status()
     return response.json()["token"]
 
-def set_commit_status(token: str, repo_full_name: str, sha: str, state: str, description: str, context: str = "Web3 Guard AI Scan"):
-    import requests
-    url = f"https://api.github.com/repos/{repo_full_name}/statuses/{sha}"
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Accept": "application/vnd.github.v3+json",
-        "X-GitHub-Api-Version": "2022-11-28"
-    }
-    payload = {
-        "state": state,
-        "description": description,
-        "context": context
-    }
-    try:
-        response = requests.post(url, headers=headers, json=payload)
-        response.raise_for_status()
-    except Exception as e:
-        print(f"Failed to set commit status: {e}")
-
-async def process_pr_scan(payload: PRScanRequest, installation_id: int = None, commit_sha: str = None):
+async def process_pr_scan(payload: PRScanRequest, installation_id: int = None):
     """Background task to run the AI scan and create an Auto-Fix PR."""
     try:
-        github_token_for_status = None
-        if installation_id and commit_sha and payload.github_repo:
-            try:
-                github_token_for_status = get_installation_access_token(installation_id)
-                set_commit_status(github_token_for_status, payload.github_repo, commit_sha, "pending", "Scanning smart contracts...")
-            except Exception as e:
-                print(f"Pending status error: {e}")
         if not payload.files:
             return
 
@@ -120,8 +94,6 @@ Do NOT wrap your response in a generic JSON block unless necessary, return pure 
         
         # Web3 Guard Auto-Fix Feature via GitHub App Token
         if payload.github_repo and "All Clear!" not in report and "\u2705" not in report:
-            if github_token_for_status and commit_sha:
-                set_commit_status(github_token_for_status, payload.github_repo, commit_sha, "failure", "Vulnerabilities found. Auto-fix PR generating.")
             github_token = None
             if installation_id:
                 try:
@@ -167,9 +139,6 @@ Do NOT wrap your response in a generic JSON block unless necessary, return pure 
                     print(f"Auto-Fix PR Created: {pr.html_url}")
                 except Exception as e:
                     print(f"Failed to create Auto-Fix PR: {str(e)}")
-        else:
-            if payload.github_repo and github_token_for_status and commit_sha:
-                set_commit_status(github_token_for_status, payload.github_repo, commit_sha, "success", "All Clear! No vulnerabilities found.")
                     
     except Exception as e:
         print(f"Error in background PR scan: {e}")
@@ -195,7 +164,7 @@ async def fetch_and_process_pr(inst_id: int, repo_full_name: str, base_branch: s
                 github_repo=repo_full_name,
                 base_branch=base_branch
             )
-            await process_pr_scan(payload, installation_id=inst_id, commit_sha=pr.head.sha)
+            await process_pr_scan(payload, installation_id=inst_id)
     except Exception as e:
         print(f"Failed to fetch PR files: {e}")
 
