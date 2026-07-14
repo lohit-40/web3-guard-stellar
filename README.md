@@ -389,6 +389,43 @@ const feeBumpTx = TransactionBuilder.buildFeeBumpTransaction(
 
 ---
 
+
+## 💻 Local CLI & MCP Server (IDE Integration)
+
+Web3 Guard includes a powerful native CLI and an **MCP (Model Context Protocol) Server**, allowing you to scan smart contracts directly from your terminal or integrate our AI scanning engine directly into your favorite AI-powered IDEs like VS Code, Cursor, or Antigravity!
+
+### 1. The Command Line Interface (CLI)
+You can install and use the Web3 Guard CLI directly via npm (or run locally):
+
+```bash
+# Scan a local smart contract file for vulnerabilities
+web3guard scan ./my_contract.sol
+
+# Check the live security score of a deployed contract
+web3guard score CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU
+```
+
+### 2. MCP Server Configuration (VS Code / Cursor)
+The CLI package includes an MCP Server that exposes two critical tools to your IDE's AI assistant:
+- `scan_local_contract`
+- `get_contract_score`
+
+**To configure in Cursor or VS Code (via MCP extension):**
+Add the following to your MCP settings (`mcp.json` or IDE config):
+
+```json
+{
+  "mcpServers": {
+    "web3guard": {
+      "command": "npx",
+      "args": ["@your-username/web3guard-cli", "start:mcp"]
+    }
+  }
+}
+```
+*Now you can simply ask your IDE's AI: "Can you scan my currently open smart contract using Web3 Guard?" and it will execute the scan autonomously!*
+
+---
 ## 📂 System File Structure
 
 ```text
