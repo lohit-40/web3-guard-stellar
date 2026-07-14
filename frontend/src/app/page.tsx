@@ -440,7 +440,7 @@ export default function App() {
         toast.error("Vulnerabilities detected!");
       } else {
         playSound('success');
-        toast.success("Security scan complete. No obvious vulnerabilities detected.");
+        toast.success("Security analysis complete, contract is secure!");
       }
       
       // Save history locally
@@ -513,7 +513,7 @@ export default function App() {
     lines.push("");
     lines.push(`Contract / Target : ${result.address}`);
     lines.push(`Audit Chain       : ${result.audit_chain || "N/A"}`);
-    lines.push(`Status            : ${result.vulnerabilities.length === 0 ? "SCANNED (No obvious vulnerabilities)" : "VULNERABILITIES FOUND ✗"}`);
+    lines.push(`Status            : ${result.vulnerabilities.length === 0 ? "SECURE ✓" : "VULNERABILITIES FOUND ✗"}`);
     lines.push(`Total Alerts      : ${result.vulnerabilities.length}`);
     if (result.audit_tx_hash) {
       lines.push(`On-Chain Proof    : ${result.audit_tx_hash}`);
@@ -566,9 +566,9 @@ export default function App() {
     setIsMinting(true);
     setMintResult(null);
     try {
-      const highestSeverity = result.vulnerabilities.length === 0 ? "SCANNED"
-        : result.vulnerabilities.some((v: any) => v.severity.toUpperCase() === "HIGH") ? "HIGH"
-        : result.vulnerabilities.some((v: any) => v.severity.toUpperCase() === "MEDIUM") ? "MEDIUM" : "LOW";
+      const highestSeverity = result.vulnerabilities.length === 0 ? "SECURE"
+        : result.vulnerabilities.some(v => v.severity === "High") ? "HIGH"
+        : result.vulnerabilities.some(v => v.severity === "Medium") ? "MEDIUM" : "LOW";
 
       const res = await fetch(`${API_URL}/mint_badge`, {
         method: "POST",
@@ -1075,7 +1075,7 @@ export default function App() {
                   {result.vulnerabilities.length === 0 ? (
                     <div className="flex items-center gap-3 px-8 py-4 border-2 border-[#10B981] bg-[#10B981]/10 text-[#10B981]">
                       <ShieldCheck className="w-6 h-6" />
-                      <span className="text-sm tracking-[0.2em] font-bold uppercase">scanned</span>
+                      <span className="text-sm tracking-[0.2em] font-bold uppercase">secure</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-3 px-8 py-4 border-2 border-brutal-orange bg-brutal-orange/10 text-brutal-orange">
@@ -1175,7 +1175,7 @@ export default function App() {
                         <div className="flex items-center gap-4 mb-8 border-b-2 border-brutal-bg/20 pb-6">
                           <ShieldCheck className="w-10 h-10 text-brutal-orange" />
                           <h2 className="text-3xl md:text-5xl font-bold tracking-tighter lowercase">
-                            <ScrambleText text={"scanned\narchitecture *"} delayMs={100} />
+                            <ScrambleText text={"secured\narchitecture *"} delayMs={100} />
                           </h2>
                         </div>
                         <div className="prose max-w-none font-mono text-[13px] md:text-sm leading-relaxed whitespace-pre-wrap overflow-x-auto text-left text-brutal-bg/90">

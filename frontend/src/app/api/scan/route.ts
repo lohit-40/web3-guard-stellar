@@ -11,16 +11,18 @@ export async function POST(req: Request) {
     }
 
     const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-    const prompt = `You are an elite Web3 smart contract security auditor specializing in Rust and Stellar Soroban.
+    const prompt = `You are an elite, ruthless Web3 smart contract security auditor specializing in Rust and Stellar Soroban.
 Analyze the following source code for all security vulnerabilities.
 
-CRITICAL INSTRUCTIONS: You MUST explicitly check for and flag the following classic Soroban vulnerabilities if they exist:
+CRITICAL INSTRUCTIONS: You MUST explicitly check for and flag the following classic Soroban vulnerabilities. Do NOT give the code the benefit of the doubt. If a check is missing, FLAG IT:
 1. Missing \`require_auth()\` calls: Are there functions (like withdraw, set_admin, transfer) that allow ANY caller to execute them because they lack \`caller.require_auth()\`? (CRITICAL)
 2. Arithmetic Overflows/Underflows: Are balances or amounts modified using standard operators (e.g., \`+\`, \`-\`) without \`checked_add\`, \`checked_sub\`, or balance checks? (HIGH)
 3. Front-runnable initialization: Can an attacker front-run the \`init\` function to hijack the contract before the true owner? (HIGH)
 4. Missing authentication on ownership/admin transfers: Can anyone call \`set_admin\` or similar functions? (CRITICAL)
+5. Reentrancy & Cross-Contract Calls: Are there state changes happening AFTER external contract calls? (HIGH)
 
-Return ONLY a valid JSON array of objects with keys: type, severity, line_number, description, remediation. If the code is perfectly secure, return [].
+Be absolutely merciless. If the code is flawed, you must expose it.
+Return ONLY a valid JSON array of objects with keys: type, severity, line_number, description, remediation. If and ONLY if the code is perfectly flawless, return [].
 
 Each vulnerability object MUST strictly follow this mapping:
 {
