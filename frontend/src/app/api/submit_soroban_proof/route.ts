@@ -53,7 +53,7 @@ export async function POST(req: Request) {
 
     const response = await server.sendTransaction(preparedTx);
     if (response.status === "ERROR") {
-      throw new Error("Transaction failed: " + (response.errorResultXdr || "Unknown error"));
+      throw new Error("Transaction failed: " + ((response as any).errorResult || (response as any).errorResultXdr || "Unknown error"));
     }
 
     return NextResponse.json({
