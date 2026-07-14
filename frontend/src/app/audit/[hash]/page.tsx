@@ -155,9 +155,9 @@ export default function SharedAuditPage() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-          <div className={`p-6 rounded-3xl border ${isSecure ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-red-500/10 border-red-500/20 text-red-400'} backdrop-blur-md flex flex-col items-center justify-center text-center shadow-[0_0_30px_rgba(0,0,0,0.5)]`}>
+          <div className={`p-6 rounded-3xl border ${isSecure ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-red-500/10 border-red-500/20 text-red-400'} backdrop-blur-md flex flex-col items-center justify-center text-center shadow-[0_0_30px_rgba(0,0,0,0.5)]`}>
             {isSecure ? <ShieldCheck className="w-8 h-8 mb-3" /> : <ShieldAlert className="w-8 h-8 mb-3" />}
-            <span className="text-2xl font-light">{isSecure ? 'Secure' : 'Critical'}</span>
+            <span className="text-2xl font-light">{isSecure ? 'Scanned' : 'Critical'}</span>
             <span className="text-[10px] uppercase tracking-widest mt-1 opacity-70">Status</span>
           </div>
           <div className="p-6 rounded-3xl border border-white/5 bg-[#0a0a0a]/50 backdrop-blur-md flex flex-col items-center justify-center text-center">
@@ -279,10 +279,14 @@ export default function SharedAuditPage() {
           ))}
           
           {isSecure && (
-            <div className="p-12 rounded-3xl border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-md text-center flex flex-col items-center">
-              <Sparkles className="w-12 h-12 text-yellow-500/50 mb-4" />
-              <h3 className="text-2xl font-light text-white mb-2">Zero Vulnerabilities Detected</h3>
-              <p className="text-neutral-400">This smart contract passed all heuristic and AI security checks seamlessly.</p>
+            <div className="flex flex-col items-center justify-center py-20 text-center space-y-6">
+              <div className="relative">
+                <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full" />
+                <ShieldCheck className="w-24 h-24 text-blue-400 relative z-10" />
+              </div>
+              <p className="text-2xl font-light text-white/70">
+                No obvious vulnerabilities detected in this contract.
+              </p>
             </div>
           )}
         </div>

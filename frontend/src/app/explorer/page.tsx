@@ -114,12 +114,13 @@ export default function ExplorerPage() {
     return addr.slice(0, 6) + "..." + addr.slice(-4);
   };
 
-  const severityColor = (sev: string) => {
-    switch (sev) {
-      case "SECURE": return "text-[#10B981] border-[#10B981]";
-      case "HIGH": return "text-[#FF4522] border-[#FF4522]";
-      case "MEDIUM": return "text-amber-500 border-amber-500";
-      default: return "text-blue-500 border-blue-500";
+  const severityColor = (level: string) => {
+    switch (level?.toUpperCase()) {
+      case "HIGH": return "text-[#EF4444] border-[#EF4444]";
+      case "MEDIUM": return "text-[#F59E0B] border-[#F59E0B]";
+      case "LOW": return "text-[#3B82F6] border-[#3B82F6]";
+      case "SCANNED": return "text-[#3B82F6] border-[#3B82F6]"; // Neutral blue instead of green
+      default: return "text-neutral-500 border-neutral-800";
     }
   };
 

@@ -11,7 +11,28 @@ export async function POST(req: Request) {
     }
 
     const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-    const prompt = `Analyze this smart contract for vulnerabilities. Return ONLY a valid JSON array of objects with keys: type, severity, line_number, description, remediation. If none, return []. Code:\n${sourceCode.substring(0, 5000)}`;
+    const prompt = `You are an elite Web3 smart contract security auditor specializing in Rust and Stellar Soroban.
+Analyze the following source code for all security vulnerabilities.
+
+CRITICAL INSTRUCTIONS: You MUST explicitly check for and flag the following classic Soroban vulnerabilities if they exist:
+1. Missing \`require_auth()\` calls: Are there functions (like withdraw, set_admin, transfer) that allow ANY caller to execute them because they lack \`caller.require_auth()\`? (CRITICAL)
+2. Arithmetic Overflows/Underflows: Are balances or amounts modified using standard operators (e.g., \`+\`, \`-\`) without \`checked_add\`, \`checked_sub\`, or balance checks? (HIGH)
+3. Front-runnable initialization: Can an attacker front-run the \`init\` function to hijack the contract before the true owner? (HIGH)
+4. Missing authentication on ownership/admin transfers: Can anyone call \`set_admin\` or similar functions? (CRITICAL)
+
+Return ONLY a valid JSON array of objects with keys: type, severity, line_number, description, remediation. If the code is perfectly secure, return [].
+
+Each vulnerability object MUST strictly follow this mapping:
+{
+    "type": "string (e.g. 'Missing require_auth', 'i128 Overflow')",
+    "severity": "string ('High', 'Medium', or 'Low')",
+    "line_number": integer (if a specific line is culpable, else null),
+    "description": "string (Detailed explanation of why it is vulnerable)",
+    "remediation": "string (Markdown explained fix and code)"
+}
+
+Code:
+${sourceCode.substring(0, 5000)}`;
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
