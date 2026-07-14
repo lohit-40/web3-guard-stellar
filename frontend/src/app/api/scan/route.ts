@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ detail: "Must provide valid code" }, { status: 400 });
     }
 
-    const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "AIzaSyANkggvpzfG3D0iqA9v02FhGG-o0Ppm81E";
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
     const prompt = `Analyze this smart contract for vulnerabilities. Return ONLY a valid JSON array of objects with keys: type, severity, line_number, description, remediation. If none, return []. Code:\n${sourceCode.substring(0, 5000)}`;
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
