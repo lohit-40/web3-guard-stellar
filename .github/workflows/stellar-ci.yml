@@ -101,7 +101,7 @@ jobs:
 
       - name: Install Core Dependencies
         working-directory: backend
-        run: pip install fastapi uvicorn requests python-dotenv pydantic google-generativeai web3 slowapi
+        run: pip install -r requirements.txt
 
       - name: Syntax Check (all Python files)
         working-directory: backend
@@ -134,7 +134,9 @@ jobs:
           os.environ.setdefault('SOROBAN_CONTRACT_ID', 'CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU')
           # Check database.py imports cleanly
           import database
-          print('✅ database.py imports OK')
+          import main
+          import ci_router
+          print('✅ backend imports OK')
           "
 
   # ─── Job 4: DEPLOY GATE — ALL 3 tests must pass before deploy ────────────────

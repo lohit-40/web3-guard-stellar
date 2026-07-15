@@ -1,0 +1,72 @@
+name: CLI Release & Publish
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'web3guard-cli/**'
+
+jobs:
+  publish-npm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        working-directory: web3guard-cli
+        run: npm ci
+
+      - name: Build CLI
+        working-directory: web3guard-cli
+        run: npm run build
+
+      - name: Publish to NPM
+        working-directory: web3guard-cli
+        # run: npm publish --access public
+        # Using a dummy command to simulate publish to avoid accidental publish by the test pipeline. Real publishing would need NODE_AUTH_TOKEN
+        run: echo "NPM publish command goes here."
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  create-github-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: web3guard-cli
+        run: npm ci
+
+      - name: Build CLI
+        working-directory: web3guard-cli
+        run: npm run build
+
+      - name: Archive build artifacts
+        working-directory: web3guard-cli
+        run: tar -czvf web3guard-cli.tar.gz dist/ package.json
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: cli-v${{ github.run_number }}
+          name: "Web3 Guard CLI v1.0.${{ github.run_number }}"
+          files: web3guard-cli/web3guard-cli.tar.gz
+          draft: false
+          prerelease: false
