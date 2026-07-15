@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "prepare": "npm run build",
     "start:cli": "node ./dist/cli.js",
     "start:mcp": "node ./dist/mcp.js"
   },

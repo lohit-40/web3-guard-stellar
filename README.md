@@ -111,7 +111,22 @@ npm run dev
 # Visit http://localhost:3000
 ```
 
-### 4. Required Environment Variables
+### 4. 💻 Web3 Guard CLI & CI/CD
+You can run the Web3 Guard automated AI scanner directly from your terminal or integrate it into any CI pipeline.
+
+```bash
+# Global installation via NPM
+npm install -g web3guard-cli
+
+# Run a scan on a specific smart contract
+web3guard scan path/to/contract.rs
+
+# (Optional) Run the Web3 Guard MCP Server for Claude/Cursor integration
+web3guard-mcp
+```
+
+### 5. Required Environment Variables
+
 
 **Backend `.env`:**
 ```env
