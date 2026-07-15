@@ -632,6 +632,18 @@ export default function App() {
               <div className="overflow-hidden p-2 -m-2"><div className="gsap-hero-title origin-bottom-left leading-none" style={{ opacity: 0 }}>guard</div></div>
             </h1>
             
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500 fill-mode-both relative z-10">
+              <a href="https://www.npmjs.com/package/web3guard-cli" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 px-6 py-3 bg-brutal-orange text-black font-bold uppercase tracking-widest text-xs hover:bg-white transition-colors duration-300 shadow-[4px_4px_0_0_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">
+                <Download size={16} /> Get CLI Tool
+              </a>
+              <div className="flex items-center justify-between gap-4 px-6 py-3 border border-brutal-text/20 bg-brutal-text/5 text-brutal-text/80 font-mono text-xs">
+                <span><span className="text-brutal-text/40 select-none">$</span> npm install -g web3guard-cli</span>
+                <button onClick={() => { navigator.clipboard.writeText("npm install -g web3guard-cli"); toast.success("Copied to clipboard!"); }} className="hover:text-brutal-orange transition-colors" title="Copy command">
+                  <Code2 size={14} />
+                </button>
+              </div>
+            </div>
+            
             <div className="absolute top-1/2 right-0 hidden lg:block transform rotate-90 origin-right z-0">
               <span className="text-xs tracking-widest uppercase text-brutal-text/40">Scroll to discover</span>
             </div>
