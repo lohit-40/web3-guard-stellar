@@ -32,9 +32,7 @@ jobs:
 
       - name: Publish to NPM
         working-directory: web3guard-cli
-        # run: npm publish --access public
-        # Using a dummy command to simulate publish to avoid accidental publish by the test pipeline. Real publishing would need NODE_AUTH_TOKEN
-        run: echo "NPM publish command goes here."
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
