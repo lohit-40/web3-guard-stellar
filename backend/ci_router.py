@@ -97,10 +97,22 @@ async def process_pr_scan(payload: PRScanRequest, installation_id: int = None, c
                 for r in rules:
                     custom_rules_text += f"- [{r['severity']}] {r['rule_text']}\n"
 
+        ecosystem_guidance = ""
+        if payload.ecosystem.lower() in ["rust", "soroban"]:
+            ecosystem_guidance = """
+CRITICAL SOROBAN CHECKS:
+1. Missing `require_auth()`: Check if sensitive functions (withdraw, set_admin, update) lack `require_auth()`. This allows anyone to drain or hijack the contract.
+2. Arithmetic Overflows: Look for `+`, `-`, `*` without `checked_add`, `checked_sub`, etc. on i128/u64.
+3. Underflow/Balance Checks: Ensure withdraws check if `amount <= balance`.
+4. Front-runnable Initialization: Ensure `initialize()` checks if it has already been called.
+5. Unprotected Setters: Ensure `set_admin` or similar setters are gated by `require_auth()`.
+"""
+
         system_instruction = f"""
 You are the Web3 Guard CI/CD GitHub Bot. 
 You are analyzing a Pull Request containing {payload.ecosystem} smart contracts.
 Identify any security vulnerabilities (Reentrancy, Integer Overflows, Unsafe CPIs, Account Substitution, etc).
+{ecosystem_guidance}
 Return your response precisely formatted as a Markdown GitHub PR Comment.
 Use emojis, bold syntax, and clear severity headers (Critical, High, Medium, Low).
 If no vulnerabilities exist, return an enthusiastic congratulatory message stating 'Web3 Guard: All Clear! \u2705'.

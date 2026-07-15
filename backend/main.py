@@ -296,8 +296,21 @@ def scan_for_vulnerabilities(source_code: str, ecosystem: str = "Solidity", cont
         except Exception:
             pass
 
+    ecosystem_guidance = ""
+    if ecosystem.lower() in ["rust", "soroban"]:
+        ecosystem_guidance = """
+CRITICAL SOROBAN CHECKS:
+1. Missing `require_auth()`: Check if sensitive functions (withdraw, set_admin, update) lack `require_auth()`. This allows anyone to drain or hijack the contract.
+2. Arithmetic Overflows: Look for `+`, `-`, `*` without `checked_add`, `checked_sub`, etc. on i128/u64.
+3. Underflow/Balance Checks: Ensure withdraws check if `amount <= balance`.
+4. Front-runnable Initialization: Ensure `initialize()` checks if it has already been called (e.g., `env.storage().instance().has(&DataKey::Admin)`).
+5. Unprotected Setters: Ensure `set_admin` or similar setters are gated by `require_auth()`.
+"""
+
     prompt = f"""You are an elite Web3 smart contract security auditor specializing in {ecosystem}.
 Analyze the following {ecosystem} source code for all security vulnerabilities.
+
+{ecosystem_guidance}
 
 {memory_context}
 Return ONLY a raw JSON array of objects. Do NOT include markdown blocks like ```json. Just output the array.
