@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 // Note: Replace with actual deployed URL in production or read from env.
-const API_URL = process.env.WEB3GUARD_API_URL || 'https://api.guardians.tech';
+const API_URL = process.env.WEB3GUARD_API_URL || 'https://stellar-submission-v2-backend.up.railway.app';
 const API_URL_LOCAL = process.env.WEB3GUARD_API_URL_LOCAL || 'http://localhost:8000';
 
 const client = axios.create({
