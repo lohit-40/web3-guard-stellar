@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useWallet } from "@/contexts/WalletContext";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-
+import SecurityTrendChart from "@/components/SecurityTrendChart";
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(useGSAP);
 }
@@ -269,6 +269,11 @@ export default function Dashboard() {
             <div className="text-5xl font-black">{metrics?.total_audits ?? "—"}</div>
             <p className="mt-2 text-xs font-mono text-brutal-text/60 uppercase">Cross-chain Volume</p>
           </div>
+        </div>
+
+        {/* Security Trend Chart */}
+        <div className="gsap-dash-feed opacity-0">
+          <SecurityTrendChart />
         </div>
 
         {/* Live Horizon SSE Feed */}

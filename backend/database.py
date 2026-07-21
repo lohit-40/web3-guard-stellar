@@ -479,6 +479,40 @@ def get_custom_rules(repo_owner: str) -> list[dict]:
     conn.close()
     return [{"rule_text": r[0], "severity": r[1]} for r in rows]
 
+def get_historical_metrics():
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    if DB_URL:
+        query = """
+            SELECT DATE(timestamp) as day, 
+                   SUM(CASE WHEN event_type = 'VULN_DETECTED' THEN 1 ELSE 0 END) as vuln_count,
+                   SUM(CASE WHEN event_type = 'SCAN_CLEAN' THEN 1 ELSE 0 END) as clean_count
+            FROM monitoring_events 
+            WHERE timestamp >= CURRENT_TIMESTAMP - INTERVAL '30 days'
+            GROUP BY day 
+            ORDER BY day ASC
+        """
+    else:
+        query = """
+            SELECT DATE(timestamp) as day, 
+                   SUM(CASE WHEN event_type = 'VULN_DETECTED' THEN 1 ELSE 0 END) as vuln_count,
+                   SUM(CASE WHEN event_type = 'SCAN_CLEAN' THEN 1 ELSE 0 END) as clean_count
+            FROM monitoring_events 
+            WHERE timestamp >= date('now', '-30 days')
+            GROUP BY day 
+            ORDER BY day ASC
+        """
+        
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    conn.close()
+    
+    return [
+        {"date": row[0], "vuln_count": int(row[1] or 0), "clean_count": int(row[2] or 0)} 
+        for row in rows
+    ]
+
 init_db()
 
 def calculate_trust_score(contract_address: str) -> dict:

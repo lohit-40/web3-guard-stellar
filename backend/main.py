@@ -13,7 +13,7 @@ import hashlib
 from dotenv import load_dotenv
 from pathlib import Path
 from google import genai
-from database import get_cached_scan, set_cached_scan, get_recent_non_evm_audits, record_user_activity, get_dashboard_metrics
+from database import get_cached_scan, set_cached_scan, get_recent_non_evm_audits, record_user_activity, get_dashboard_metrics, get_historical_metrics
 
 # Explicitly load .env from the backend directory
 load_dotenv(dotenv_path=Path(__file__).parent / ".env")
@@ -1570,3 +1570,12 @@ def post_feedback(request: Request, feedback: UserFeedback):
         pass
 
     return {"status": "success"}
+
+@app.get("/api/metrics/historical")
+@limiter.limit("20/minute")
+def historical_metrics_endpoint(request: Request):
+    try:
+        metrics = get_historical_metrics()
+        return {"metrics": metrics}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
