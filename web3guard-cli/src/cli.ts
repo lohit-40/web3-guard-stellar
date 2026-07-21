@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 import * as fs from 'fs';
 import * as path from 'path';
+import { execSync } from 'child_process';
 import { scanContract, getTrustScore, findContracts } from './api';
 import { writeConfig } from './config';
 
@@ -18,22 +19,38 @@ program
 
 
 program
-  .command('scan <path>')
+  .command('scan [path]')
   .description('Scan a local smart contract file or directory for vulnerabilities')
   .option('--json', 'Output result in JSON format')
   .option('--out <file>', 'Save output to a file (JSON format)')
+  .option('--staged', 'Scan only staged files in Git')
+  .option('--strict', 'Exit with code 1 if vulnerabilities are found')
   .action(async (scanPath, options) => {
     let filesToScan: string[] = [];
-    try {
-      const stat = fs.statSync(scanPath);
-      if (stat.isDirectory()) {
-        filesToScan = findContracts(scanPath);
-      } else {
-        filesToScan = [scanPath];
+    if (options.staged) {
+      try {
+        const output = execSync('git diff --cached --name-only --diff-filter=ACM').toString();
+        filesToScan = output.split('\n').filter(f => f.endsWith('.rs') || f.endsWith('.sol')).map(f => f.trim()).filter(f => f.length > 0);
+      } catch (e) {
+        console.error(chalk.red('Error running git command. Are you in a git repository?'));
+        process.exit(1);
       }
-    } catch (e: any) {
-      console.error(chalk.red(`Error accessing path: ${e.message}`));
-      return;
+    } else {
+      if (!scanPath) {
+        console.error(chalk.red('Error: path is required if --staged is not used.'));
+        process.exit(1);
+      }
+      try {
+        const stat = fs.statSync(scanPath);
+        if (stat.isDirectory()) {
+          filesToScan = findContracts(scanPath);
+        } else {
+          filesToScan = [scanPath];
+        }
+      } catch (e: any) {
+        console.error(chalk.red(`Error accessing path: ${e.message}`));
+        return;
+      }
     }
 
     if (filesToScan.length === 0) {
@@ -91,6 +108,13 @@ program
         }
       });
     }
+
+    if (options.strict) {
+      const hasVulnerabilities = allResults.some(r => r.result && r.result.vulnerabilities && r.result.vulnerabilities.length > 0);
+      if (hasVulnerabilities) {
+        process.exit(1);
+      }
+    }
   });
 
 program
@@ -141,6 +165,36 @@ program
       console.log(chalk.green(`Configuration updated: api_url = ${value}`));
     } else {
       console.log(chalk.yellow('Usage: web3guard config set api-url <url>'));
+    }
+  });
+
+program
+  .command('init-hook')
+  .description('Initialize a Git pre-commit hook for Web3 Guard')
+  .action(() => {
+    const hookDir = path.join(process.cwd(), '.git', 'hooks');
+    const hookPath = path.join(hookDir, 'pre-commit');
+    
+    if (!fs.existsSync(hookDir)) {
+      console.error(chalk.red('Error: .git/hooks directory not found. Are you in a Git repository?'));
+      process.exit(1);
+    }
+
+    const hookContent = `#!/bin/sh
+echo "🛡️ Running Web3 Guard Pre-Commit Scan..."
+npx web3guard-cli scan --staged --strict
+if [ $? -ne 0 ]; then
+  echo "❌ Security vulnerabilities found! Commit rejected."
+  exit 1
+fi
+`;
+
+    try {
+      fs.writeFileSync(hookPath, hookContent, { mode: 0o755 });
+      console.log(chalk.green('✅ Successfully installed Web3 Guard pre-commit hook at .git/hooks/pre-commit'));
+    } catch (e: any) {
+      console.error(chalk.red(`Error writing hook file: ${e.message}`));
+      process.exit(1);
     }
   });
 
