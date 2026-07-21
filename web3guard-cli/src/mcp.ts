@@ -6,7 +6,8 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { scanContract, getTrustScore } from "./api";
+import { scanContract, getTrustScore, findContracts } from "./api";
+import * as fs from "fs";
 
 // Initialize the MCP Server
 const server = new Server(
@@ -27,16 +28,16 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: "scan_local_contract",
-        description: "Scans a local smart contract file (Solidity or Rust) for security vulnerabilities using Web3 Guard's AI engine.",
+        description: "Scans a local smart contract file or directory (Solidity or Rust) for security vulnerabilities using Web3 Guard's AI engine.",
         inputSchema: {
           type: "object",
           properties: {
-            filePath: {
+            path: {
               type: "string",
-              description: "The absolute or relative path to the local smart contract file.",
+              description: "The absolute or relative path to the local smart contract file or directory.",
             },
           },
-          required: ["filePath"],
+          required: ["path"],
         },
       },
       {
@@ -62,17 +63,40 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
   if (name === "scan_local_contract") {
-    const filePath = String(args?.filePath);
-    if (!filePath) {
-      throw new Error("filePath is required");
+    const scanPath = String(args?.path || args?.filePath || "");
+    if (!scanPath || scanPath === "undefined") {
+      throw new Error("path is required");
     }
     try {
-      const result = await scanContract(filePath);
+      let filesToScan: string[] = [];
+      const stat = fs.statSync(scanPath);
+      if (stat.isDirectory()) {
+        filesToScan = findContracts(scanPath);
+      } else {
+        filesToScan = [scanPath];
+      }
+
+      if (filesToScan.length === 0) {
+        return {
+          content: [{ type: "text", text: "No .rs or .sol files found." }]
+        };
+      }
+
+      let allResults = [];
+      for (const file of filesToScan) {
+        try {
+          const result = await scanContract(file);
+          allResults.push({ file, result });
+        } catch (error: any) {
+          allResults.push({ file, error: error.message || String(error) });
+        }
+      }
+
       return {
         content: [
           {
             type: "text",
-            text: JSON.stringify(result, null, 2),
+            text: JSON.stringify(allResults, null, 2),
           },
         ],
       };
@@ -81,7 +105,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         content: [
           {
             type: "text",
-            text: `Error scanning contract: ${error.message}`,
+            text: `Error scanning contract(s): ${error.message}`,
           },
         ],
         isError: true,

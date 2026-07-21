@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/badge/AI-Gemini%20API-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="AI" />
 </p>
 
-[**🚀 Live Demo**](https://web3-guard-stellar-gilt.vercel.app/) • [**📦 NPM Package**](https://www.npmjs.com/package/web3guard-cli) • [**📊 Pitch Deck**]([./Web3_Guard_Pitch_Deck.pptx](https://docs.google.com/presentation/d/10tkeHBZsz9wTTgB3jddBXARcZlqZZY8P/edit?usp=sharing&ouid=100953453020666012701&rtpof=true&sd=true)) • [**📼 Watch Video**](https://youtu.be/leUKx8XQdys) • [**📚 Read Docs**](#setup-instructions) • [**🔐 Security**](./SECURITY.md) • [**𝕏 Twitter/X**](https://x.com/Web3zGuard)
+[**🚀 Live Demo**](https://web3-guard-stellar-gilt.vercel.app/) • [**📦 NPM Package**](https://www.npmjs.com/package/web3guard-cli) • [**📊 Pitch Deck**](https://docs.google.com/presentation/d/10tkeHBZsz9wTTgB3jddBXARcZlqZZY8P/edit?usp=sharing&ouid=100953453020666012701&rtpof=true&sd=true) • [**📼 Watch Video**](https://youtu.be/leUKx8XQdys) • [**📚 Read Docs**](#setup-instructions) • [**🔐 Security**](./SECURITY.md) • [**𝕏 Twitter/X**](https://x.com/Web3zGuard)
 
 <br/>
 <p align="justify">
@@ -111,19 +111,29 @@ npm run dev
 # Visit http://localhost:3000
 ```
 
-### 4. 💻 Web3 Guard CLI & CI/CD
-You can run the Web3 Guard automated AI scanner directly from your terminal or integrate it into any CI pipeline.
+### 4. 💻 Web3 Guard CLI (Advanced Usage & CI/CD)
+The Web3 Guard CLI is a powerful tool designed for local developer workflows and automated CI/CD pipelines.
 
+**Installation:**
 ```bash
-# Global installation via NPM
 npm install -g web3guard-cli
-
-# Run a scan on a specific smart contract
-web3guard scan path/to/contract.rs
-
-# (Optional) Run the Web3 Guard MCP Server for Claude/Cursor integration
-web3guard-mcp
 ```
+
+**Configuration:**
+Persist your API URL to avoid using environment variables locally:
+```bash
+web3guard config set api-url https://stellar-submission-v2-backend.up.railway.app
+```
+
+**Commands & Features:**
+- **Single File Scan:** `web3guard scan src/lib.rs`
+- **Recursive Directory Scan:** `web3guard scan ./contracts` (Automatically finds and scans all `.rs` and `.sol` files)
+- **CI/CD JSON Output:** `web3guard scan . --json --out report.json` (Outputs raw JSON, perfect for automated parsing in GitHub Actions/GitLab CI)
+- **Live Trust Score:** `web3guard score <contract_address>` (Check the live safety grade of any deployed contract)
+- **AI Agent Integration (MCP):** Run `web3guard-mcp` to expose these tools to AI coding assistants like Cursor and Claude.
+
+**How is the CLI Profitable?**
+By integrating `web3guard-cli` directly into CI/CD pipelines, enterprises and DAOs can mathematically prevent millions of dollars in exploits. The CLI operates as an automated "Shift-Left" security layer, blocking vulnerable Pull Requests from ever being merged into production. Additionally, the structured JSON output allows Web3 auditing firms to white-label Web3 Guard's engine to autonomously generate paid audit reports for their clients at near-zero marginal cost.
 
 ### 5. Required Environment Variables
 
