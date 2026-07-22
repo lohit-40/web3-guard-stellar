@@ -329,6 +329,13 @@ We mapped the two key feedback columns directly into codebase improvements:
 
 [→ View Full Improvement Commit History](https://github.com/lohit-40/web3-guard-stellar/commits/main)
 
+### 3. Continuous Evolution (Phase 2 Improvements)
+Based on broader community testing and feedback requesting more developer-friendly integrations and better visualization, we evolved the product and shipped the following advanced features post-launch:
+- **Pre-Commit Git Hooks**: Blocks vulnerable code from even being committed to the repo. [Commit 5ce66fe](https://github.com/lohit-40/web3-guard-stellar/commit/5ce66fe)
+- **VS Code Extension**: Native IDE scanning for developers. [Commit dffbdb0](https://github.com/lohit-40/web3-guard-stellar/commit/dffbdb0)
+- **Visual Analytics Dashboard**: Implemented `recharts` to render a 30-day historical view of clean vs. vulnerable scans natively driven by real-time backend PostgreSQL events. [Commit 6f5483b](https://github.com/lohit-40/web3-guard-stellar/commit/6f5483b)
+- **Expansion to Move & Cairo**: Added native support for Aptos, Sui, and Starknet, expanding our AI heuristics beyond just Rust and Solidity. [Commit c63f5e5](https://github.com/lohit-40/web3-guard-stellar/commit/c63f5e5)
+
 ---
 
 ## 🥋 Level 6: Black Belt — Production Scaling
