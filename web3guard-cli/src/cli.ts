@@ -30,7 +30,7 @@ program
     if (options.staged) {
       try {
         const output = execSync('git diff --cached --name-only --diff-filter=ACM').toString();
-        filesToScan = output.split('\n').filter(f => f.endsWith('.rs') || f.endsWith('.sol')).map(f => f.trim()).filter(f => f.length > 0);
+        filesToScan = output.split('\n').filter(f => f.endsWith('.rs') || f.endsWith('.sol') || f.endsWith('.move') || f.endsWith('.cairo')).map(f => f.trim()).filter(f => f.length > 0);
       } catch (e) {
         console.error(chalk.red('Error running git command. Are you in a git repository?'));
         process.exit(1);
@@ -54,7 +54,7 @@ program
     }
 
     if (filesToScan.length === 0) {
-      console.log(chalk.yellow('No .rs or .sol files found to scan.'));
+      console.log(chalk.yellow('No .rs, .sol, .move, or .cairo files found to scan.'));
       return;
     }
 

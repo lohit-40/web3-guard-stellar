@@ -16,8 +16,8 @@ export function activate(context: vscode.ExtensionContext) {
     const document = editor.document;
     const filePath = document.uri.fsPath;
 
-    if (!filePath.endsWith('.rs') && !filePath.endsWith('.sol')) {
-      vscode.window.showWarningMessage('Web3 Guard: Only .rs and .sol files are supported.');
+    if (!filePath.endsWith('.rs') && !filePath.endsWith('.sol') && !filePath.endsWith('.move') && !filePath.endsWith('.cairo')) {
+      vscode.window.showWarningMessage('Web3 Guard: Only .rs, .sol, .move, and .cairo files are supported.');
       return;
     }
 

@@ -26,7 +26,10 @@ export async function scanContract(filePath: string): Promise<ScanResult> {
   }
 
   const sourceCode = fs.readFileSync(absolutePath, 'utf8');
-  const ecosystem = absolutePath.endsWith('.sol') ? 'Solidity' : 'Rust';
+  let ecosystem = 'Rust';
+  if (absolutePath.endsWith('.sol')) ecosystem = 'Solidity';
+  else if (absolutePath.endsWith('.move')) ecosystem = 'Move';
+  else if (absolutePath.endsWith('.cairo')) ecosystem = 'Cairo';
 
   const response = await client.post('/scan', {
     source_code: sourceCode,
@@ -52,7 +55,7 @@ export function findContracts(dir: string): string[] {
         results = results.concat(findContracts(filePath));
       }
     } else {
-      if (filePath.endsWith('.rs') || filePath.endsWith('.sol')) {
+      if (filePath.endsWith('.rs') || filePath.endsWith('.sol') || filePath.endsWith('.move') || filePath.endsWith('.cairo')) {
         results.push(filePath);
       }
     }

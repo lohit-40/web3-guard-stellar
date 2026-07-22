@@ -306,6 +306,22 @@ CRITICAL SOROBAN CHECKS:
 4. Front-runnable Initialization: Ensure `initialize()` checks if it has already been called (e.g., `env.storage().instance().has(&DataKey::Admin)`).
 5. Unprotected Setters: Ensure `set_admin` or similar setters are gated by `require_auth()`.
 """
+    elif ecosystem.lower() == "move":
+        ecosystem_guidance = """
+CRITICAL MOVE CHECKS:
+1. Missing `key` or `store` abilities leading to locked or untransferable assets.
+2. Unprotected `public` functions that should be `public(friend)` or internal.
+3. Lack of signer validation (failing to verify the `&signer` matches expected owner).
+4. Resource double-spending or improper borrowing/dropping.
+"""
+    elif ecosystem.lower() == "cairo":
+        ecosystem_guidance = """
+CRITICAL CAIRO CHECKS:
+1. Missing `@external` vs `@view` decorators: state changes in `@view` or unprotected `@external`.
+2. Felt underflow/overflow: improper felt arithmetic without range checks.
+3. Missing caller validation: `get_caller_address()` not checked against owner/admin.
+4. Storage variable hijacking: Unprotected write access to critical storage variables.
+"""
 
     prompt = f"""You are an elite Web3 smart contract security auditor specializing in {ecosystem}.
 Analyze the following {ecosystem} source code for all security vulnerabilities.
