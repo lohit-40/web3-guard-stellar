@@ -1,5 +1,5 @@
 [workspace]
-members = ["proof_of_audit"]
+members = ["proof_of_audit", "web3guard_treasury"]
 resolver = "2"
 
 [profile.release]

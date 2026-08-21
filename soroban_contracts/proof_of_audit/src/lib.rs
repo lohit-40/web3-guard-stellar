@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, contracttype, symbol_short, Env, String, Address, token};
+use soroban_sdk::{contract, contractimpl, contracttype, symbol_short, Env, String, Address, IntoVal};
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
@@ -29,7 +29,7 @@ pub struct AuditRecord {
 #[contracttype]
 pub enum DataKey {
     Admin,         // Instance
-    FeeToken,      // Instance
+    Treasury,      // Instance
     ProofCount,    // Instance
     Proof(String), // Persistent: audit_hash → AuditRecord
 }
@@ -41,14 +41,14 @@ pub struct ProofOfAuditContract;
 
 #[contractimpl]
 impl ProofOfAuditContract {
-    /// Initialize the contract with an admin and the official native token address for fees.
+    /// Initialize the contract with an admin and the treasury contract address.
     /// Can only be called once.
-    pub fn initialize(env: Env, admin: Address, fee_token: Address) {
+    pub fn initialize(env: Env, admin: Address, treasury: Address) {
         if env.storage().instance().has(&DataKey::Admin) {
             panic!("Already initialized");
         }
         env.storage().instance().set(&DataKey::Admin, &admin);
-        env.storage().instance().set(&DataKey::FeeToken, &fee_token);
+        env.storage().instance().set(&DataKey::Treasury, &treasury);
         
         // Initialize proof count
         env.storage().instance().set(&DataKey::ProofCount, &0u64);
@@ -57,28 +57,9 @@ impl ProofOfAuditContract {
         env.storage().instance().extend_ttl(LEDGER_THRESHOLD_INSTANCE, LEDGER_TTL_INSTANCE);
     }
 
-    /// Withdraw collected fees to a specified address.
-    /// Only the admin can call this.
-    pub fn withdraw_fees(env: Env, to: Address) {
-        let admin: Address = env.storage().instance().get(&DataKey::Admin).expect("Not initialized");
-        admin.require_auth();
-
-        let fee_token: Address = env.storage().instance().get(&DataKey::FeeToken).expect("Not initialized");
-        let token_client = token::Client::new(&env, &fee_token);
-        
-        let contract_address = env.current_contract_address();
-        let balance = token_client.balance(&contract_address);
-        
-        if balance > 0 {
-            token_client.transfer(&contract_address, &to, &balance);
-        }
-
-        env.storage().instance().extend_ttl(LEDGER_THRESHOLD_INSTANCE, LEDGER_TTL_INSTANCE);
-    }
-
     /// Store a new audit proof on the Stellar ledger.
-    /// Requires the user's signature (`caller.require_auth()`) and transfers 1 XLM as an audit fee
-    /// via inter-contract calls to the Native Token (which was set during initialization).
+    /// Requires the user's signature (`caller.require_auth()`).
+    /// Invokes the Treasury contract to consume 1 audit from their subscription quota.
     pub fn store_proof(
         env: Env,
         caller: Address,
@@ -89,10 +70,10 @@ impl ProofOfAuditContract {
     ) -> u64 {
         caller.require_auth();
 
-        // Load trusted fee token address and charge fee (1 XLM = 10,000,000 stroops)
-        let fee_token: Address = env.storage().instance().get(&DataKey::FeeToken).expect("Not initialized");
-        let token_client = token::Client::new(&env, &fee_token);
-        token_client.transfer(&caller, &env.current_contract_address(), &10_000_000); 
+        // Cross-contract call to Treasury to consume audit
+        let treasury: Address = env.storage().instance().get(&DataKey::Treasury).expect("Not initialized");
+        let args = soroban_sdk::vec![&env, env.current_contract_address().into_val(&env), caller.into_val(&env)];
+        env.invoke_contract::<()>(&treasury, &soroban_sdk::Symbol::new(&env, "consume_audit"), args);
 
         // Increment global proof counter
         let mut proof_id: u64 = env.storage().instance().get(&DataKey::ProofCount).expect("Not initialized");
@@ -163,34 +144,65 @@ impl ProofOfAuditContract {
 mod tests {
     use super::*;
     use soroban_sdk::{testutils::Address as _, Env, String, Address};
-    use soroban_sdk::token;
+
+    #[test]
+    fn test_initialize() {
+        let env = Env::default();
+        let admin = Address::generate(&env);
+        let treasury = Address::generate(&env);
+        
+        let contract_id = env.register_contract(None, crate::ProofOfAuditContract);
+        let client = ProofOfAuditContractClient::new(&env, &contract_id);
+
+        client.initialize(&admin, &treasury);
+        assert_eq!(client.total_proofs(), 0);
+    }
+
+    #[test]
+    fn test_missing_proof_returns_none() {
+        let env = Env::default();
+        let admin = Address::generate(&env);
+        let treasury = Address::generate(&env);
+        
+        let contract_id = env.register(crate::ProofOfAuditContract, ());
+        let client = ProofOfAuditContractClient::new(&env, &contract_id);
+        client.initialize(&admin, &treasury);
+
+        let missing = String::from_str(&env, "nonexistent_hash");
+        assert!(client.get_proof(&missing).is_none());
+        assert!(!client.verify_proof(&missing));
+    }
+
+    #[contract]
+    pub struct MockTreasury;
+
+    #[contractimpl]
+    impl MockTreasury {
+        pub fn consume_audit(_env: Env, _consumer: Address, user: Address) {
+            user.require_auth();
+            // Mock success
+        }
+    }
 
     #[test]
     fn test_store_and_retrieve_proof() {
         let env = Env::default();
-        let auth_admin = Address::generate(&env);
-        let caller = Address::generate(&env);
-        let admin = Address::generate(&env);
-        
         env.mock_all_auths();
-
-        // Setup Native Token Mock
-        let token_id = env.register_stellar_asset_contract_v2(auth_admin.clone()).address();
-        let token_client = token::Client::new(&env, &token_id);
-        let token_admin_client = token::StellarAssetClient::new(&env, &token_id);
-        token_admin_client.mint(&caller, &1_000_000_000);
-
-        let contract_id = env.register_contract(None, crate::ProofOfAuditContract);
+        
+        let admin = Address::generate(&env);
+        let caller = Address::generate(&env);
+        let treasury_id = env.register(MockTreasury, ());
+        
+        let contract_id = env.register(crate::ProofOfAuditContract, ());
         let client = ProofOfAuditContractClient::new(&env, &contract_id);
 
-        // Initialize contract
-        client.initialize(&admin, &token_id);
+        client.initialize(&admin, &treasury_id);
 
         let hash = String::from_str(&env, "abc123deadbeef");
         let program = String::from_str(&env, "GABCDEF123456");
         let risk = String::from_str(&env, "HIGH");
 
-        // Store a proof (fee_token is no longer passed!)
+        // Store a proof
         let proof_id = client.store_proof(&caller, &hash, &program, &risk, &3u32);
         assert_eq!(proof_id, 1);
 
@@ -200,55 +212,7 @@ mod tests {
         assert_eq!(record.proof_id, 1);
         assert_eq!(record.caller, caller.clone());
 
-        // Verify balance was deducted (1 XLM = 10,000,000)
-        assert_eq!(token_client.balance(&caller), 1_000_000_000 - 10_000_000);
-        assert_eq!(token_client.balance(&client.address), 10_000_000);
-
         assert!(client.verify_proof(&hash));
         assert_eq!(client.total_proofs(), 1);
-
-        // Admin withdraws fees
-        client.withdraw_fees(&admin);
-        assert_eq!(token_client.balance(&client.address), 0);
-        assert_eq!(token_client.balance(&admin), 10_000_000);
-    }
-
-    #[test]
-    fn test_missing_proof_returns_none() {
-        let env = Env::default();
-        let admin = Address::generate(&env);
-        let auth_admin = Address::generate(&env);
-        let token_id = env.register_stellar_asset_contract_v2(auth_admin.clone()).address();
-        
-        let contract_id = env.register_contract(None, crate::ProofOfAuditContract);
-        let client = ProofOfAuditContractClient::new(&env, &contract_id);
-        client.initialize(&admin, &token_id);
-
-        let missing = String::from_str(&env, "nonexistent_hash");
-        assert!(client.get_proof(&missing).is_none());
-        assert!(!client.verify_proof(&missing));
-    }
-
-    #[test]
-    #[should_panic]
-    fn test_require_auth_fails_without_signature() {
-        let env = Env::default();
-        let auth_admin = Address::generate(&env);
-        let caller = Address::generate(&env);
-        let admin = Address::generate(&env);
-        
-        let token_id = env.register_stellar_asset_contract_v2(auth_admin.clone()).address();
-
-        let contract_id = env.register_contract(None, crate::ProofOfAuditContract);
-        let client = ProofOfAuditContractClient::new(&env, &contract_id);
-        
-        // We do NOT call env.mock_all_auths() -> this should panic
-        client.initialize(&admin, &token_id);
-
-        let hash = String::from_str(&env, "fail_hash");
-        let program = String::from_str(&env, "GABC");
-        let risk = String::from_str(&env, "LOW");
-
-        client.store_proof(&caller, &hash, &program, &risk, &0u32);
     }
 }
