@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useWallet } from "@/contexts/WalletContext";
-import { TransactionBuilder, Networks, Contract, SorobanRpc, xdr, nativeToScVal } from "@stellar/stellar-sdk";
+import { TransactionBuilder, Networks, Contract, rpc, xdr, nativeToScVal } from "@stellar/stellar-sdk";
 import { signTransaction, requestAccess, setAllowed } from "@stellar/freighter-api";
 
 // The Admin address that deployed the Treasury contract
@@ -27,7 +27,7 @@ export default function AdminDashboard() {
 
   const fetchRevenue = async () => {
      try {
-       const server = new SorobanRpc.Server(rpcUrl);
+       const server = new rpc.Server(rpcUrl);
        const contract = new Contract(TREASURY_CONTRACT_ID);
        
        const tx = new TransactionBuilder(
@@ -39,7 +39,7 @@ export default function AdminDashboard() {
        .build();
        
        const simResult = await server.simulateTransaction(tx);
-       if (SorobanRpc.Api.isSimulationSuccess(simResult) && simResult.result) {
+       if (rpc.Api.isSimulationSuccess(simResult) && simResult.result) {
           const revVal = simResult.result.retval;
           // Decode scval i128
           setRevenue((Number(revVal.i128().lo()) / 10000000).toString());
@@ -72,7 +72,7 @@ export default function AdminDashboard() {
   const submitSorobanTx = async (op: xdr.Operation) => {
     setLoading(true);
     try {
-      const server = new SorobanRpc.Server(rpcUrl);
+      const server = new rpc.Server(rpcUrl);
       const source = await server.getAccount(address!);
       
       let tx = new TransactionBuilder(source, { fee: "100000", networkPassphrase })
@@ -81,22 +81,23 @@ export default function AdminDashboard() {
         .build();
 
       const simResult = await server.simulateTransaction(tx);
-      if (!SorobanRpc.Api.isSimulationSuccess(simResult)) {
+      if (!rpc.Api.isSimulationSuccess(simResult)) {
         throw new Error("Simulation failed");
       }
 
-      tx = SorobanRpc.assembleTransaction(tx, networkPassphrase, simResult).build();
+      tx = rpc.assembleTransaction(tx, simResult).build();
 
       // Sign with Freighter
       const signedXdr = await signTransaction(tx.toXDR(), {
-        network: network.toUpperCase() as "TESTNET" | "PUBLIC",
+        networkPassphrase,
       });
 
       if (signedXdr.error) {
          throw new Error(signedXdr.error);
       }
 
-      const signedTx = TransactionBuilder.fromXDR(signedXdr, networkPassphrase);
+      // We ensure signedTxXdr is passed as a string
+      const signedTx = TransactionBuilder.fromXDR(signedXdr.signedTxXdr, networkPassphrase);
       
       const sendResponse = await server.sendTransaction(signedTx);
       if (sendResponse.status === "ERROR") {
