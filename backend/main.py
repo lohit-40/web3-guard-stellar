@@ -91,7 +91,7 @@ async def scout_monitor_loop():
                                 prompt = f"Analyze this Stellar transaction touching our smart contract: {json.dumps(tx_data)[:2000]}.\nIs there an anomalous state change or security risk (like massive drain or reentrancy)? Reply with exactly 'ANOMALY: <reason>' or 'SAFE'."
                                 
                                 response = gclient.models.generate_content(
-                                    model='gemini-2.0-flash',
+                                    model='gemini-3.6-flash',
                                     contents=prompt
                                 )
                                 result = response.text.strip()
@@ -352,18 +352,32 @@ Source Code:
     for i, key in enumerate(current_keys):
         try:
             client = genai.Client(api_key=key)
-            for model in ['gemini-2.5-flash', 'gemini-2.0-flash']:
+            for attempt in range(3):
                 try:
-                    response = client.models.generate_content(model=model, contents=prompt)
-                    break
+                    response = client.models.generate_content(
+                        model='gemini-3.6-flash',
+                        contents=prompt,
+                        config=genai.types.GenerateContentConfig(
+                            response_mime_type="application/json"
+                        )
+                    )
+                    return _parse_vulns(response.text.strip(), Vulnerability)
                 except Exception as me:
-                    if "503" in str(me) or "UNAVAILABLE" in str(me):
-                        if model == 'gemini-2.5-flash': continue
-                    raise me
-            return _parse_vulns(response.text.strip(), Vulnerability)
+                    if "429" in str(me) or "quota" in str(me).lower():
+                        if attempt < 2:
+                            _time.sleep(2 ** attempt)
+                            continue
+                        raise me
+                    elif "503" in str(me) or "UNAVAILABLE" in str(me):
+                        if attempt < 2:
+                            _time.sleep(1)
+                            continue
+                        raise me
+                    else:
+                        raise me
         except Exception as e:
             err_str = str(e)
-            is_429 = "429" in err_str
+            is_429 = "429" in err_str or "quota" in err_str.lower()
             is_403 = "403" in err_str or "PERMISSION_DENIED" in err_str or "denied" in err_str.lower()
             if (is_429 or is_403) and i < len(current_keys) - 1:
                 _time.sleep(3)
@@ -952,7 +966,7 @@ For the threats, use the STRIDE methodology:
     client = genai.Client(api_key=current_keys[0])
     try:
         response = client.models.generate_content(
-            model='gemini-2.0-flash',
+            model='gemini-3.6-flash',
             contents=prompt,
             config=genai.types.GenerateContentConfig(
                 system_instruction=system_instruction,
@@ -1010,13 +1024,13 @@ def auto_remediate_contract(request: Request, payload: SecureContractRequest):
             client = genai.Client(api_key=key)
             try:
                 response = client.models.generate_content(
-                    model='gemini-2.5-flash',
+                    model='gemini-3.6-flash',
                     contents=prompt
                 )
             except Exception as e:
                 if "503" in str(e) or "UNAVAILABLE" in str(e):
                     response = client.models.generate_content(
-                        model='gemini-2.0-flash',
+                        model='gemini-3.6-flash',
                         contents=prompt
                     )
                 else:
@@ -1097,13 +1111,13 @@ def multilingual_chat(request: Request, payload: ChatRequest):
             client = genai.Client(api_key=key)
             try:
                 response = client.models.generate_content(
-                    model='gemini-2.5-flash',
+                    model='gemini-3.6-flash',
                     contents=messages
                 )
             except Exception as e:
                 if "503" in str(e) or "UNAVAILABLE" in str(e):
                     response = client.models.generate_content(
-                        model='gemini-2.0-flash',
+                        model='gemini-3.6-flash',
                         contents=messages
                     )
                 else:

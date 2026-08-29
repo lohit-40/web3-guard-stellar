@@ -121,7 +121,7 @@ Do NOT wrap your response in a generic JSON block unless necessary, return pure 
 """
         client = get_gemini_client()
         response = client.models.generate_content(
-            model='gemini-2.0-flash',
+            model='gemini-3.6-flash',
             contents=code_context,
             config=genai.types.GenerateContentConfig(
                 system_instruction=system_instruction,
@@ -157,7 +157,7 @@ Do NOT wrap your response in a generic JSON block unless necessary, return pure 
                     for filename, code in payload.files.items():
                         secure_prompt = f"Rewrite this {payload.ecosystem} code to be 100% mathematically secure against the vulnerabilities identified. Return ONLY raw code, no markdown blocks.\n\n{code}"
                         sec_resp = client.models.generate_content(
-                            model='gemini-2.0-flash',
+                            model='gemini-3.6-flash',
                             contents=secure_prompt
                         )
                         secure_code = sec_resp.text.strip()
