@@ -86,7 +86,12 @@ program
       allResults.forEach(({ file, result, error }) => {
         console.log(`\n${chalk.cyan.bold(file)}:`);
         if (error) {
-          console.log(chalk.red(`Error: ${error}`));
+          if (String(error).includes("429") || String(error).toLowerCase().includes("exhausted")) {
+            console.log(chalk.bgRed.white.bold(' ⏳ AI SCANNER RATE LIMITED '));
+            console.log(chalk.yellow('The backend is under heavy load. Exponential backoff retry limit reached. Please try again in a few seconds.'));
+          } else {
+            console.log(chalk.red(`Error: ${error}`));
+          }
           return;
         }
         if (result.vulnerabilities && result.vulnerabilities.length > 0) {

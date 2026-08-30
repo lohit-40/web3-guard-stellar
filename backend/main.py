@@ -1609,3 +1609,72 @@ def historical_metrics_endpoint(request: Request):
         return {"metrics": metrics}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/metrics/live")
+@limiter.limit("60/minute")
+def get_live_metrics(request: Request):
+    from database import get_connection
+    conn = get_connection()
+    try:
+        cursor = conn.cursor()
+        
+        # Get active users (wallets seen in last 24h)
+        cursor.execute("SELECT COUNT(DISTINCT wallet_address) FROM users WHERE first_seen > datetime('now', '-1 day')")
+        active_users = cursor.fetchone()[0] or 0
+        
+        # Get watched contracts
+        cursor.execute("SELECT COUNT(DISTINCT contract_address) FROM watchlist")
+        watched_contracts = cursor.fetchone()[0] or 0
+        
+        # Get total audits
+        cursor.execute("SELECT SUM(audit_count) FROM users")
+        total_audits = cursor.fetchone()[0] or 0
+
+        # Get watched addresses list
+        cursor.execute("SELECT contract_address FROM watchlist")
+        watched_addresses = [row[0] for row in cursor.fetchall()]
+
+        return {
+            "active_users": active_users,
+            "watched_contracts": watched_contracts,
+            "total_audits": total_audits,
+            "watched_addresses": watched_addresses,
+            "recent_events": []
+        }
+    except Exception as e:
+        print(f"Error fetching live metrics: {e}")
+        return {
+            "active_users": 0,
+            "watched_contracts": 0,
+            "total_audits": 0,
+            "watched_addresses": [],
+            "recent_events": []
+        }
+    finally:
+        conn.close()
+
+@app.get("/api/false_positives")
+@limiter.limit("30/minute")
+def get_false_positives(request: Request):
+    from database import get_connection
+    conn = get_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT contract_address, vuln_type, reason, timestamp FROM false_positives ORDER BY timestamp DESC LIMIT 50")
+        results = cursor.fetchall()
+        
+        fps = []
+        for row in results:
+            fps.append({
+                "contract_address": row[0],
+                "type": row[1],
+                "reason": row[2],
+                "timestamp": row[3]
+            })
+            
+        return {"false_positives": fps}
+    except Exception as e:
+        print(f"Error fetching false positives: {e}")
+        return {"false_positives": []}
+    finally:
+        conn.close()

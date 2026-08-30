@@ -461,7 +461,15 @@ export default function App() {
       
     } catch (err: any) {
       playSound('error');
-      toast.error(err.message || "An unexpected error occurred.");
+      if (err.message && (err.message.includes("429") || err.message.toLowerCase().includes("exhausted"))) {
+        toast("AI Scanner is under heavy load. The backend is retrying via exponential backoff, please try again in a few seconds.", {
+          icon: '⏳',
+          duration: 6000,
+          style: { background: '#f59e0b', color: '#fff' }
+        });
+      } else {
+        toast.error(err.message || "An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }
