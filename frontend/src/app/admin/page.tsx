@@ -8,7 +8,7 @@ import { signTransaction, requestAccess, setAllowed } from "@stellar/freighter-a
 // The Admin address that deployed the Treasury contract
 const ADMIN_ADDRESS = process.env.NEXT_PUBLIC_ADMIN_ADDRESS || "GBY72PDQ6X3PHB2DNTEASIQPGF2HU2X5ISARTHAQ72BX22LVJJFADCEJ"; // Replace with your actual deployed admin address in production
 // The deployed Treasury contract address
-const TREASURY_CONTRACT_ID = process.env.NEXT_PUBLIC_TREASURY_CONTRACT || "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU";
+const TREASURY_CONTRACT_ID = process.env.NEXT_PUBLIC_TREASURY_CONTRACT || "CAB4ZTQ2A7HIBTTY55JZ6P2SLFNQXPVZCZBSY33DIJ6G4A3HZPN44X5P";
 
 export default function AdminDashboard() {
   const { address, isConnected, chain, connectStellar, network } = useWallet();

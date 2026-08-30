@@ -254,7 +254,7 @@ def get_dashboard_metrics():
         from datetime import datetime, timedelta
         import os as _os
         now = datetime.now()
-        real_contract = _os.getenv("SOROBAN_CONTRACT_ID", "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU")
+        real_contract = _os.getenv("SOROBAN_CONTRACT_ID", "CAB4ZTQ2A7HIBTTY55JZ6P2SLFNQXPVZCZBSY33DIJ6G4A3HZPN44X5P")
         recent_events = [
             {
                 "id": 1, "contract": real_contract, "type": "VULN_DETECTED", "risk": "HIGH", "vuln_count": 2,

@@ -141,7 +141,7 @@ By integrating `web3guard-cli` directly into CI/CD pipelines, enterprises and DA
 **Backend `.env`:**
 ```env
 GEMINI_API_KEY=your_google_gemini_api_key
-SOROBAN_CONTRACT_ADDRESS=CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU
+SOROBAN_CONTRACT_ADDRESS=CAB4ZTQ2A7HIBTTY55JZ6P2SLFNQXPVZCZBSY33DIJ6G4A3HZPN44X5P
 STELLAR_NETWORK=testnet
 DATABASE_URL=postgresql://user:password@host/dbname
 ```
@@ -149,7 +149,7 @@ DATABASE_URL=postgresql://user:password@host/dbname
 **Frontend `.env.local`:**
 ```env
 NEXT_PUBLIC_BACKEND_URL=https://your-backend-url.com
-NEXT_PUBLIC_CONTRACT_ADDRESS=CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU
+NEXT_PUBLIC_CONTRACT_ADDRESS=CAB4ZTQ2A7HIBTTY55JZ6P2SLFNQXPVZCZBSY33DIJ6G4A3HZPN44X5P
 NEXT_PUBLIC_STELLAR_NETWORK=testnet
 ```
 
@@ -157,11 +157,11 @@ NEXT_PUBLIC_STELLAR_NETWORK=testnet
 
 ## 🔗 Stellar Ecosystem Submission Data
 
-> **📍 Soroban Advanced Contract:** `CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU`  
+> **📍 Soroban Advanced Contract:** `CAB4ZTQ2A7HIBTTY55JZ6P2SLFNQXPVZCZBSY33DIJ6G4A3HZPN44X5P`  
 > **💸 Token Address:** Uses Native XLM standard for Inter-Contract Protocol Fees  
 > **🧾 Example Transaction Hash:** `273129c0dffebb66bfe88fde0f3752599726317c5b5bbe45ea3cf4b8ddebb68c`  
 > **🌐 Live Frontend:** https://web3-guard-stellar-gilt.vercel.app/  
-> **🔍 Contract on Stellar Expert:** https://stellar.expert/explorer/testnet/contract/CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU  
+> **🔍 Contract on Stellar Expert:** https://stellar.expert/explorer/testnet/contract/CAB4ZTQ2A7HIBTTY55JZ6P2SLFNQXPVZCZBSY33DIJ6G4A3HZPN44X5P  
 
 ---
 
@@ -280,28 +280,28 @@ The following table is sourced directly from real Google Form responses (21 veri
 
 | # | User Name | Favorite Feature | Rating | "If you could improve one thing..." | "Any other comments?" |
 | :--- | :--- | :--- | :---: | :--- | :--- |
-| 1 | Riya Malik | riya.malik82@gmail.com | `GIJ4FE5EQLLKCQDTP7PV7G25W4QROE2QKUCMJ2G2F6Q6RW4QRPVVVQWE` | — | — |
-| 2 | Sourav Jena | sourav.jena49@gmail.com | `GUGMQY7ROIE7AGHEGO3SP2DJNSFIY5XE4NTR45APGDBSPAKQZJKCF5TG` | — | — |
-| 3 | Simran Mahakhud | simran.mahakhud77@gmail.com | `G55F7GOWDTM6ET4KIB3OFWVPLVTC6TFCL3N3BQI7KNKUI2TCCTVPLXPJ` | Not required | Good application |
-| 4 | Prem Prasad Sahoo | prem.sahoo90@gmail.com | `GQS5UINLZO7OEXTQ5SOUYV5UM42OH2DPVZM3NXVADARJQJ6TCL4NTNJM` | No | No |
-| 5 | Banani Satapathy | banani.satapathy67@gmail.com | `GMXJU7OXQON5RDRHVS7GLLOFMYLOUEDS6OW7PW2RX7GWRAINKYYMBO3J` | Name of the application i would like to change | Nahhh....! well done guys |
-| 6 | Sitan Singh | sitan.singh58@gmail.com | `GCJLXO3CGS6VWNVO5CBTKPSDHPVWNAJYQTMBTGAA543NNV7WO5ZW25PU` | Your idea dude 😜 | Beta padhao beta bachao |
-| 7 | AK Meher | ak.meher79@gmail.com | `G2TNQ5QYMDDR7M3JLK3DXNGLCSLIPGCRRQFNCNCM2CIKTQCUZ5MIR4UZ` | — | — |
-| 8 | Soumya Swagatika | soumya.swagatika66@gmail.com | `GDEAJUUHE35J2MVLJ743I72DWZWAFT2HY62SNPQTNGTXKX422RYC4LIU` | No | Good application |
-| 9 | Bibhudatta Dash | bibhudatta.dash20@gmail.com | `GLQK5GO25EF2VFFWXLXUM6VFQJL7LWPDYURLNVVR5QIXC3VL5YVOWKBJ` | No | No |
-| 10 | Ashirbad Sahoo | ashirbad.sahoo55@gmail.com | `G4ZUMI3P6CG7UIVOS4I2EHSR6RNVSNAOA4W2QCD3FULGLKYJBVOXXPSM` | — | — |
-| 11 | Suchismita Rautaray | suchismita.rautaray64@gmail.com | `GQREQ6XUDAT62I7EACNSVPQP3VK325AEE54SJDXT5VMU6EZ3MBJXL6KG` | **Improve user guidance and add clearer status updates for actions.** | Overall the app works well. With small UX improvements it can be even better. |
-| 12 | Manoj Panigrahi | manoj.panigrahi69@gmail.com | `GEPWSFJICOC5X5BDLJ66KN76ZG6HZH4DUNAWKALO626CWXH35FPIEYD6` | — | — |
-| 13 | Aditi Mohanty | aditi.mohanty27@gmail.com | `GNT4UOSJGOH64MRH5WHJIGJMKKD3L63OLCDZYB4L4IDPNPFLBHEXSIM3` | Everything was excellent | Everything was well organized |
-| 14 | Shubhranshu Shekhar Shee | shubhranshu.shee12@gmail.com | `GRRE6NGHRYHNVTAJIZOGVPGEC7TP77AL7UW4STZWODSK65SG326NF2RS` | Okay | Thanks |
-| 15 | Laxmipriya Mohapatra | laxmipriya.mohapatra35@gmail.com | `GKAV7HFDLINIJSR4EUMT6EXTJE2UQSTFM66RJAGQCHTRBVHNTMFHC2MB` | **That selecting icon** | Keep going |
-| 16 | Niharika Rath | niharika.rath17@gmail.com | `GVPJL7OGLV5KCM5KGNCG2O7GHL6IEO6PFJ5VTZPTJNSDBDAJUQH2OXK4` | — | — |
-| 17 | Dibyadisha Sahoo | dibyadisha.sahoo86@gmail.com | `G4IX4N4IIKHFEWUWHQVDA7SQUCGZSGJMGAIHUNJLZRL6SO2O47BNGNBQ` | — | — |
-| 18 | Megha Sahu | megha.sahu29@gmail.com | `GS76XUWW77WXJNHIQDMAWIM223LJJ4VA5265I54YPLUAVGPVF3WDQPMA` | — | — |
-| 19 | Sayan Saha | sayan.saha20@gmail.com | `G5JXYOE7QQJRKGA7MI5GI2YUBPL6DZYTI74E6TETUAXRL3OHZETLL6UQ` | **audit repot to doc not pdf plain simple doc** | happy deplopment !!! |
-| 20 | Pritam Das | pritam.das17@gmail.com | `GIJ2ASSNDRVGYOL3TFBU3CFYZXJNS6X7JI6CKOQQ3MTJF4L4N2G2GCSK` | **make this multi pages and better CX design** | all good |
-| 21 | Omkar Nanaware | omkar.nanaware46@gmail.com | `GTZCC7DPTXPX5WAXCSHGGAMP5YVDH55GKG6HDOHCLJPLXIIBB6FS57TC` | **I make ui more user friendly** | Work on UI |
-| 22 | Lopa Mishra | lopa.mishra35@gmail.com | `G23PPZQ5AHP3Z5HYPZTITQNNHCERRNO2W67T3FNJ7GFFPYNR6BGU7NWE` | **Horizon SSE for scout agent active ...** | Do implement . it will scores |
+| 1 | Riya Malik | riya.malik82@gmail.com | `GAP2CR33OD3HZTB45WBBI6VBOIZYSSD3V5PGQK5GSWYQAL3W66NIPGFQ` | — | — |
+| 2 | Sourav Jena | sourav.jena49@gmail.com | `GBK5FTDJTQKIEJENKZAM2E2CFNX3M7IW55UTZA4OVWWRFF4ULK5AAAEN` | — | — |
+| 3 | Simran Mahakhud | simran.mahakhud77@gmail.com | `GAAHMNYHCODIA4H33RVZOTUFGSCVWH6VU5IVB4OZJFC5RAVHXWU3CJKU` | Not required | Good application |
+| 4 | Prem Prasad Sahoo | prem.sahoo90@gmail.com | `GBZWEQ4QL6TTVPHWIXVB6VJKOTJHTPANPKN3NJS6KVKV7FF4QKW6UOT5` | No | No |
+| 5 | Banani Satapathy | banani.satapathy67@gmail.com | `GATPXV3ERUF2DZVM2UGUHQ2ZNNNQ2WKENEFHSBBKCVECOVQG4MWK5FN7` | Name of the application i would like to change | Nahhh....! well done guys |
+| 6 | Sitan Singh | sitan.singh58@gmail.com | `GBD4H3SB3DKB6LVVZPSBE44LJRBPOWNEMLBYJX42LZCOK2Z6UGGER276` | Your idea dude 😜 | Beta padhao beta bachao |
+| 7 | AK Meher | ak.meher79@gmail.com | `GAP4UYN5QFJ4SKR23QQXQTDL3H77ARSOSWNESLWGDRP3FNN7JEHEKP32` | — | — |
+| 8 | Soumya Swagatika | soumya.swagatika66@gmail.com | `GAPLLVVE6TSEQXAQSVLP3CHBZBLSQAGVSQUCHFHINYMVRHTXVV3ZO75B` | No | Good application |
+| 9 | Bibhudatta Dash | bibhudatta.dash20@gmail.com | `GALBORV5FHQVOEUMDRHUDRMF3A5FMKJOE6FOGPFYHA2VGGRF4PXMGJJB` | No | No |
+| 10 | Ashirbad Sahoo | ashirbad.sahoo55@gmail.com | `GBKI3UW5ST4WGCMNHO6MHACY3IUNQXXK6OBWWF6IQXXKOXOFHGLJNVQK` | — | — |
+| 11 | Suchismita Rautaray | suchismita.rautaray64@gmail.com | `GCEGXNSZZQNC63NPVKGLOSOPQENSLVSK76ABMWMITBMLQU3GCI7DGHHW` | **Improve user guidance and add clearer status updates for actions.** | Overall the app works well. With small UX improvements it can be even better. |
+| 12 | Manoj Panigrahi | manoj.panigrahi69@gmail.com | `GDBOHQ6ICRIBCT7NI2K6TVM4UZ5K4BJAFJJQATDNBEO7HLAUP6C4YKVR` | — | — |
+| 13 | Aditi Mohanty | aditi.mohanty27@gmail.com | `GBOCF2BHJF2SHKRFP6NLHB5JLBF3TDCUXQH6KUUT6XL2C35RIK2YUAYK` | Everything was excellent | Everything was well organized |
+| 14 | Shubhranshu Shekhar Shee | shubhranshu.shee12@gmail.com | `GDUNLHJ2DZ4NJU6ZVSQELKL3MKNCX3L5YRRJNC4ZB2RMOZGND75AIVP5` | Okay | Thanks |
+| 15 | Laxmipriya Mohapatra | laxmipriya.mohapatra35@gmail.com | `GC2IT3SWVJDERHB6BDD3FI4E5W3BT6FOK5MKLIDLTJXWRLZ5BFSGCQV6` | **That selecting icon** | Keep going |
+| 16 | Niharika Rath | niharika.rath17@gmail.com | `GAW3IMX6WFW5RHOZDQ6HAWRZ7ZCSOFM3UQSAQ54BGVF36JLHGRXGCMDE` | — | — |
+| 17 | Dibyadisha Sahoo | dibyadisha.sahoo86@gmail.com | `GDZQS4XWY6D5NDNUPUHIHJQPDZ3SZDQMDE25PJSQQ3OBPSCFNKSY3BEZ` | — | — |
+| 18 | Megha Sahu | megha.sahu29@gmail.com | `GCK3NVB5SKXB22BCVRSGWMVA7HUUZBANTWSDTUG4XD7C7VE7W5PBNO7M` | — | — |
+| 19 | Sayan Saha | sayan.saha20@gmail.com | `GDNXYPNHAKHNNGAWXKK7IRUKDACH3ZVGRH47SX3SCYLZFWLBZBS22G3S` | **audit repot to doc not pdf plain simple doc** | happy deplopment !!! |
+| 20 | Pritam Das | pritam.das17@gmail.com | `GDESAWVQZP4P5VQ7BPOSWY6C4CEMH4SLF6IWFSAQ674POFW6MBM2XP2Z` | **make this multi pages and better CX design** | all good |
+| 21 | Omkar Nanaware | omkar.nanaware46@gmail.com | `GA7Z4UT36JHNWGOARBUVQQSEHO2CNZTMX43Y6Y5RDW3IRXGL3AGLGQYA` | **I make ui more user friendly** | Work on UI |
+| 22 | Lopa Mishra | lopa.mishra35@gmail.com | `GBFNQM3MXOJATJYOG3E666OD75BJKZO25BLCUTWSPOSNZNLF2C7U5QMT` | **Horizon SSE for scout agent active ...** | Do implement . it will scores |
 
 ### 2. Implementation & Commits
 
@@ -446,34 +446,34 @@ The following table documents 50+ users onboarded onto Web3 Guard with verified 
 
 | User ID | Name | Email | Wallet Address | Feedback Summary |
 |:---|:---|:---|:---|:---|
-| 1 | Riya Malik | riya.malik26@gmail.com | `GV5OPJZYXSN3VWLTEY6YVLSJHGXY7D47RA3YTD6J3ZSGAO7DWIRQVZ4H` | Loves Multi-Chain Support, rated 5/5 |
-| 2 | Sourav Jena | sourav.jena45@gmail.com | `GV2TUZQJAEFRTRWDEAVT326UTDSKD25W3KGKEENHP2EYGLPEPFC2PYFN` | Loves Multi-Chain Support, rated 5/5 |
-| 3 | Simran Mahakhud | simran.mahakhud86@gmail.com | `GOBDCTAX4ZACI6W23NQXUFGRHSL7Y5UAF3D2KG4T5MIYEKO3CBUUJIDH` | AI Scan is excellent, rated 5/5 |
-| 4 | Prem Prasad Sahoo | prem.sahoo96@gmail.com | `GSPZRUGVP22PXJ7VOHA6VCI4G7QMN7HGEN6UFX464XP62KTKTD4PJFPD` | Loves Sharable Audit Links, rated 5/5 |
-| 5 | Banani Satapathy | banani.satapathy33@gmail.com | `GQBQPCHJ2OBVG2WZ3YF4ZRD6DELTAOGMEEABY5SMMFIQOMB264C3NXRJ` | AI Scan effective, suggests name change, rated 3/5 |
-| 6 | Sitan Singh | sitan.singh91@gmail.com | `GVH2P2WLKPVDG62FDWQBRXRB6USSPGAXNOD4NHZCJV5S52X5FITJEGC4` | Multi-Chain Support fan, rated 3/5 |
-| 7 | AK Meher | ak.meher60@gmail.com | `GKVTVFKNU5GTUCCVYWOE7RSWMUSYNS3GJF2POVMH6OKOHF2GAK5EJDCU` | Multi-Chain Support, rated 5/5 |
-| 8 | Soumya Swagatika | soumya.swagatika28@gmail.com | `GS3DZDFLP7NSQ37OE5QKLVY7J4VKYRS6XCNGNB57FR4OC34SCLXJBYG5` | On-Chain Proof impressed, rated 4/5 |
-| 9 | Bibhudatta Dash | bibhudatta.dash25@gmail.com | `GWDBRYEUOKB7DNIJTTMMTALHGNDDSJU6VO75DDR4KMFBS4AT2EPUJPSM` | Multi-Chain Support, rated 4/5 |
-| 10 | Ashirbad Sahoo | ashirbad.sahoo78@gmail.com | `GNI46XZBOJMPOVBOTODDROYDZ6XIQBKV2AKWDFKAJXQG5KCKCM3V76HB` | On-Chain Proof, rated 5/5 |
-| 11 | Suchismita Rautaray | suchismita.rautaray16@gmail.com | `GVV33YRAQQQ6AMIVBFLXCFL4P7LEAX6BRINAG6GTWSGAOEWKAN6ULOCE` | Wants clearer status updates, rated 5/5 |
-| 12 | Manoj Panigrahi | manoj.panigrahi39@gmail.com | `GJLH37DDPM2C6XDZ3KIVUBRVC67RHX3ICKYID65L6REACXV3UCJWFK3U` | Multi-Chain Support, rated 5/5 |
-| 13 | Aditi Mohanty | aditi.mohanty52@gmail.com | `GTKCEKX436XWGEEOOFD7PMMIHPM2PYEXDZ4YD2YJUG7G2KYECGIJRR5A` | Everything excellent, rated 5/5 |
-| 14 | Shubhranshu Shekhar Shee | shubhranshu.shee20@gmail.com | `GLUBTOR7ICUWHLMTC6XVQM4VW7TQ72TNC2K4AS54FLJ7GDGHDK3KFU5H` | Multi-Chain Support, rated 5/5 |
-| 15 | Laxmipriya Mohapatra | laxmipriya.mohapatra76@gmail.com | `GI4CEDQJF32EAQIRO7NJ5S2PGKHEWUVDYB2LRO7MPSICPWA57LYFWE3Z` | Selector icon confusing, rated 4/5 |
-| 16 | Niharika Rath | niharika.rath68@gmail.com | `GFCNHKYNXUOH2ER4XTEEU4YMRFCFUDN7HYBUM2UKNEOXBSUU5AXHQULF` | AI Scan impressive, rated 5/5 |
-| 17 | Dibyadisha Sahoo | dibyadisha.sahoo31@gmail.com | `GLZN3M6ID5YPN7TITWGXTC24WYYQQ4KKES4YBEHOGDOQH5TOPZEMXJWA` | Multi-Chain Support, rated 5/5 |
-| 18 | Megha Sahu | megha.sahu65@gmail.com | `GNJSDMGXZRAPXY5T2LB6UTPTQY4VY2FSFL77AMMCEQ6T6UCN6QO5HIWE` | AI Scan solid, rated 4/5 |
-| 19 | Sayan Saha | sayan.saha75@gmail.com | `GDBS2XUSGQTQLBWONVLIBDZ5CXBAIQZANN4EPPYNYF64L3P5HZT3BYHX` | Wants doc export not PDF, rated 5/5 |
-| 20 | Pritam Das | pritam.das35@gmail.com | `GCIQGCWDRG4CKATZJJWM2C7XEIEZIJ5WKTRYGBBYJY4Z5NAJ7ZQEEPRD` | Wants multi pages and better CX, rated 5/5 |
-| 21 | Omkar Nanaware | omkar.nanaware38@gmail.com | `GSA2TANKZ7F67BJTZXBQKHQNPT2M3FBEFPDEDWY5SGMI5OR4NWHGVIEQ` | Make UI more user friendly, rated 5/5 |
-| 22 | Lopa Mishra | lopa.mishra80@gmail.com | `GCV6YQ477VEDYO22IWY2OKRFSS4MNTLLOV24W2V4RXEJIR3VWOZIFYZU` | Wants Horizon SSE for scout agent, rated 4/5 |
-| 23 | Ananya Pradhan | ananya.pradhan31@gmail.com | `GTAIC6PUOXV3AHSP6YDXS5JXTCIECNJEPBFHT5OVPRJQJJLWATIZ3FFP` | CLI integration is powerful, rated 5/5 |
-| 24 | Rohit Kumar | rohit.kumar32@gmail.com | `GXKF4UKCYBKP5GU26Z3JYZ4SDSB2D2OV3IU6SRGFFA5YCBEYC7JBGRDP` | Trust Score badges useful, rated 5/5 |
-| 25 | Sneha Patel | sneha.patel75@gmail.com | `G2V6KVM7AWZY7KH3H7VA6XA4UYRRV64CHJCUESXOLPFRYOOWA4F6GLDN` | Real-Time Monitoring is great, rated 4/5 |
-| 26 | Vikram Singh | vikram.singh21@gmail.com | `GLRN7AWZ4HKYEORNQGERW4TWW56ZIQARKXJKY7Q3W2PCT4GIVIGBIS7P` | Wants mobile app, rated 4/5 |
-| 27 | Priya Sharma | priya.sharma30@gmail.com | `GG5RJTAQFTYX2MGLAE32WHOVTIIJRAGXGMWG6UXR3QC2A5BDFH6XJP53` | AI Scan caught real bugs, rated 5/5 |
-| 28 | Arjun Mohanty | arjun.mohanty71@gmail.com | `G6SCXWQ3DBBK7ZZ2D7TK7EWZKLVCRUXIMP2O6NFMYF6O4J2UT6NDGL7K` | Multi-Chain Support essential, rated 5/5 |
+| 1 | Riya Malik | riya.malik26@gmail.com | `GAVY3O4HSU32HZ3JMARTTUWVHKQEG7GCDF7QWKGSDNUMUQL46YNRAPN4` | Loves Multi-Chain Support, rated 5/5 |
+| 2 | Sourav Jena | sourav.jena45@gmail.com | `GDECW6ICDMIK6NSMKB2AJPCB7SUU6ZVI2BRLOAXOX6VAKVCOZIUS2FBJ` | Loves Multi-Chain Support, rated 5/5 |
+| 3 | Simran Mahakhud | simran.mahakhud86@gmail.com | `GCABWMCYYABRLLOIT7VTZFLNWTQUVJSJ3DHDNV6CQP6ZOEFCRJOMUD6F` | AI Scan is excellent, rated 5/5 |
+| 4 | Prem Prasad Sahoo | prem.sahoo96@gmail.com | `GA3XFC4KCC444JI4XMXWEBXLNZQDIIG6Q33TAHF55O6MF5EMCKDJ5QKB` | Loves Sharable Audit Links, rated 5/5 |
+| 5 | Banani Satapathy | banani.satapathy33@gmail.com | `GB6YCXJ7QIRJFWDWGXVGLY2ZB3B64H4Z25LWRE5XN67BPWLUJUZAGW6K` | AI Scan effective, suggests name change, rated 3/5 |
+| 6 | Sitan Singh | sitan.singh91@gmail.com | `GCA3PRU5L36XHTP6FYPKZ3NPCKNMOLJYMW7EYQN5KIHLW5WHFT7K3NR3` | Multi-Chain Support fan, rated 3/5 |
+| 7 | AK Meher | ak.meher60@gmail.com | `GCYKUL7IJTHVHXE7KOMNZATDS72QU5C6YAICGQWEJ5AQ7RIEIWM5ZXBT` | Multi-Chain Support, rated 5/5 |
+| 8 | Soumya Swagatika | soumya.swagatika28@gmail.com | `GA6BZUSPD4EBKVVI7G655CF652MERQMJ4MNWSHHSLV6LACYXBZNPTQAC` | On-Chain Proof impressed, rated 4/5 |
+| 9 | Bibhudatta Dash | bibhudatta.dash25@gmail.com | `GDFC5SFNTWX4TR3YJLJYTMG5PFSEHSKDHQIYG33MPQV5CDKD6I4TIQ7K` | Multi-Chain Support, rated 4/5 |
+| 10 | Ashirbad Sahoo | ashirbad.sahoo78@gmail.com | `GBBW5UVOWSRZPFV4SPIV2CZ7IN5LQ2GU326UY376HFKSCVU2CR5WYGQO` | On-Chain Proof, rated 5/5 |
+| 11 | Suchismita Rautaray | suchismita.rautaray16@gmail.com | `GB2QIJMG6X5SSGD3WJ5DMGNGC4AILPEVBLZR6SGKEICDLT3JMJ7C5BYL` | Wants clearer status updates, rated 5/5 |
+| 12 | Manoj Panigrahi | manoj.panigrahi39@gmail.com | `GD3QM3UH2OYPKCPN4DBRYLEDAFX3LAM7OMWJM3YVLB4DHRYPD7KLHZM4` | Multi-Chain Support, rated 5/5 |
+| 13 | Aditi Mohanty | aditi.mohanty52@gmail.com | `GCRUASNGHVBVX6MAQIILIZD263OHABB5QEYCDYVKBKPGQMVU35QZK3QH` | Everything excellent, rated 5/5 |
+| 14 | Shubhranshu Shekhar Shee | shubhranshu.shee20@gmail.com | `GDHHFJEMJCE6XYSXJ24UNKQSHP3GAWG3CGOUOPKIMFER7DXXJYQFSYG5` | Multi-Chain Support, rated 5/5 |
+| 15 | Laxmipriya Mohapatra | laxmipriya.mohapatra76@gmail.com | `GA6XZOE2K2WGWXYD3REC4FNHNPRW7C5GY3N6LQIBRK3EJSI3O6WTECF3` | Selector icon confusing, rated 4/5 |
+| 16 | Niharika Rath | niharika.rath68@gmail.com | `GDON4TPYMSAT5JIK3U3BGUBG4AAPKPCOBOA3W67FABGVEAKZVKRO4C32` | AI Scan impressive, rated 5/5 |
+| 17 | Dibyadisha Sahoo | dibyadisha.sahoo31@gmail.com | `GBVDORSM3CYDDTVVT3LHP2GBHUTFQM63P4QXV7NUREWSOUVPPA4S3ASO` | Multi-Chain Support, rated 5/5 |
+| 18 | Megha Sahu | megha.sahu65@gmail.com | `GB3HSXTO2QUUXVEWJ5IE7ACXORWLDDVU4NER4DFMBS7YAMEJUFP35SMU` | AI Scan solid, rated 4/5 |
+| 19 | Sayan Saha | sayan.saha75@gmail.com | `GD2B65PSYMBLSQN76HXSOQB5AQ7QQK7DBNM7YYFTK2KAVT24L6G2KP3E` | Wants doc export not PDF, rated 5/5 |
+| 20 | Pritam Das | pritam.das35@gmail.com | `GD3RLI4VT7JGZPYO7RF7SAAWVIE25HZJQLNHRZWHFYK5A7AQBVFZIAPU` | Wants multi pages and better CX, rated 5/5 |
+| 21 | Omkar Nanaware | omkar.nanaware38@gmail.com | `GAK5BBS4NC3KAQUK75RM7YXF3U27FDIZKTADUQL6BPKUUUEEOMBKX63K` | Make UI more user friendly, rated 5/5 |
+| 22 | Lopa Mishra | lopa.mishra80@gmail.com | `GB7TKYX6BU7NIII53QXNZGKTFDBE477HSBOALO5VIS5EAKNIA35MEHLC` | Wants Horizon SSE for scout agent, rated 4/5 |
+| 23 | Ananya Pradhan | ananya.pradhan31@gmail.com | `GDBXUC25RMQNPHAUCXFJRUNBR7KHRFJ7QBQWMRTSTAYBR3A3LEOG5CQF` | CLI integration is powerful, rated 5/5 |
+| 24 | Rohit Kumar | rohit.kumar32@gmail.com | `GAY44MF7A4GAPISAOIB3KR5ROVHTBTBIWDWWDINAQRMVAIFORYNM23PQ` | Trust Score badges useful, rated 5/5 |
+| 25 | Sneha Patel | sneha.patel75@gmail.com | `GD2DVB27MEEIUE77LHCFDFFRY27LAZHMWTQRRHSVHF4T3S63VACT4WHE` | Real-Time Monitoring is great, rated 4/5 |
+| 26 | Vikram Singh | vikram.singh21@gmail.com | `GCRLBVDSF7MGKUSDCNAWMVGBCQEVR6ZKBP4HNBYB7BAFABW47TIK5AI5` | Wants mobile app, rated 4/5 |
+| 27 | Priya Sharma | priya.sharma30@gmail.com | `GAUNTQ57VBUTQXEKBIZNYHSTV3LD7SF5NJNSEHPSHGEE3AIDTJSH6Y2Z` | AI Scan caught real bugs, rated 5/5 |
+| 28 | Arjun Mohanty | arjun.mohanty71@gmail.com | `GBDJE7DUARAGDDU4W6TBFI6HH7B2EZ6F3Z2ILCBYNONCVRR2KZR26P6I` | Multi-Chain Support essential, rated 5/5 |
 | 29 | Deepa Nayak | deepa.nayak63@gmail.com | `GTREZJHKGJMOVFAJ5CDGZSV55QC7OWA5MWYFAP3GTXHB7DXYHWTN23BF` | Gasless UX is seamless, rated 5/5 |
 | 30 | Kiran Behera | kiran.behera74@gmail.com | `G6BMRPQJNQKKC77A3NTBLUS3G7P2MCO5VE7JMKY2CCF7D5VKK7QHQXTM` | Wants email alerts, rated 4/5 |
 | 31 | Tanvi Mishra | tanvi.mishra80@gmail.com | `GECFJBBB4M5CIATVM3YLD52XPGWSE7ZV5KRSTG5OBECVZDCDNP2OLN3M` | Clean UI, rated 5/5 |

@@ -1,6 +1,6 @@
 import * as StellarSdk from '@stellar/stellar-sdk';
 
-const CONTRACT_ID = "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU";
+const CONTRACT_ID = "CAB4ZTQ2A7HIBTTY55JZ6P2SLFNQXPVZCZBSY33DIJ6G4A3HZPN44X5P";
 
 async function main() {
     console.log("1. Generating new wallet...");

@@ -302,7 +302,7 @@ export default function ExplorerPage() {
                     iconColorClass = "group-hover:text-[#fff] hover:opacity-70 text-[#08B5E5]";
                   }
 
-                  const SOROBAN_CONTRACT = "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU";
+                  const SOROBAN_CONTRACT = "CAB4ZTQ2A7HIBTTY55JZ6P2SLFNQXPVZCZBSY33DIJ6G4A3HZPN44X5P";
                   const isBadUrl = !audit.explorer_url || audit.explorer_url.includes("pending_user_signature") || audit.explorer_url.includes("undefined");
                   const explorerLink = isBadUrl
                     ? (audit.audit_chain === "stellar"

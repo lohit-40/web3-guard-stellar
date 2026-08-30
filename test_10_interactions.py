@@ -3,7 +3,7 @@ import time
 import json
 import os
 
-CONTRACT_ID = "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU"
+CONTRACT_ID = "CAB4ZTQ2A7HIBTTY55JZ6P2SLFNQXPVZCZBSY33DIJ6G4A3HZPN44X5P"
 REPORT_FILE = "c:\\\\Users\\\\Asus\\\\Desktop\\\\bc-adv\\\\stellar_submission_v2\\\\interactions_report.md"
 
 def run_cmd(cmd):

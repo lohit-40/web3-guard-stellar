@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     // Testnet key split to avoid false positive GitHub secret scanning alerts. No real funds on this key.
     const STELLAR_SECRET_KEY = process.env.STELLAR_SECRET_KEY || ("SAMVCRZZTKUMEZ2SVMZ2" + "7Z55D66TMAUXV2EIF4YFHW52QVQNO4XPSBS2");
     const SOROBAN_RPC_URL = "https://soroban-testnet.stellar.org";
-    const SOROBAN_CONTRACT_ID = process.env.SOROBAN_CONTRACT_ID || "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU";
+    const SOROBAN_CONTRACT_ID = process.env.SOROBAN_CONTRACT_ID || "CAB4ZTQ2A7HIBTTY55JZ6P2SLFNQXPVZCZBSY33DIJ6G4A3HZPN44X5P";
 
     const keypair = Keypair.fromSecret(STELLAR_SECRET_KEY);
     const server = new SorobanRpc.Server(SOROBAN_RPC_URL);

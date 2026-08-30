@@ -125,7 +125,7 @@ async def startup_event():
     # Seed the REAL deployed Soroban contract into watchlist for Scout Agent to monitor
     try:
         from database import add_to_watchlist
-        soroban_id = os.getenv("SOROBAN_CONTRACT_ID", "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU")
+        soroban_id = os.getenv("SOROBAN_CONTRACT_ID", "CAB4ZTQ2A7HIBTTY55JZ6P2SLFNQXPVZCZBSY33DIJ6G4A3HZPN44X5P")
         STELLAR_SEED_CONTRACTS = [
             (soroban_id, "Scout", "LOW"),
         ]
@@ -703,12 +703,12 @@ def submit_soroban_proof_backend(request: Request, payload: SubmitProofRequest):
 
         is_mainnet = payload.network == "mainnet"
         SOROBAN_RPC  = "https://soroban.stellar.org" if is_mainnet else "https://soroban-testnet.stellar.org"
-        CONTRACT_ID  = os.getenv("SOROBAN_CONTRACT_ID_MAINNET", "") if is_mainnet else os.getenv("SOROBAN_CONTRACT_ID", "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU")
+        CONTRACT_ID  = os.getenv("SOROBAN_CONTRACT_ID_MAINNET", "") if is_mainnet else os.getenv("SOROBAN_CONTRACT_ID", "CAB4ZTQ2A7HIBTTY55JZ6P2SLFNQXPVZCZBSY33DIJ6G4A3HZPN44X5P")
         
         # Fallback to testnet safely if the user tries to use mainnet without a deployed contract
         if is_mainnet and not CONTRACT_ID:
             SOROBAN_RPC = "https://soroban-testnet.stellar.org"
-            CONTRACT_ID = os.getenv("SOROBAN_CONTRACT_ID", "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU")
+            CONTRACT_ID = os.getenv("SOROBAN_CONTRACT_ID", "CAB4ZTQ2A7HIBTTY55JZ6P2SLFNQXPVZCZBSY33DIJ6G4A3HZPN44X5P")
             is_mainnet = False
 
         NATIVE_XLM   = "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
@@ -1324,7 +1324,7 @@ def explorer_audits(request: Request):
     # ── Pull REAL on-chain store_proof calls from Stellar Horizon API ──
     latest_stellar_tx_url = None
     try:
-        soroban_id = os.getenv("SOROBAN_CONTRACT_ID", "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU")
+        soroban_id = os.getenv("SOROBAN_CONTRACT_ID", "CAB4ZTQ2A7HIBTTY55JZ6P2SLFNQXPVZCZBSY33DIJ6G4A3HZPN44X5P")
         h_resp = requests.get(
             f"https://horizon-testnet.stellar.org/contracts/{soroban_id}/operations?order=desc&limit=20",
             timeout=8
@@ -1362,7 +1362,7 @@ def explorer_audits(request: Request):
                 a["explorer_url"] = latest_stellar_tx_url
 
     # Fallback contract page if no Horizon txs found at all
-    soroban_id = os.getenv("SOROBAN_CONTRACT_ID", "CDQQQUGCX33O7JAUXOJHPC6JONZ3D5UPWW6IHNUHLPSLF7IPZHQ2WBZU")
+    soroban_id = os.getenv("SOROBAN_CONTRACT_ID", "CAB4ZTQ2A7HIBTTY55JZ6P2SLFNQXPVZCZBSY33DIJ6G4A3HZPN44X5P")
     contract_page = f"https://stellar.expert/explorer/testnet/contract/{soroban_id}?filter=history"
     for a in audits:
         if a.get("audit_chain") == "stellar" and not a.get("explorer_url"):

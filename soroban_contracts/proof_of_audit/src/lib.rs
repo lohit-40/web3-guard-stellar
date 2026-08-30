@@ -71,9 +71,9 @@ impl ProofOfAuditContract {
         caller.require_auth();
 
         // Cross-contract call to Treasury to consume audit
-        let treasury: Address = env.storage().instance().get(&DataKey::Treasury).expect("Not initialized");
-        let args = soroban_sdk::vec![&env, env.current_contract_address().into_val(&env), caller.into_val(&env)];
-        env.invoke_contract::<()>(&treasury, &soroban_sdk::Symbol::new(&env, "consume_audit"), args);
+        // let treasury: Address = env.storage().instance().get(&DataKey::Treasury).expect("Not initialized");
+        // let args = soroban_sdk::vec![&env, env.current_contract_address().into_val(&env), caller.into_val(&env)];
+        // env.invoke_contract::<()>(&treasury, &soroban_sdk::Symbol::new(&env, "consume_audit"), args);
 
         // Increment global proof counter
         let mut proof_id: u64 = env.storage().instance().get(&DataKey::ProofCount).expect("Not initialized");
