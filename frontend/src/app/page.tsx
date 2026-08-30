@@ -296,6 +296,24 @@ export default function App() {
   const [isMinting, setIsMinting] = useState(false);
   const [mintResult, setMintResult] = useState<{ tx_hash: string; token_id: number | null; etherscan_nft_url: string | null } | null>(null);
 
+  // [Level 7 Feedback]: Keyboard shortcuts for power users
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+Enter: trigger scan
+      if (e.ctrlKey && e.key === "Enter" && !loading) {
+        e.preventDefault();
+        handleScan();
+      }
+      // Esc: clear results and reset
+      if (e.key === "Escape" && result) {
+        setResult(null);
+        setSecureContract(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [loading, result]);
+
   const handleScan = async (e?: React.FormEvent) => {
     e?.preventDefault();
     trackEvent('scan_contract', { 
