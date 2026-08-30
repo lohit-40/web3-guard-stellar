@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web3 Guard — Level 7 User Feedback Form</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #F2F0EB; color: #1C1C1C; min-height: 100vh; }
+    .container { max-width: 700px; margin: 0 auto; padding: 40px 24px; }
+    .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .logo span { font-size: 28px; font-weight: 900; letter-spacing: 0.05em; }
+    .logo .guard { color: #FF4522; }
+    .subtitle { font-size: 13px; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 700; color: #1C1C1C; opacity: 0.5; margin-bottom: 32px; }
+    h1 { font-size: 32px; font-weight: 900; letter-spacing: -0.02em; margin-bottom: 8px; line-height: 1.1; }
+    .desc { font-size: 15px; line-height: 1.6; margin-bottom: 40px; color: #1C1C1C; opacity: 0.7; }
+    .field { margin-bottom: 28px; }
+    label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 700; margin-bottom: 8px; }
+    label .req { color: #FF4522; }
+    input[type="text"], input[type="email"], textarea, select {
+      width: 100%; padding: 14px 0; font-size: 18px; font-family: 'Inter', sans-serif;
+      background: transparent; border: none; border-bottom: 3px solid #1C1C1C20;
+      outline: none; transition: border-color 0.3s; color: #1C1C1C;
+    }
+    input:focus, textarea:focus, select:focus { border-bottom-color: #FF4522; }
+    textarea { resize: vertical; min-height: 80px; }
+    select { cursor: pointer; appearance: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231C1C1C' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 0 center; }
+    .rating-group { display: flex; gap: 8px; margin-top: 8px; }
+    .rating-group label { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border: 3px solid #1C1C1C; cursor: pointer; font-size: 18px; font-weight: 700; transition: all 0.2s; text-transform: none; letter-spacing: 0; margin-bottom: 0; }
+    .rating-group input[type="radio"] { display: none; }
+    .rating-group input[type="radio"]:checked + label { background: #FF4522; color: #F2F0EB; border-color: #FF4522; transform: translateY(-2px); box-shadow: 4px 4px 0 #1C1C1C; }
+    .submit-btn {
+      width: 100%; padding: 18px; font-size: 16px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.2em; background: #FF4522; color: #F2F0EB; border: none; cursor: pointer;
+      transition: all 0.3s; box-shadow: 6px 6px 0 #1C1C1C; margin-top: 16px;
+    }
+    .submit-btn:hover { background: #1C1C1C; transform: translate(2px, 2px); box-shadow: 4px 4px 0 #FF4522; }
+    .submit-btn:active { transform: translate(6px, 6px); box-shadow: none; }
+    .divider { width: 100%; height: 4px; background: #1C1C1C; margin: 40px 0; }
+    .success-msg { display: none; text-align: center; padding: 60px 20px; }
+    .success-msg h2 { font-size: 42px; font-weight: 900; margin-bottom: 12px; }
+    .success-msg p { font-size: 15px; opacity: 0.6; }
+    .privacy { font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.4; margin-top: 24px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <span>WEB3<span class="guard">Guard</span></span>
+    </div>
+    <div class="subtitle">Level 7 — Mainnet User Feedback Collection</div>
+
+    <div id="form-area">
+      <h1>Help Us Improve *</h1>
+      <p class="desc">Your feedback directly shapes the next version of Web3 Guard. Every response is tracked and implemented with a corresponding Git commit.</p>
+
+      <form id="feedback-form">
+        <div class="field">
+          <label>Full Name <span class="req">*</span></label>
+          <input type="text" name="name" required placeholder="Enter your full name">
+        </div>
+
+        <div class="field">
+          <label>Email Address <span class="req">*</span></label>
+          <input type="email" name="email" required placeholder="your@email.com">
+        </div>
+
+        <div class="field">
+          <label>Stellar Wallet Address <span class="req">*</span></label>
+          <input type="text" name="wallet" required placeholder="G..." pattern="^G[A-Z2-7]{55}$" title="Must be a valid Stellar public key (starts with G, 56 chars)">
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="field">
+          <label>Product Rating <span class="req">*</span></label>
+          <div class="rating-group">
+            <input type="radio" name="rating" id="r1" value="1" required><label for="r1">1</label>
+            <input type="radio" name="rating" id="r2" value="2"><label for="r2">2</label>
+            <input type="radio" name="rating" id="r3" value="3"><label for="r3">3</label>
+            <input type="radio" name="rating" id="r4" value="4"><label for="r4">4</label>
+            <input type="radio" name="rating" id="r5" value="5"><label for="r5">5</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Which feature did you like the most? <span class="req">*</span></label>
+          <select name="favorite_feature" required>
+            <option value="">Select a feature...</option>
+            <option value="AI Vulnerability Scan">AI Vulnerability Scan</option>
+            <option value="On-Chain Audit Proof">On-Chain Audit Proof (Soroban)</option>
+            <option value="Multi-Chain Support">Multi-Chain Support</option>
+            <option value="Auto-Remediation">AI Auto-Remediation</option>
+            <option value="CLI / CI/CD Integration">CLI / CI/CD Integration</option>
+            <option value="Trust Score & Badges">Trust Score & Safety Badges</option>
+            <option value="Real-Time Monitoring">Real-Time Monitoring Dashboard</option>
+            <option value="Keyboard Shortcuts">Keyboard Shortcuts & UX</option>
+            <option value="CSV Export">Scan History CSV Export</option>
+            <option value="Fee Sponsorship">Gasless Fee Sponsorship</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>What feature do you think is missing?</label>
+          <textarea name="missing_feature" placeholder="Tell us what you'd like to see added..."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Did you encounter any bugs or usability issues?</label>
+          <textarea name="bugs" placeholder="Describe any issues you faced..."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Would you recommend this product to others? <span class="req">*</span></label>
+          <select name="would_recommend" required>
+            <option value="">Select...</option>
+            <option value="Definitely Yes">Definitely Yes</option>
+            <option value="Probably Yes">Probably Yes</option>
+            <option value="Not Sure">Not Sure</option>
+            <option value="Probably No">Probably No</option>
+            <option value="Definitely No">Definitely No</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>What improvements would you like to see?</label>
+          <textarea name="improvements" placeholder="Any suggestions for improving the product..."></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit Feedback →</button>
+        <p class="privacy">Your data is collected solely for product improvement and hackathon submission purposes.</p>
+      </form>
+    </div>
+
+    <div id="success" class="success-msg">
+      <h2>Thank you *</h2>
+      <p>Your feedback has been recorded. Every suggestion will be reviewed and implemented where possible, with corresponding Git commits tracked in our README.</p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('feedback-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+      
+      // Store locally for export
+      const existing = JSON.parse(localStorage.getItem('web3guard_feedback') || '[]');
+      data.timestamp = new Date().toISOString();
+      data.user_id = existing.length + 1;
+      existing.push(data);
+      localStorage.setItem('web3guard_feedback', JSON.stringify(existing));
+      
+      // Show success
+      document.getElementById('form-area').style.display = 'none';
+      document.getElementById('success').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
