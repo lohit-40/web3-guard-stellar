@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { History, X, ChevronRight, AlertTriangle, CheckCircle } from "lucide-react";
+import { History, X, ChevronRight, AlertTriangle, CheckCircle, Download } from "lucide-react";
 
 interface HistorySidebarProps {
   onSelectReport: (report: any) => void;
@@ -20,6 +20,45 @@ export default function HistorySidebar({ onSelectReport }: HistorySidebarProps) 
       } catch (e) {}
     }
   };
+
+  // [Level 7 Feedback]: Export scan history as CSV for teams and auditors
+  const exportCSV = useCallback(() => {
+    if (history.length === 0) return;
+    const headers = ["Date", "Contract/Target", "Status", "Vulnerabilities", "Risk Level", "Chain", "TX Hash"];
+    const rows = history.map((item: any) => {
+      const vulnCount = item.vulnerabilities?.length ?? 0;
+      const risk = vulnCount === 0 ? "SECURE" : item.vulnerabilities.some((v: any) => v.severity === "High") ? "HIGH" : "MEDIUM";
+      return [
+        new Date(item.timestamp).toISOString(),
+        `"${item.address || 'Source Code Audit'}"`,
+        vulnCount === 0 ? "Clean" : `${vulnCount} vulnerabilities`,
+        vulnCount,
+        risk,
+        item.audit_chain || "N/A",
+        item.audit_tx_hash || "N/A",
+      ].join(",");
+    });
+    const csv = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `web3guard_audit_history_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [history]);
+
+  // [Level 7 Feedback]: Keyboard shortcut Ctrl+H to toggle history panel
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "h") {
+        e.preventDefault();
+        setIsOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -67,10 +106,25 @@ export default function HistorySidebar({ onSelectReport }: HistorySidebarProps) 
                   </div>
                   <h2 className="font-bold tracking-[0.2em] uppercase text-xl" style={{ color: '#F2F0EB' }}>History</h2>
                 </div>
-                <button onClick={() => setIsOpen(false)} className="p-2 transition-colors" style={{ backgroundColor: '#F2F0EB', color: '#1C1C1C', border: '2px solid #F2F0EB' }}>
-                  <X className="w-6 h-6" />
-                </button>
+                <div className="flex items-center gap-2">
+                  {history.length > 0 && (
+                    <button onClick={exportCSV} className="p-2 transition-colors hover:brightness-110" style={{ backgroundColor: '#FF4522', color: '#F2F0EB', border: '2px solid #F2F0EB' }} title="Export audit history as CSV">
+                      <Download className="w-5 h-5" />
+                    </button>
+                  )}
+                  <button onClick={() => setIsOpen(false)} className="p-2 transition-colors" style={{ backgroundColor: '#F2F0EB', color: '#1C1C1C', border: '2px solid #F2F0EB' }}>
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
               </div>
+
+              {/* Stats Bar */}
+              {history.length > 0 && (
+                <div className="px-6 py-3 flex items-center justify-between text-xs font-bold tracking-[0.15em] uppercase" style={{ backgroundColor: '#1C1C1C', color: '#F2F0EB', borderBottom: '2px solid #FF4522' }}>
+                  <span>{history.length} audit{history.length !== 1 ? "s" : ""} recorded</span>
+                  <span className="opacity-50">Ctrl+H</span>
+                </div>
+              )}
 
               {/* Content */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4" style={{ backgroundColor: '#F2F0EB' }}>
