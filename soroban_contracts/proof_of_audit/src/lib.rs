@@ -216,3 +216,6 @@ mod tests {
         assert_eq!(client.total_proofs(), 1);
     }
 }
+
+#[cfg(test)]
+mod test;
